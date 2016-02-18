@@ -10,7 +10,7 @@ import ogp.framework.util.ModelException;
 /**
  *
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
  *
  */
