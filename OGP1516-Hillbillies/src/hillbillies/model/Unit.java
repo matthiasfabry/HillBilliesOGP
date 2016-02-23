@@ -36,7 +36,9 @@ import ogp.framework.util.ModelException;
  * @invar  The Stamina of each Unit must be a valid Stamina for any
  *         Unit.
  *       | isValidStamina(getStamina())
-     
+ * @invar  The Name of each Unit must be a valid Name for any
+ *         Unit.
+ *       | isValidName(getName())   
  */
 
 public class Unit {
@@ -517,9 +519,7 @@ public class Unit {
 	
 // Name (defensive) //
 	/** TO BE ADDED TO CLASS HEADING
-	 * @invar  The Name of each Unit must be a valid Name for any
-	 *         Unit.
-	 *       | isValidName(getName())
+
 	 */
 
 
