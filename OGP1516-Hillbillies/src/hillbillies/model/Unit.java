@@ -24,6 +24,9 @@ import ogp.framework.util.ModelException;
  *        isValidStamina(getStamina())
  * @invar The Name of each Unit must be a valid Name for any Unit. |
  *        isValidName(getName())
+ * @invar The position of each Unit must be a valid position for any
+ *        Unit.
+ *        | isValidPosition(getXposition()) && isValidPosition(getYposition()) && isValidPosition(getZposition())
  *
  * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
@@ -51,7 +54,7 @@ public class Unit {
 	 *            Flag to signal whether the Unit performs default behavior.
 	 * @throws ModelException
 	 */
-	public Unit(String name, int[] initialPosition, int weight, int agility,
+	public Unit(String name, double[] position, double xposition, double yposition, double zposition, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior)
 					throws ModelException {
 		if (isValidInitialAttribute(agility))
@@ -74,9 +77,203 @@ public class Unit {
 			this.name = name;
 		else
 			throw new ModelException();
+			
+		if (isValidPosition(xposition))
+			this.xposition = xposition;
+		else
+			this.xposition = nearestValidPosition(xposition);
+		if (isValidPosition(yposition))
+			this.yposition = yposition;
+		else
+			this.yposition = nearestValidPosition(yposition);
+		if (isValidPosition(zposition))
+			this.zposition = zposition;
+		else
+			this.zposition = nearestValidPosition(zposition);
+		position[0] = xposition;
+		position[1] = yposition;
+		position[2] = zposition;
 
 	}
-
+	
+	
+	// Position (Defensive) //
+	private static final int MAX_POSITION = 50;
+	private static final int MIN_POSITION = 0;
+	
+//	/**
+//	 * Return the position of this Unit.
+//	 */
+//	@Basic @Raw
+//	public double getPosition() {
+//		return this.position;
+//	}
+	
+	/**
+	 * Return the x-position of this Unit.
+	 */
+	@Basic @Raw
+	public double getXposition() {
+		return this.position[0];
+	}
+	/**
+	 * Return the y-position of this Unit.
+	 */
+	@Basic @Raw
+	public double getYposition() {
+		return this.position[1];
+	}
+	/**
+	 * Return the z-position of this Unit.
+	 */
+	@Basic @Raw
+	public double getZposition() {
+		return this.position[2];
+	}
+	
+	/**
+	 * Return the in-world position of this Unit.
+	 */
+	public int[] getInWorldPosition(){
+		int[] inworldposition = null;
+		for (int i=0; i < 3;)
+			inworldposition[i] = (int) Math.round(position[i]);
+		return inworldposition;
+	}
+	
+	/**
+	 * Check whether the given position component is a valid position component for
+	 * any Unit.
+	 *  
+	 * @param  position
+	 *         The position to check.
+	 * @return True if the given position component is valid for this Unit
+	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
+	 *       | 		return True
+	 *       | else
+	 *       | 		return False
+	*/
+	public static boolean isValidPosition(double position){
+		return (position >= MIN_POSITION && position <= MAX_POSITION);
+	}
+	
+	/**
+	 * Check whether the given position is a valid position for
+	 * any Unit.
+	 *  
+	 * @param  position
+	 *         The position to check.
+	 * @return True if the given position is valid for this Unit
+	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
+	 *       | 		return True
+	 *       | else
+	 *       | 		return False
+	*/
+	public static boolean isValidPosition(double [] position){
+		for (int i = 0; i < position.length;)
+			if (! isValidPosition(position[i]))
+				return false;
+		return true;
+				
+	}
+	
+	/**
+	 * @param position
+	 * 		  The position for this Unit
+	 * @return a valid value for the component of the position
+	 */
+	public static double nearestValidPosition(double position){
+		if (position > MAX_POSITION)
+			return MAX_POSITION;
+		else
+			return MIN_POSITION;
+	}
+	
+	/**
+	 * Set the position of this Unit to the given position.
+	 * 
+	 * @param  position
+	 *         The new position for this Unit.
+	 * @post   The position of this new Unit is equal to
+	 *         the given position.
+	 *       | new.getPosition() == position
+	 * @throws RangeException
+	 *         The given position is not a valid position for any
+	 *         Unit.
+	 *       | ! isValidPosition(getPosition())
+	 */
+	@Raw
+	public void setPosition(double [] position) 
+			throws RangeException {
+	//	if (! isValidPosition(position))
+	//		throw new RangeException();
+		for (int i = 0; i < 3;)
+			this.position[i] = (int) position[i];
+	}
+	
+	/**
+	 * Variable registering the position of this Unit.
+	 */
+	private double xposition;
+	private double yposition;
+	private double zposition;
+	private int [] position;
+	
+//	/**
+//	 * Set the x-component of this Unit to the given x-value.
+//	 * 
+//	 * @throws
+//	 * @param  xposition
+//	 *         The new x-position for this Unit.
+//	 */
+//	@Raw
+//	public void setxposition(double xposition){
+//		if (isValidPosition(xposition))
+//			this.position[0] = xposition;
+//		else
+//			this.position[0] = nearestValidPosition(xposition);
+//	}
+//	/**
+//	 * Set the y-component of this Unit to the given y-value.
+//	 * 
+//	 * @param  xposition
+//	 *         The new y-position for this Unit.
+//	 * @post   If the given y-position is a valid y-position for any Unit,
+//	 *         the y-position of this new Unit is equal to the given
+//	 *         y-position. Otherwise, the y-position will be set to the nearest
+//	 *         valid y-position.
+//	 *       | if (isValidPosition(yposition))
+//	 *       |   then new.getxposition() == yposition
+//	 *       |   else new.getposition() == nearestValidPosition(yposition)
+//	 */
+//	@Raw
+//	public void setyposition(double yposition) {
+//		if (isValidPosition(yposition))
+//			this.position[1] = yposition;
+//		else
+//			this.position[1] = nearestValidPosition(yposition);
+//	}
+//	/**
+//	 * Set the z-component of this Unit to the given z-value.
+//	 * 
+//	 * @param  zposition
+//	 *         The new z-position for this Unit.
+//	 * @post   If the given z-position is a valid z-position for any Unit,
+//	 *         the z-position of this new Unit is equal to the given
+//	 *         z-position. Otherwise, the z-position will be set to the nearest
+//	 *         valid z-position.
+//	 *       | if (isValidPosition(zposition))
+//	 *       |   then new.getxposition() == zposition
+//	 *       |   else new.getposition() == nearestValidPosition(zposition)
+//	 */
+//	@Raw
+//	public void setzposition(double zposition) {
+//		if (isValidPosition(zposition))
+//			this.position[2] = zposition;
+//		else
+//			this.position[2] = nearestValidPosition(zposition);
+//	}
+	
 	// Primary Attributes (Total) //
 	/**
 	 * Checks whether the given attribute is a valid initial value for that attribute
