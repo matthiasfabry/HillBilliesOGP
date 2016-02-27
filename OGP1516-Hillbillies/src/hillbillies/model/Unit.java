@@ -504,6 +504,9 @@ public class Unit {
 		this.name = name;
 	}
 
+	/**
+	 * variable containing the pattern of valid characters for the first letter of Unit names.
+	 */
 	private static final Pattern upperCase = Pattern.compile("[A-Z]");
 	/**
 	 * variable containing the pattern of valid characters for Unit names.
@@ -514,4 +517,72 @@ public class Unit {
 	 * Variable registering the Name of this Unit.
 	 */
 	private String name;
+	
+	// Time control (defensive) //
+	
+	public void advanceTime(){
+		
+	}
+	
+	// Working (defensive) //
+	
+	public void work(){
+		double timeRequired = (500.0/this.getStrength());
+		
+	}
+	
+	
+	// Fighting (defensive) //
+	
+	public void attack(){
+	
+	}
+	
+	public void defend(){
+		
+	}
+	
+	public void dodge(){
+		
+	}
+	
+	public void block(){
+		
+	}
+	
+	
+	/**
+	 * Changes the hitpoints of the victim due to an attack
+	 * 
+	 * @param victim
+	 * 			The Unit to which damage is dealt.
+	 * @post The 
+	 */
+	public void doesDamage(Unit victim){
+		victim.setHitpoints(victim.getHitpoints()-this.getStrength()/10);
+	}
+	
+	public void orientWith(Unit defender){
+		
+	}
+	
+	// Resting (defensive) //
+	
+	public void rest(){
+		
+	}
+	
+	// Default behaviour (defensive) //
+	
+	public void startDefaultBehaviour(){
+		
+	}
+	
+	public void stopDefaultBehaviour(){
+		
+	}
+	
+	
+	
+	// 
 }
