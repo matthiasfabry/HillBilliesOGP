@@ -101,13 +101,13 @@ public class Unit {
 	private static final int MAX_POSITION = 50;
 	private static final int MIN_POSITION = 0;
 	
-//	/**
-//	 * Return the position of this Unit.
-//	 */
-//	@Basic @Raw
-//	public double getPosition() {
-//		return this.position;
-//	}
+	/**
+	 * Return the position of this Unit.
+	 */
+	@Basic @Raw
+	public double getPosition() {
+		return this.position;
+	}
 	
 	/**
 	 * Return the x-position of this Unit.
@@ -217,7 +217,7 @@ public class Unit {
 	private double xposition;
 	private double yposition;
 	private double zposition;
-	private int [] position;
+	private int[] position;
 	
 //	/**
 //	 * Set the x-component of this Unit to the given x-value.
