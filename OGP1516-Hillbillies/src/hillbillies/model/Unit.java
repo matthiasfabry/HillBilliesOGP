@@ -4,29 +4,32 @@ package hillbillies.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.w3c.dom.ranges.RangeException;
+
 import be.kuleuven.cs.som.annotate.*;
 import ogp.framework.util.ModelException;
 
 /**
  *	A class describing the Hillbillie Unit
  *
- * @invar The Weight of each Unit must be a valid Weight for any Unit. |
- *        isValidWeight(getWeight())
- * @invar The Agility of each Unit must be a valid Agility for any Unit. |
- *        isValidAgility(getAgility())
- * @invar The Strength of each Unit must be a valid Strength for any Unit. |
- *        isValidStrength(getStrength())
- * @invar The Toughness of each Unit must be a valid Toughness for any Unit. |
- *        isValidToughness(getToughness())
- * @invar The Hitpoints of each Unit must be a valid Hitpoints for any Unit. |
- *        isValidHitpoints(getHitpoints())
- * @invar The Stamina of each Unit must be a valid Stamina for any Unit. |
- *        isValidStamina(getStamina())
- * @invar The Name of each Unit must be a valid Name for any Unit. |
- *        isValidName(getName())
- * @invar The position of each Unit must be a valid position for any
- *        Unit.
- *        | isValidPosition(getXposition()) && isValidPosition(getYposition()) && isValidPosition(getZposition())
+ * @invar The Weight of each Unit must be a valid Weight for any Unit. 
+ * 			| isValidWeight(getWeight())
+ * @invar The Agility of each Unit must be a valid Agility for any Unit. 
+ * 			| isValidAgility(getAgility())
+ * @invar The Strength of each Unit must be a valid Strength for any Unit. 
+ * 			| isValidStrength(getStrength())
+ * @invar The Toughness of each Unit must be a valid Toughness for any Unit.
+ * 			| isValidToughness(getToughness())
+ * @invar The Hitpoints of each Unit must be a valid Hitpoints for any Unit. 
+ * 			| isValidHitpoints(getHitpoints())
+ * @invar The Stamina of each Unit must be a valid Stamina for any Unit. 
+ * 			| isValidStamina(getStamina())
+ * @invar The Name of each Unit must be a valid Name for any Unit. 
+ * 			| isValidName(getName())
+ * @invar  The Orientation of each Unit must be a valid Orientation for any Unit.
+ * *      	| isValidOrientation(getOrientation())
+ * @invar The position of each Unit must be a valid position for any Unit.
+ *        	| isValidPosition(getPosition())
  *
  * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
@@ -54,93 +57,72 @@ public class Unit {
 	 *            Flag to signal whether the Unit performs default behavior.
 	 * @throws ModelException
 	 */
-	public Unit(String name, double[] position, double xposition, double yposition, double zposition, int weight, int agility,
+	public Unit(String name, double[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior)
 					throws ModelException {
-		if (isValidInitialAttribute(agility))
-			this.agility = agility;
-		else
-			this.agility = nearestValidInitialAttribute(agility);
-		if (isValidInitialAttribute(strength))
-			this.strength = strength;
-		else
-			this.strength = nearestValidInitialAttribute(strength);
-		if (isValidInitialAttribute(toughness))
-			this.toughness = toughness;
-		else
-			this.toughness = nearestValidInitialAttribute(toughness);
-		if (isValidInitialAttribute(weight) && this.isValidWeight(weight))
-			this.weight = weight;
-		else
-			this.weight = nearestValidInitialAttribute(weight);
-		if (isValidName(name))
-			this.name = name;
-		else
-			throw new ModelException();
-			
-		if (isValidPosition(xposition))
-			this.xposition = xposition;
-		else
-			this.xposition = nearestValidPosition(xposition);
-		if (isValidPosition(yposition))
-			this.yposition = yposition;
-		else
-			this.yposition = nearestValidPosition(yposition);
-		if (isValidPosition(zposition))
-			this.zposition = zposition;
-		else
-			this.zposition = nearestValidPosition(zposition);
-		position[0] = xposition;
-		position[1] = yposition;
-		position[2] = zposition;
+		this.setAgility(agility);
+		this.setStrength(strength);
+		this.setToughness(toughness);
+		this.setWeight(weight);
+		this.setPosition(position);
+		this.setName(name);
+		this.setOrientation((float) (Math.PI/2));
+		
+		
+
+		// position[0] = xposition;
+		// position[1] = yposition;
+		// position[2] = zposition;
 
 	}
-	
-	
+
 	// Position (Defensive) //
-	private static final int MAX_POSITION = 50;
-	private static final int MIN_POSITION = 0;
-	
+	private static final double MAX_POSITION = 50.0;
+	private static final double MIN_POSITION = 0.0;
+
 	/**
 	 * Return the position of this Unit.
 	 */
-	@Basic @Raw
-	public double getPosition() {
+	@Basic
+	@Raw
+	public double[] getPosition() {
 		return this.position;
 	}
-	
 	/**
 	 * Return the x-position of this Unit.
 	 */
-	@Basic @Raw
+	@Basic
+	@Raw
 	public double getXposition() {
 		return this.position[0];
 	}
 	/**
 	 * Return the y-position of this Unit.
 	 */
-	@Basic @Raw
+	@Basic
+	@Raw
 	public double getYposition() {
 		return this.position[1];
 	}
 	/**
 	 * Return the z-position of this Unit.
 	 */
-	@Basic @Raw
+	@Basic
+	@Raw
 	public double getZposition() {
 		return this.position[2];
 	}
-	
+
 	/**
 	 * Return the in-world position of this Unit.
 	 */
-	public int[] getInWorldPosition(){
-		int[] inworldposition = null;
-		for (int i=0; i < 3;)
-			inworldposition[i] = (int) Math.round(position[i]);
+	public int[] getInWorldPosition() {
+		int[] inworldposition = {0, 0, 0};
+		for (int i = 0; i < 3;)
+			inworldposition[i] = (int) Math.floor(this.position[i]);
 		return inworldposition;
 	}
-	
+
 	/**
 	 * Check whether the given position component is a valid position component for
 	 * any Unit.
@@ -153,10 +135,10 @@ public class Unit {
 	 *       | else
 	 *       | 		return False
 	*/
-	public static boolean isValidPosition(double position){
+	public static boolean isValidPosition(double position) {
 		return (position >= MIN_POSITION && position <= MAX_POSITION);
 	}
-	
+
 	/**
 	 * Check whether the given position is a valid position for
 	 * any Unit.
@@ -169,26 +151,26 @@ public class Unit {
 	 *       | else
 	 *       | 		return False
 	*/
-	public static boolean isValidPosition(double [] position){
+	public static boolean isValidPosition(double[] position) {
 		for (int i = 0; i < position.length;)
-			if (! isValidPosition(position[i]))
+			if (!isValidPosition(position[i]))
 				return false;
 		return true;
-				
+
 	}
-	
+
 	/**
 	 * @param position
 	 * 		  The position for this Unit
 	 * @return a valid value for the component of the position
 	 */
-	public static double nearestValidPosition(double position){
+	public static double nearestValidPosition(double position) {
 		if (position > MAX_POSITION)
 			return MAX_POSITION;
 		else
 			return MIN_POSITION;
 	}
-	
+
 	/**
 	 * Set the position of this Unit to the given position.
 	 * 
@@ -203,77 +185,76 @@ public class Unit {
 	 *       | ! isValidPosition(getPosition())
 	 */
 	@Raw
-	public void setPosition(double [] position) 
-			throws RangeException {
-	//	if (! isValidPosition(position))
-	//		throw new RangeException();
+	public void setPosition(double[] position) throws ModelException {
+		if (! isValidPosition(position))
+			 throw new ModelException("Invalid Position");
 		for (int i = 0; i < 3;)
-			this.position[i] = (int) position[i];
+			this.position[i] = position[i];
 	}
-	
+
 	/**
 	 * Variable registering the position of this Unit.
 	 */
-	private double xposition;
-	private double yposition;
-	private double zposition;
-	private int[] position;
-	
-//	/**
-//	 * Set the x-component of this Unit to the given x-value.
-//	 * 
-//	 * @throws
-//	 * @param  xposition
-//	 *         The new x-position for this Unit.
-//	 */
-//	@Raw
-//	public void setxposition(double xposition){
-//		if (isValidPosition(xposition))
-//			this.position[0] = xposition;
-//		else
-//			this.position[0] = nearestValidPosition(xposition);
-//	}
-//	/**
-//	 * Set the y-component of this Unit to the given y-value.
-//	 * 
-//	 * @param  xposition
-//	 *         The new y-position for this Unit.
-//	 * @post   If the given y-position is a valid y-position for any Unit,
-//	 *         the y-position of this new Unit is equal to the given
-//	 *         y-position. Otherwise, the y-position will be set to the nearest
-//	 *         valid y-position.
-//	 *       | if (isValidPosition(yposition))
-//	 *       |   then new.getxposition() == yposition
-//	 *       |   else new.getposition() == nearestValidPosition(yposition)
-//	 */
-//	@Raw
-//	public void setyposition(double yposition) {
-//		if (isValidPosition(yposition))
-//			this.position[1] = yposition;
-//		else
-//			this.position[1] = nearestValidPosition(yposition);
-//	}
-//	/**
-//	 * Set the z-component of this Unit to the given z-value.
-//	 * 
-//	 * @param  zposition
-//	 *         The new z-position for this Unit.
-//	 * @post   If the given z-position is a valid z-position for any Unit,
-//	 *         the z-position of this new Unit is equal to the given
-//	 *         z-position. Otherwise, the z-position will be set to the nearest
-//	 *         valid z-position.
-//	 *       | if (isValidPosition(zposition))
-//	 *       |   then new.getxposition() == zposition
-//	 *       |   else new.getposition() == nearestValidPosition(zposition)
-//	 */
-//	@Raw
-//	public void setzposition(double zposition) {
-//		if (isValidPosition(zposition))
-//			this.position[2] = zposition;
-//		else
-//			this.position[2] = nearestValidPosition(zposition);
-//	}
-	
+	// private double xposition;
+	// private double yposition;
+	// private double zposition;
+	private double[] position;
+
+	// /**
+	// * Set the x-component of this Unit to the given x-value.
+	// *
+	// * @throws
+	// * @param xposition
+	// * The new x-position for this Unit.
+	// */
+	// @Raw
+	// public void setxposition(double xposition){
+	// if (isValidPosition(xposition))
+	// this.position[0] = xposition;
+	// else
+	// this.position[0] = nearestValidPosition(xposition);
+	// }
+	// /**
+	// * Set the y-component of this Unit to the given y-value.
+	// *
+	// * @param xposition
+	// * The new y-position for this Unit.
+	// * @post If the given y-position is a valid y-position for any Unit,
+	// * the y-position of this new Unit is equal to the given
+	// * y-position. Otherwise, the y-position will be set to the nearest
+	// * valid y-position.
+	// * | if (isValidPosition(yposition))
+	// * | then new.getxposition() == yposition
+	// * | else new.getposition() == nearestValidPosition(yposition)
+	// */
+	// @Raw
+	// public void setyposition(double yposition) {
+	// if (isValidPosition(yposition))
+	// this.position[1] = yposition;
+	// else
+	// this.position[1] = nearestValidPosition(yposition);
+	// }
+	// /**
+	// * Set the z-component of this Unit to the given z-value.
+	// *
+	// * @param zposition
+	// * The new z-position for this Unit.
+	// * @post If the given z-position is a valid z-position for any Unit,
+	// * the z-position of this new Unit is equal to the given
+	// * z-position. Otherwise, the z-position will be set to the nearest
+	// * valid z-position.
+	// * | if (isValidPosition(zposition))
+	// * | then new.getxposition() == zposition
+	// * | else new.getposition() == nearestValidPosition(zposition)
+	// */
+	// @Raw
+	// public void setzposition(double zposition) {
+	// if (isValidPosition(zposition))
+	// this.position[2] = zposition;
+	// else
+	// this.position[2] = nearestValidPosition(zposition);
+	// }
+
 	// Primary Attributes (Total) //
 	/**
 	 * Checks whether the given attribute is a valid initial value for that attribute
@@ -565,7 +546,11 @@ public class Unit {
 	private static final int MIN_ATTRIBUTE = 1;
 
 	// Secondary Attributes (Nominal) //
-
+	
+	/**
+	 * Returns the maximum value for any secondary attribute of a unit
+	 * @return Math.ceil(this.getWeight() * this.getToughness() / 50.0)
+	 */
 	public int maxSecondaryAttribute() {
 		return (int) Math.ceil(this.getWeight() * this.getToughness() / 50.0);
 	}
@@ -673,14 +658,15 @@ public class Unit {
 	 * 			|	result == true
 	 * 			| else
 	 * 			|	result == false
-	 * 
 	 */
-	public static boolean isValidName(String name) throws ModelException {
+	public static boolean isValidName(String name){
+		if (name == null)
+			return false;
 		Matcher fullName = validCharacters.matcher(name);
 		boolean fullNameCorrect = fullName.matches();
-		Matcher firstLetter = upperCase.matcher(name.substring(0,1));
+		Matcher firstLetter = upperCase.matcher(name.substring(0, 1));
 		boolean firstLetterCorrect = firstLetter.matches();
-		return (fullNameCorrect && firstLetterCorrect && name.length() >=2) ;
+		return (fullNameCorrect && firstLetterCorrect && name.length() >= 2);
 	}
 
 	/**
@@ -697,7 +683,7 @@ public class Unit {
 	@Raw
 	public void setName(String name) throws ModelException {
 		if (!isValidName(name))
-			throw new ModelException();
+			throw new ModelException("Invalid Name");
 		this.name = name;
 	}
 
@@ -714,72 +700,360 @@ public class Unit {
 	 * Variable registering the Name of this Unit.
 	 */
 	private String name;
-	
+
 	// Time control (defensive) //
-	
-	public void advanceTime(){
-		
+
+	public void advanceTime(double deltaT, Unit victim) throws ModelException {
+		if (this.isWorking) {
+			this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
+			if (this.getRemainingWorkTime() < 0) {
+				this.stopWork();
+			}
+		}
+		if (this.isAttacking) {
+			this.setRemainingAttackTime(this.getRemainingAttackTime() - deltaT);
+			if (this.getRemainingAttackTime() < 0) {
+				this.stopAttack(victim);
+			}
+		}
 	}
-	
+
 	// Working (defensive) //
 	
-	public void work(){
-		double timeRequired = (500.0/this.getStrength());
-		
+	/**
+	 * Method that initiates a work task for a Unit.
+	 * 
+	 * @post | this.isWorking == true
+	 * @post | this.getRemainingWorkTime == this.workTime()
+	 * @throws ModelException
+	 */
+	public void work() throws ModelException {
+		this.setRemainingWorkTime(this.workTime());
+		this.isWorking = true;
+
+	}
+	/**
+	 * Method that stops a work task for a Unit
+	 * 
+	 * @post | this.isWorking == false
+	 */
+	public void stopWork() {
+		this.isWorking = false;
 	}
 	
+	/**
+	 * Method that computes how long it takes for a unit to finish a work task.
+	 * @return 500.0 / this.getStrength()
+	 */
+	public double workTime() {
+		return 500.0 / this.getStrength();
+	}
+
+	/** TO BE ADDED TO CLASS HEADING
+	 * @invar  The remaining work time of each Unit must be a valid remaining work time for any
+	 *         Unit.
+	 *       | isValidRemainingWorkTime(getRemainingWorkTime())
+	 */
+
+	/**
+	 * Return the remaining work time of this Unit.
+	 */
+	@Basic
+	@Raw
+	public double getRemainingWorkTime() {
+		return this.remainingWorkTime;
+	}
+
+	/**
+	 * Check whether the given remaining work time is a valid remaining work time for
+	 * any Unit.
+	 *  
+	 * @param  remaining work time
+	 *         The remaining work time to check.
+	 * @return 
+	 *       | result == remainingWorkTime < this.workTime()
+	*/
+	public boolean isValidRemainingWorkTime(double remainingWorkTime) {
+		return (remainingWorkTime < this.workTime());
+	}
+
+	/**
+	 * Set the remaining work time of this Unit to the given remaining work time.
+	 * 
+	 * @param  remainingWorkTime
+	 *         The new remaining work time for this Unit.
+	 * @post   The remaining work time of this new Unit is equal to
+	 *         the given remaining work time.
+	 *       | new.getRemainingWorkTime() == remainingWorkTime
+	 * @throws ModelException
+	 *         The given remaining work time is not a valid remaining work time for any
+	 *         Unit.
+	 *       | ! isValidRemainingWorkTime(getRemainingWorkTime())
+	 */
+	@Raw
+	public void setRemainingWorkTime(double remainingWorkTime)
+			throws ModelException {
+		if (!isValidRemainingWorkTime(remainingWorkTime))
+			throw new ModelException();
+		this.remainingWorkTime = remainingWorkTime;
+	}
+
+	/**
+	 * Variable registering the remaining work time of this Unit.
+	 */
+	private double remainingWorkTime;
 	
+	/**
+	 * Flag that registers whether a Unit is Working.
+	 */
+	private boolean isWorking = false;
+
 	// Fighting (defensive) //
 	
-	public void attack(){
-	
+	/**
+	 * Method that initiates an attack on another Unit
+	 * @param victim
+	 * 			The Unit to attack
+	 * @throws ModelException
+	 */
+	public void attack() throws ModelException {
+		this.setRemainingAttackTime(this.attackTime());
 	}
 	
-	public void defend(){
-		
+	/**
+	 * Method that stops an attack of a Unit, inflicting damage 
+	 * when the victim doesn't successfully defend
+	 * @throws ModelException 
+	 */
+	public void stopAttack(Unit victim) throws ModelException {
+		if (!victim.defend(this) && this.getRemainingAttackTime() < 0)
+			this.doesDamage(victim);
+		this.isAttacking = false;
 	}
 	
-	public void dodge(){
-		
+	/**
+	 * Method that returns the time it takes to conduct an attack
+	 * @return 1
+	 */
+	public double attackTime() {
+		return 1;
 	}
 	
-	public void block(){
-		
+	/** TO BE ADDED TO CLASS HEADING
+	 * @invar  The remaining attack time of each Unit must be a valid remaining attack time for any
+	 *         Unit.
+	 *       | isValidRemainingAttackTime(getRemainingAttackTime())
+	 */
+
+	/**
+	 * Return the remaining attack time of this Unit.
+	 */
+	@Basic
+	@Raw
+	public double getRemainingAttackTime() {
+		return this.remainingAttackTime;
 	}
-	
-	
+
+	/**
+	 * Check whether the given remaining attack time is a valid remaining attack time for
+	 * any Unit.
+	 *  
+	 * @param  remaining attack time
+	 *         The remaining attack time to check.
+	 * @return 
+	 *       | result == 
+	*/
+	public static boolean isValidRemainingAttackTime(
+			double remainingAttackTime) {
+		return false;
+	}
+
+	/**
+	 * Set the remaining attack time of this Unit to the given remaining attack time.
+	 * 
+	 * @param  remainingAttackTime
+	 *         The new remaining attack time for this Unit.
+	 * @post   The remaining attack time of this new Unit is equal to
+	 *         the given remaining attack time.
+	 *       | new.getRemainingAttackTime() == remainingAttackTime
+	 * @throws ModelException
+	 *         The given remaining attack time is not a valid remaining attack time for any
+	 *         Unit.
+	 *       | ! isValidRemainingAttackTime(getRemainingAttackTime())
+	 */
+	@Raw
+	public void setRemainingAttackTime(double remainingAttackTime)
+			throws ModelException {
+		if (!isValidRemainingAttackTime(remainingAttackTime))
+			throw new ModelException();
+		this.remainingAttackTime = remainingAttackTime;
+	}
+
+	/**
+	 * Variable registering the remaining attack time of this Unit.
+	 */
+	private double remainingAttackTime;
+	/**
+	 * flag registering whether a Unit is Attacking
+	 */
+	private boolean isAttacking = false;
+
+	/**
+	 * Method that simulates the defending behavior of a Unit
+	 *  
+	 * @param attacker
+	 * 			The Unit that attacks this Unit
+	 * @return Returns true when the Unit defends successfully, false when otherwise
+	 * 			| if (! this.dodge(attacker))
+	 *		    | 	then if (!this.block(attacker))
+	 *			|  		then return false;
+	 *			| return true;
+	 * @throws ModelException
+	 */
+	public boolean defend(Unit attacker) throws ModelException {
+		if (! this.dodge(attacker))
+			if (!this.block(attacker))
+				return false;
+		return true;
+	}
+	/**
+	 * Method that simulates the dodge behavior of a Unit.
+	 * 
+	 * @param attacker
+	 * 			The Unit that attacks this Unit
+	 * @return Returns true when the Unit dodges successfully, and updates the Unit's position
+	 * 			to a random position neighboring the unit's current position. Returns false when
+	 * 			when the dodge is unsuccessful.
+	 * 			| if (random < chance)
+	 * 			| then new.getPostion() = this.getPosition() + random jump
+	 * 			|  			&& return true
+	 * 			| else
+	 * 			|	return false
+	 * @throws ModelException
+	 */
+	public boolean dodge(Unit attacker) throws ModelException {
+		double chance = 0.20
+				* ((double) this.getAgility() / attacker.getAgility());
+		double random = Math.random();
+		if (random < chance) {
+			double xjump = Math.random() * 2 - 2;
+			double yjump = Math.random() * 2 - 2;
+			double[] jump = {this.getPosition()[0] + xjump,
+					this.getPosition()[1] + yjump, this.getPosition()[2]};
+			this.setPosition(jump);
+			return true;
+		};
+		return false;
+	}
+
+	/**
+	 * Method that simulates the blocking behavior of a Unit.
+	 * 
+	 * @param attacker
+	 * 			The Unit that attacks this Unit
+	 * @return Returns true when the Unit blocks successfully. Returns false when
+	 * 			when the dodge is unsuccessful.
+	 * 			| if (random < chance)
+	 * 			|  	then return true
+	 * 			| else
+	 * 			|	return false
+	 * @throws ModelException
+	 */
+	public boolean block(Unit attacker) {
+		double chance = 0.25
+				* ((double) (this.getStrength() + this.getAgility())
+						/ (attacker.getAgility() + attacker.getStrength()));
+		double random = Math.random();
+		return (random < chance);
+	}
+
 	/**
 	 * Changes the hitpoints of the victim due to an attack
 	 * 
 	 * @param victim
 	 * 			The Unit to which damage is dealt.
-	 * @post The 
+	 * @post The victim's hitpoints are lowered with the attacker's strength / 10 
+	 * 		| new.victim.getHitpoints = victim.getHitpoints - this.getStrength() / 10
 	 */
-	public void doesDamage(Unit victim){
-		victim.setHitpoints(victim.getHitpoints()-this.getStrength()/10);
+	public void doesDamage(Unit victim) {
+		victim.setHitpoints(victim.getHitpoints() - this.getStrength() / 10);
 	}
 	
-	public void orientWith(Unit defender){
-		
+	/**
+	 * Method that orients the attacking unit with the defending unit
+	 * @param defender
+	 * 			The unit that this unit is attacking
+	 * @post the Units will face each other
+	 */
+	public void orientWith(Unit defender) {
+		this.setOrientation((float) Math.atan2(defender.getPosition()[1]-this.getPosition()[1],
+				(defender.getPosition()[0]-this.getPosition()[0])));
+		defender.setOrientation((float) Math.atan2(this.getPosition()[1]-defender.getPosition()[1],
+				(this.getPosition()[0]-defender.getPosition()[0])));
 	}
-	
+
 	// Resting (defensive) //
-	
-	public void rest(){
-		
+
+	public void rest() {
+
 	}
-	
+
 	// Default behaviour (defensive) //
-	
-	public void startDefaultBehaviour(){
-		
+
+	public void startDefaultBehaviour() {
+
 	}
-	
-	public void stopDefaultBehaviour(){
-		
+
+	public void stopDefaultBehaviour() {
+
 	}
-	
-	
-	
-	// 
+
+	// Orientation (total) //
+
+	/**
+	 * Return the Orientation of this Unit.
+	 */
+	@Basic
+	@Raw
+	public float getOrientation() {
+		return this.orientation;
+	}
+
+	/**
+	 * Check whether the given Orientation is a valid Orientation for
+	 * any Unit.
+	 *  
+	 * @param  orientation
+	 *         The Orientation to check.
+	 * @return 
+	 *       | result == 
+	*/
+	public static boolean isValidOrientation(float orientation) {
+		return false;
+	}
+
+	/**
+	 * Set the Orientation of this Unit to the given Orientation.
+	 * 
+	 * @param  orientation
+	 *         The new Orientation for this Unit.
+	 * @post   If the given Orientation is a valid Orientation for any Unit,
+	 *         the Orientation of this new Unit is equal to the given
+	 *         Orientation.
+	 *       | if (isValidOrientation(orientation))
+	 *       |   then new.getOrientation() == orientation
+	 */
+	@Raw
+	public void setOrientation(float orientation) {
+		if (isValidOrientation(orientation))
+			this.orientation = orientation;
+		else
+			this.orientation = (float) (orientation % 2*Math.PI);
+	}
+
+	/**
+	 * Variable registering the Orientation of this Unit.
+	 */
+	private float orientation;
+
 }
