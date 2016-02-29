@@ -669,6 +669,9 @@ public class Unit {
 	public void moveToAdjacent(int x, int y,int z){
 		
 	}
+	public void moveTo(int x, int y, int z){
+		
+	}
 	public void move(){
 		this.isMoving = true;
 	}
@@ -1007,12 +1010,24 @@ public class Unit {
 	// Default behavior (defensive) //
 
 	public void startDefaultBehaviour() {
-
+		this.activeDefaultBehaviour = true;
+	}
+	public void defaultBehaviour() throws ModelException{
+		if (this.activeDefaultBehaviour);
+			int defaultsetter = -1;
+			if (defaultsetter == 0)
+			rest();
+			if (defaultsetter == 1)
+			work();
+			else
+			moveTo(-1,-1,-1);
 	}
 
 	public void stopDefaultBehaviour() {
-
+		this.activeDefaultBehaviour = false;
 	}
+	
+	private boolean activeDefaultBehaviour = false;
 
 	// Orientation (total) //
 
@@ -1035,7 +1050,7 @@ public class Unit {
 	 *       | result == 
 	*/
 	public static boolean isValidOrientation(float orientation) {
-		return false;
+		return (orientation >= 0 && orientation < 2*Math.PI);
 	}
 
 	/**
@@ -1061,5 +1076,6 @@ public class Unit {
 	 * Variable registering the Orientation of this Unit.
 	 */
 	private float orientation;
+	// defaults op pi/2 //
 
 }
