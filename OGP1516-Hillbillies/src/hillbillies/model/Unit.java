@@ -672,19 +672,48 @@ public class Unit {
 	public void moveTo(int x, int y, int z){
 		
 	}
+	/**
+	 * Method that initiates the unit is moving.
+	 * 
+	 * @post | this.isMoving == true
+	 */
 	public void move(){
 		this.isMoving = true;
 	}
+	/**
+	 * Method that stops a unit from moving.
+	 * 
+	 * @post | this.isMoving == false
+	 */
 	public void stopMoving(){
 		this.isMoving = false;
 	}
+	/**
+	 * Method that initiates the unit is sprinting.
+	 * 
+	 * @post | this.isSprinting == true
+	 */
 	public void sprint(){
 		if (this.canSprint())
 			this.isSprinting = true;
 	}
+	/**
+	 * Method that indicates whether a Unit is able to sprint
+	 * 
+	 * result == 
+	 */
 	public boolean canSprint(){
 		return (this.isMoving && this.getStamina() > 0);
 	}
+	/**
+	 * Method that stops a unit from sprinting.
+	 * 
+	 * @post | this.isSprinting == false
+	 */
+	public void stopSprinting(){
+		this.isSprinting = false;
+	}
+	
 	public double walkingSpeed(int z){
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5*(this.getAgility()+this.getStrength())/(2*this.getWeight());
@@ -704,7 +733,13 @@ public class Unit {
 			//beweeg met stapsnelheid
 			
 	}
+	/**
+	 * flag registering whether a Unit is Moving
+	*/
 	private boolean isMoving = false;
+	/**
+	 * flag registering whether a Unit is Sprinting
+	*/
 	private boolean isSprinting = false;
 
 	// Working (defensive) //
@@ -988,11 +1023,21 @@ public class Unit {
 	}
 
 	// Resting (defensive) //
-
+	/**
+	 * Method that initiates the unit is resting.
+	 * 
+	 * @post | this.isResting == true
+	 */
 	public void rest() {
 		this.isResting = true;
 
 	}
+	/**
+	 * Method that governs the resting process
+	 * @param DeltaT
+	 * 			the time-interval used in advanceTime()
+	 * @throws ModelException
+	*/
 	public void resting(double DeltaT) throws ModelException{
 		if (this.isResting == false)
 			throw new ModelException();
@@ -1002,31 +1047,54 @@ public class Unit {
 			this.setStamina((int) (this.getStamina() + (this.getToughness()/100)*(DeltaT/0.2)));
 		this.stopResting();
 	}
+	/**
+	 * Method that stops a unit from resting.
+	 * 
+	 * @post | this.isResting == false
+	 */
 	public void stopResting(){
 		this.isResting = false;
 	}
+	/**
+	 * flag registering whether a Unit is resting.
+	 */
 	private boolean isResting = false;
 
 	// Default behavior (defensive) //
-
+	
+	/**
+	 * Method that initiates the unit is executing defaultbehaviour.
+	 * 
+	 * @post | this.activeDefaultBehaviour == true
+	 */
 	public void startDefaultBehaviour() {
 		this.activeDefaultBehaviour = true;
 	}
-	public void defaultBehaviour() throws ModelException{
+	/**
+	 * Method that governs a Unit during defaultbehaviour
+	 * @param deltaT
+	 * 			the time-interval used in advanceTime()
+	 * @throws ModelException
+	*/
+	public void defaultBehaviour(double deltaT) throws ModelException{
 		if (this.activeDefaultBehaviour);
 			int defaultsetter = -1;
+			//defaultsetter = randomintgenerator(0..2)
 			if (defaultsetter == 0)
-			rest();
+			resting(deltaT);
 			if (defaultsetter == 1)
 			work();
 			else
 			moveTo(-1,-1,-1);
+			//three random coordinates
 	}
 
 	public void stopDefaultBehaviour() {
 		this.activeDefaultBehaviour = false;
 	}
-	
+	/**
+	 * flag registering whether a Unit is executing defaultbehaviour.
+	*/
 	private boolean activeDefaultBehaviour = false;
 
 	// Orientation (total) //
