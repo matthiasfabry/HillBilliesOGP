@@ -195,65 +195,7 @@ public class Unit {
 	/**
 	 * Variable registering the position of this Unit.
 	 */
-	// private double xposition;
-	// private double yposition;
-	// private double zposition;
 	private double[] position;
-
-	// /**
-	// * Set the x-component of this Unit to the given x-value.
-	// *
-	// * @throws
-	// * @param xposition
-	// * The new x-position for this Unit.
-	// */
-	// @Raw
-	// public void setxposition(double xposition){
-	// if (isValidPosition(xposition))
-	// this.position[0] = xposition;
-	// else
-	// this.position[0] = nearestValidPosition(xposition);
-	// }
-	// /**
-	// * Set the y-component of this Unit to the given y-value.
-	// *
-	// * @param xposition
-	// * The new y-position for this Unit.
-	// * @post If the given y-position is a valid y-position for any Unit,
-	// * the y-position of this new Unit is equal to the given
-	// * y-position. Otherwise, the y-position will be set to the nearest
-	// * valid y-position.
-	// * | if (isValidPosition(yposition))
-	// * | then new.getxposition() == yposition
-	// * | else new.getposition() == nearestValidPosition(yposition)
-	// */
-	// @Raw
-	// public void setyposition(double yposition) {
-	// if (isValidPosition(yposition))
-	// this.position[1] = yposition;
-	// else
-	// this.position[1] = nearestValidPosition(yposition);
-	// }
-	// /**
-	// * Set the z-component of this Unit to the given z-value.
-	// *
-	// * @param zposition
-	// * The new z-position for this Unit.
-	// * @post If the given z-position is a valid z-position for any Unit,
-	// * the z-position of this new Unit is equal to the given
-	// * z-position. Otherwise, the z-position will be set to the nearest
-	// * valid z-position.
-	// * | if (isValidPosition(zposition))
-	// * | then new.getxposition() == zposition
-	// * | else new.getposition() == nearestValidPosition(zposition)
-	// */
-	// @Raw
-	// public void setzposition(double zposition) {
-	// if (isValidPosition(zposition))
-	// this.position[2] = zposition;
-	// else
-	// this.position[2] = nearestValidPosition(zposition);
-	// }
 
 	// Primary Attributes (Total) //
 	/**
@@ -703,7 +645,7 @@ public class Unit {
 
 	// Time control (defensive) //
 
-	public void advanceTime(double deltaT, Unit victim) throws ModelException {
+	public void advanceTime(double deltaT) throws ModelException {
 		if (this.isWorking) {
 			this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
 			if (this.getRemainingWorkTime() < 0) {
@@ -713,10 +655,54 @@ public class Unit {
 		if (this.isAttacking) {
 			this.setRemainingAttackTime(this.getRemainingAttackTime() - deltaT);
 			if (this.getRemainingAttackTime() < 0) {
-				this.stopAttack(victim);
+				this.stopAttack();
 			}
 		}
+		if (this.isMoving) {
+			this.updatePosition();
+		}
+		if (this.isResting){
+			this.resting(deltaT);
+		}
 	}
+	// Moving (defensive) //
+	public void moveToAdjacent(int x, int y,int z){
+		
+	}
+	public void move(){
+		this.isMoving = true;
+	}
+	public void stopMoving(){
+		this.isMoving = false;
+	}
+	public void sprint(){
+		if (this.canSprint())
+			this.isSprinting = true;
+	}
+	public boolean canSprint(){
+		return (this.isMoving && this.getStamina() > 0);
+	}
+	public double walkingSpeed(int z){
+		double walkingSpeed = 0;
+		double baseSpeed = 1.5*(this.getAgility()+this.getStrength())/(2*this.getWeight());
+		if (z-this.getInWorldPosition()[2] == -1)
+			walkingSpeed = 0.5*baseSpeed;
+		if (z-this.getInWorldPosition()[2] == 1)
+			walkingSpeed = 1.2*baseSpeed;
+		else
+			walkingSpeed = baseSpeed;
+		return walkingSpeed;
+	}
+	public void updatePosition(){
+		if (this.isMoving)
+			if (this.isSprinting)
+				;
+				// beweeg met sprint sneheid
+			//beweeg met stapsnelheid
+			
+	}
+	private boolean isMoving = false;
+	private boolean isSprinting = false;
 
 	// Working (defensive) //
 	
@@ -727,7 +713,7 @@ public class Unit {
 	 * @post | this.getRemainingWorkTime == this.workTime()
 	 * @throws ModelException
 	 */
-	public void work() throws ModelException {
+ 	public void work() throws ModelException {
 		this.setRemainingWorkTime(this.workTime());
 		this.isWorking = true;
 
@@ -816,18 +802,21 @@ public class Unit {
 	 * 			The Unit to attack
 	 * @throws ModelException
 	 */
-	public void attack() throws ModelException {
+	public void attack(Unit victim) throws ModelException {
 		this.setRemainingAttackTime(this.attackTime());
+		this.victim = victim;
+		this.isAttacking = true;
 	}
+	private Unit victim;
 	
 	/**
 	 * Method that stops an attack of a Unit, inflicting damage 
 	 * when the victim doesn't successfully defend
 	 * @throws ModelException 
 	 */
-	public void stopAttack(Unit victim) throws ModelException {
-		if (!victim.defend(this) && this.getRemainingAttackTime() < 0)
-			this.doesDamage(victim);
+	public void stopAttack() throws ModelException {
+		if (!this.victim.defend(this) && this.getRemainingAttackTime() < 0)
+			this.doesDamage(this.victim);
 		this.isAttacking = false;
 	}
 	
@@ -936,10 +925,13 @@ public class Unit {
 				* ((double) this.getAgility() / attacker.getAgility());
 		double random = Math.random();
 		if (random < chance) {
-			double xjump = Math.random() * 2 - 2;
-			double yjump = Math.random() * 2 - 2;
-			double[] jump = {this.getPosition()[0] + xjump,
-					this.getPosition()[1] + yjump, this.getPosition()[2]};
+			double[] jump = {0,0,0};
+			do {
+				double xjump = Math.random() * 2 - 2;
+				double yjump = Math.random() * 2 - 2;
+				jump[0] = this.getPosition()[0] + xjump;
+				jump[1] = this.getPosition()[1] + yjump;
+			} while (! isValidPosition(jump));
 			this.setPosition(jump);
 			return true;
 		};
@@ -995,10 +987,24 @@ public class Unit {
 	// Resting (defensive) //
 
 	public void rest() {
+		this.isResting = true;
 
 	}
+	public void resting(double DeltaT) throws ModelException{
+		if (this.isResting == false)
+			throw new ModelException();
+		if (this.getHitpoints() < this.maxSecondaryAttribute())
+			this.setHitpoints((int) (this.getHitpoints() + (this.getToughness()/200)*(DeltaT/0.2)));
+		if (this.getStamina() < this.maxSecondaryAttribute())
+			this.setStamina((int) (this.getStamina() + (this.getToughness()/100)*(DeltaT/0.2)));
+		this.stopResting();
+	}
+	public void stopResting(){
+		this.isResting = false;
+	}
+	private boolean isResting = false;
 
-	// Default behaviour (defensive) //
+	// Default behavior (defensive) //
 
 	public void startDefaultBehaviour() {
 
