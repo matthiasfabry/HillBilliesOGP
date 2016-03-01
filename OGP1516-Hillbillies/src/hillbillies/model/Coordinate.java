@@ -3,40 +3,48 @@ package hillbillies.model;
 
 /**
  * Class that handles coordinates in the gameworld
- * @author admin
+ * @author Matthias Fabry & Lukas Van Riel
  *
  */
 public class Coordinate {
 	public Coordinate(double x, double y, double z){
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.setX(x);
+		this.setY(y);
+		this.setZ(z);
 	}
 	public Coordinate sum(Coordinate other){
 		Coordinate result = new Coordinate(0,0,0);
-		result.x = this.x + other.x;
-		result.y = this.y + other.y;
-		result.z = this.z + other.z;
+		result.setX(this.getX()+other.getX());
+		result.setY(this.getY()+other.getY());
+		result.setZ(this.getZ()+other.getZ());
 		return result;
 	}
 	
 	public double length(){
-		return Math.sqrt(this.x*this.x + this.y * this.y + this.z* this.z);
+		return Math.sqrt(this.getX()*this.getX() + this.getY()*this.getY() + this.getZ()*this.getZ());
 	}
 	
 	public Coordinate normalize(){
 		Coordinate result = new Coordinate(0,0,0);
-		result.x = this.x / this.length();
-		result.y = this.y / this.length();
-		result.z = this.z / this.length();
+		result.setX(this.getX()/this.length());
+		result.setY(this.getY()/this.length());
+		result.setZ(this.getZ()/this.length());
 		return result; 
 	}
 	
 	public Coordinate difference(Coordinate other){
 		Coordinate result = new Coordinate(0,0,0);
-		result.x = this.x - other.x;
-		result.y = this.y - other.y;
-		result.z = this.z - other.z;
+		result.setX(this.getX()-other.getX());
+		result.setY(this.getY()-other.getY());
+		result.setZ(this.getZ()-other.getZ());
+		return result;
+	}
+	
+	public Coordinate scalarMult(double p){
+		Coordinate result = new Coordinate(0,0,0);
+		result.setX(this.getX()*p);
+		result.setY(this.getY()*p);
+		result.setZ(this.getZ()*p);
 		return result;
 	}
 	/**
@@ -75,8 +83,6 @@ public class Coordinate {
 	 * Check whether the given position component is a valid position component for
 	 * any Unit.
 	 *  
-	 * @param  position
-	 *         The position to check.
 	 * @return True if the given position component is valid for this Unit
 	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
 	 *       | 		return True

@@ -64,17 +64,16 @@ public class Unit {
 		this.setStrength(strength);
 		this.setToughness(toughness);
 		this.setWeight(weight);
-		Coordinate newPosition = new Coordinate(position[0],position[1], position[2]);
+		Coordinate newPosition = new Coordinate(position[0]+0.5,position[1]+0.5, position[2]+0.5);
 		this.setPosition(newPosition);
 		this.setName(name);
 		this.setOrientation((float) (Math.PI/2));
-
+		this.defaultBehaviour = enableDefaultBehavior;
 
 	}
 
 	// Position (Defensive) //
 	
-
 	/**
 	 * Return the position of this Unit.
 	 */
@@ -83,7 +82,6 @@ public class Unit {
 	public Coordinate getPosition() {
 		return this.position;
 	}
-	
 	
 	/**
 	 * Return the in-world position of this Unit.
@@ -593,22 +591,50 @@ public class Unit {
 	// Moving (defensive) //
 	
 	public void moveToAdjacent(int x, int y, int z){
-		//setOrientation()//
+		Coordinate goal = new Coordinate(x,y,z);
 		
-		
+
 	}
-	public void moveTo(int x, int y, int z){
+	public Coordinate velocityVector(Coordinate goal){
+		Coordinate velocity = this.getPosition().difference(goal);
+		velocity.normalize();
+		return velocity;
 		
-	}
-	/**
-	 * Method that initiates the unit is moving.
-	 * 
-	 * @post | this.isMoving == true
-	 */
-	public void move(){
-		this.setActivity(Activity.MOVING);
 	}
 	
+	public void moveTo(int x, int y, int z){
+		this.setActivity(Activity.MOVING);
+		Coordinate destination = new Coordinate(x,y,z);
+		this.setDestination(destination);
+		this.findPath();
+	}
+	
+	public void findPath(){
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		while (this.getDestination() != this.getInWorldPosition()){
+			if (this.getDestination().getX() == this.getInWorldPosition().getX())
+				x = 0;
+			else if (this.getDestination().getX() < this.getInWorldPosition().getX())
+				x = -1;
+			else
+				x = 1;
+			if (this.getDestination().getY() == this.getInWorldPosition().getY())
+				y = 0;
+			else if (this.getDestination().getY() < this.getInWorldPosition().getY())
+				y = -1;
+			else
+				y = 1;
+			if (this.getDestination().getZ() == this.getInWorldPosition().getZ())
+				z = 0;
+			else if (this.getDestination().getZ() < this.getInWorldPosition().getZ())
+				z = -1;
+			else
+				z = 1;
+		}
+		this.moveToAdjacent(x, y, z);		
+	}
 
 	/**
 	 * Method that stops a unit from moving.
@@ -616,7 +642,7 @@ public class Unit {
 	 * @post | this.isMoving == false
 	 */
 	public void stopMoving(){
-		this.isMoving = false;
+		this.activity = Activity.IDLE;
 	}
 
 	/**
@@ -625,7 +651,7 @@ public class Unit {
 	 * result == 
 	 */
 	public boolean canSprint(){
-		return (this.isMoving && this.getStamina() > 0);
+		return (this.getActivity() == Activity.MOVING && this.getStamina() > 0);
 	}
 	/**
 	 * Method that stops a unit from sprinting.
@@ -633,7 +659,7 @@ public class Unit {
 	 * @post | this.isSprinting == false
 	 */
 	public void stopSprinting(){
-		this.isSprinting = false;
+		this.setActivity(Activity.MOVING);
 	}
 	
 	public double walkingSpeed(int z){
@@ -649,6 +675,8 @@ public class Unit {
 	}
 	
 	public double getCurrentSpeed(){
+		if (this.getActivity() != Activity.SPRINTING && this.getActivity() != Activity.MOVING )
+			return 0;
 		int destinationZ = (int) Math.floor(this.getDestination().getZ());
 		if (this.getActivity() == Activity.MOVING)
 			if (this.getActivity() == Activity.SPRINTING)
@@ -658,10 +686,6 @@ public class Unit {
 	}
 	public void updatePosition(double deltaT){
 		
-				
-				// beweeg met sprint sneheid
-			//beweeg met stapsnelheid
-			
 	}
 
 	public void setDestination(Coordinate destination){
@@ -694,7 +718,7 @@ public class Unit {
 	 */
   	public void work() throws ModelException {
 		this.setRemainingWorkTime(this.workTime());
-		this.isWorking = true;
+		this.setActivity(Activity.WORKING);
 
 	}
 	/**
@@ -703,7 +727,7 @@ public class Unit {
 	 * @post | this.isWorking == false
 	 */
 	public void stopWork() {
-		this.isWorking = false;
+		this.setActivity(Activity.IDLE);
 	}
 	
 	/**
@@ -768,10 +792,6 @@ public class Unit {
 	 */
 	private double remainingWorkTime;
 	
-	/**
-	 * Flag that registers whether a Unit is Working.
-	 */
-	private boolean isWorking = false;
 
 	// Fighting (defensive) //
 	
@@ -787,6 +807,7 @@ public class Unit {
 		this.setActivity(Activity.ATTACKING);
 		victim.setActivity(Activity.DEFENDING);
 	}
+	
 	private Unit victim;
 	
 	/**
@@ -795,9 +816,10 @@ public class Unit {
 	 * @throws ModelException 
 	 */
 	public void stopAttack() throws ModelException {
-		if (!this.victim.defend(this) && this.getRemainingAttackTime() < 0)
+		if (! this.victim.defend(this) && this.getRemainingAttackTime() < 0)
 			this.doesDamage(this.victim);
-		this.isAttacking = false;
+		this.setActivity(Activity.IDLE);
+		this.victim = null;
 	}
 	
 	/**
@@ -862,11 +884,7 @@ public class Unit {
 	 * Variable registering the remaining attack time of this Unit.
 	 */
 	private double remainingAttackTime;
-	/**
-	 * flag registering whether a Unit is Attacking
-	 */
-	private boolean isAttacking = false;
-
+	
 	/**
 	 * Method that simulates the defending behavior of a Unit
 	 *  
@@ -880,7 +898,6 @@ public class Unit {
 	 * @throws ModelException
 	 */
 	public boolean defend(Unit attacker) throws ModelException {
-		this.isMoving = false;
 		if (! this.dodge(attacker))
 			if (! this.block(attacker))
 				return false;
@@ -1004,7 +1021,7 @@ public class Unit {
 	 * @post | this.activeDefaultBehaviour == true
 	 */
 	public void startDefaultBehaviour() {
-		this.activeDefaultBehaviour = true;
+		this.setDefaultBehavior(true);
 	}
 	/**
 	 * Method that governs a Unit during defaultbehaviour
@@ -1012,8 +1029,8 @@ public class Unit {
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
 	*/
-	public void defaultBehaviour(double deltaT) throws ModelException{
-		if (this.activeDefaultBehaviour);
+	public void doDefaultBehaviour(double deltaT) throws ModelException{
+		if (this.getDefaultBehavior());
 			int defaultsetter = -1;
 			//defaultsetter = randomintgenerator(0..2)
 			if (defaultsetter == 0)
@@ -1026,12 +1043,19 @@ public class Unit {
 	}
 
 	public void stopDefaultBehaviour() {
-		this.activeDefaultBehaviour = false;
+		this.setDefaultBehavior(false);
 	}
 	/**
 	 * flag registering whether a Unit is executing defaultbehaviour.
 	*/
-	private boolean activeDefaultBehaviour = false;
+	public void setDefaultBehavior(boolean flag){
+		this.defaultBehaviour = flag;
+	}
+	public boolean getDefaultBehavior(){
+		return this.defaultBehaviour;
+	}
+	
+	private boolean defaultBehaviour = false;
 
 	// Orientation (total) //
 
@@ -1080,6 +1104,6 @@ public class Unit {
 	 * Variable registering the Orientation of this Unit.
 	 */
 	private float orientation;
-	// defaults op pi/2 //
+
 
 }
