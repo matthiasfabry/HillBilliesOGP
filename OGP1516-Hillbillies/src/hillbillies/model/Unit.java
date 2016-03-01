@@ -659,7 +659,7 @@ public class Unit {
 			}
 		}
 		if (this.isMoving) {
-			this.updatePosition();
+			this.updatePosition(deltaT);
 		}
 		if (this.isResting){
 			this.resting(deltaT);
@@ -667,6 +667,8 @@ public class Unit {
 	}
 	// Moving (defensive) //
 	public void moveToAdjacent(int x, int y,int z){
+		//setOrientation()//
+		double walkingspeed = walkingSpeed(z);
 		
 	}
 	public void moveTo(int x, int y, int z){
@@ -725,7 +727,7 @@ public class Unit {
 			walkingSpeed = baseSpeed;
 		return walkingSpeed;
 	}
-	public void updatePosition(){
+	public void updatePosition(double deltaT){
 		if (this.isMoving)
 			if (this.isSprinting)
 				;
@@ -938,8 +940,9 @@ public class Unit {
 	 * @throws ModelException
 	 */
 	public boolean defend(Unit attacker) throws ModelException {
+		this.isMoving = false;
 		if (! this.dodge(attacker))
-			if (!this.block(attacker))
+			if (! this.block(attacker))
 				return false;
 		return true;
 	}
