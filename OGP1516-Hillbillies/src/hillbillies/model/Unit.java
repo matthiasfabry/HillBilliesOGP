@@ -57,118 +57,43 @@ public class Unit {
 	 *            Flag to signal whether the Unit performs default behavior.
 	 * @throws ModelException
 	 */
-	public Unit(String name, double[] position, int weight, int agility,
+	public Unit(String name, int[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior)
 					throws ModelException {
 		this.setAgility(agility);
 		this.setStrength(strength);
 		this.setToughness(toughness);
 		this.setWeight(weight);
-		this.setPosition(position);
+		Coordinate newPosition = new Coordinate(position[0],position[1], position[2]);
+		this.setPosition(newPosition);
 		this.setName(name);
 		this.setOrientation((float) (Math.PI/2));
-		
-		
 
-		// position[0] = xposition;
-		// position[1] = yposition;
-		// position[2] = zposition;
 
 	}
 
 	// Position (Defensive) //
-	private static final double MAX_POSITION = 50.0;
-	private static final double MIN_POSITION = 0.0;
+	
 
 	/**
 	 * Return the position of this Unit.
 	 */
 	@Basic
 	@Raw
-	public double[] getPosition() {
+	public Coordinate getPosition() {
 		return this.position;
 	}
-	/**
-	 * Return the x-position of this Unit.
-	 */
-	@Basic
-	@Raw
-	public double getXposition() {
-		return this.position[0];
-	}
-	/**
-	 * Return the y-position of this Unit.
-	 */
-	@Basic
-	@Raw
-	public double getYposition() {
-		return this.position[1];
-	}
-	/**
-	 * Return the z-position of this Unit.
-	 */
-	@Basic
-	@Raw
-	public double getZposition() {
-		return this.position[2];
-	}
-
+	
+	
 	/**
 	 * Return the in-world position of this Unit.
 	 */
-	public int[] getInWorldPosition() {
-		int[] inworldposition = {0, 0, 0};
-		for (int i = 0; i < 3;)
-			inworldposition[i] = (int) Math.floor(this.position[i]);
+	public Coordinate getInWorldPosition() {
+		Coordinate inworldposition = new Coordinate(0,0,0);
+		inworldposition.setX(Math.floor(this.position.getX()));
+		inworldposition.setY(Math.floor(this.position.getY()));
+		inworldposition.setZ(Math.floor(this.position.getZ()));
 		return inworldposition;
-	}
-
-	/**
-	 * Check whether the given position component is a valid position component for
-	 * any Unit.
-	 *  
-	 * @param  position
-	 *         The position to check.
-	 * @return True if the given position component is valid for this Unit
-	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
-	 *       | 		return True
-	 *       | else
-	 *       | 		return False
-	*/
-	public static boolean isValidPosition(double position) {
-		return (position >= MIN_POSITION && position <= MAX_POSITION);
-	}
-
-	/**
-	 * Check whether the given position is a valid position for
-	 * any Unit.
-	 *  
-	 * @param  position
-	 *         The position to check.
-	 * @return True if the given position is valid for this Unit
-	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
-	 *       | 		return True
-	 *       | else
-	 *       | 		return False
-	*/
-	public static boolean isValidPosition(double[] position) {
-		for (int i = 0; i < position.length;)
-			if (!isValidPosition(position[i]))
-				return false;
-		return true;
-
-	}
-
-	/**
-	 * @param position
-	 * 		  The position for this Unit
-	 * @return a valid value for the component of the position
-	 */
-	public static double nearestValidPosition(double position) {
-		if (position > MAX_POSITION)
-			return MAX_POSITION;
-		else
-			return MIN_POSITION;
 	}
 
 	/**
@@ -185,17 +110,16 @@ public class Unit {
 	 *       | ! isValidPosition(getPosition())
 	 */
 	@Raw
-	public void setPosition(double[] position) throws ModelException {
-		if (! isValidPosition(position))
+	public void setPosition(Coordinate position) throws ModelException {
+		if (! position.isValidCoordinate())
 			 throw new ModelException("Invalid Position");
-		for (int i = 0; i < 3;)
-			this.position[i] = position[i];
+		this.position = new Coordinate(position.getX(),position.getY(),position.getZ());
 	}
 
 	/**
 	 * Variable registering the position of this Unit.
 	 */
-	private double[] position;
+	private Coordinate position;
 
 	// Primary Attributes (Total) //
 	/**
@@ -646,29 +570,31 @@ public class Unit {
 	// Time control (defensive) //
 
 	public void advanceTime(double deltaT) throws ModelException {
-		if (this.isWorking) {
+		if (this.activity == Activity.WORKING) {
 			this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
 			if (this.getRemainingWorkTime() < 0) {
 				this.stopWork();
 			}
 		}
-		if (this.isAttacking) {
+		if (this.activity == Activity.ATTACKING) {
 			this.setRemainingAttackTime(this.getRemainingAttackTime() - deltaT);
 			if (this.getRemainingAttackTime() < 0) {
 				this.stopAttack();
 			}
 		}
-		if (this.isMoving) {
+		if (this.activity == Activity.MOVING || this.activity == Activity.SPRINTING) {
 			this.updatePosition(deltaT);
 		}
-		if (this.isResting){
+		if (this.activity == Activity.RESTING){
 			this.resting(deltaT);
 		}
 	}
+	
 	// Moving (defensive) //
-	public void moveToAdjacent(int x, int y,int z){
+	
+	public void moveToAdjacent(int x, int y, int z){
 		//setOrientation()//
-		double walkingspeed = walkingSpeed(z);
+		
 		
 	}
 	public void moveTo(int x, int y, int z){
@@ -680,8 +606,10 @@ public class Unit {
 	 * @post | this.isMoving == true
 	 */
 	public void move(){
-		this.isMoving = true;
+		this.setActivity(Activity.MOVING);
 	}
+	
+
 	/**
 	 * Method that stops a unit from moving.
 	 * 
@@ -690,15 +618,7 @@ public class Unit {
 	public void stopMoving(){
 		this.isMoving = false;
 	}
-	/**
-	 * Method that initiates the unit is sprinting.
-	 * 
-	 * @post | this.isSprinting == true
-	 */
-	public void sprint(){
-		if (this.canSprint())
-			this.isSprinting = true;
-	}
+
 	/**
 	 * Method that indicates whether a Unit is able to sprint
 	 * 
@@ -719,30 +639,49 @@ public class Unit {
 	public double walkingSpeed(int z){
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5*(this.getAgility()+this.getStrength())/(2*this.getWeight());
-		if (z-this.getInWorldPosition()[2] == -1)
+		if (z-this.getInWorldPosition().getZ() == -1)
 			walkingSpeed = 0.5*baseSpeed;
-		if (z-this.getInWorldPosition()[2] == 1)
+		if (z-this.getInWorldPosition().getZ() == 1)
 			walkingSpeed = 1.2*baseSpeed;
 		else
 			walkingSpeed = baseSpeed;
 		return walkingSpeed;
 	}
+	
+	public double getCurrentSpeed(){
+		int destinationZ = (int) Math.floor(this.getDestination().getZ());
+		if (this.getActivity() == Activity.MOVING)
+			if (this.getActivity() == Activity.SPRINTING)
+				return 2*this.walkingSpeed(destinationZ);
+			return this.walkingSpeed(destinationZ);
+			
+	}
 	public void updatePosition(double deltaT){
-		if (this.isMoving)
-			if (this.isSprinting)
-				;
+		
+				
 				// beweeg met sprint sneheid
 			//beweeg met stapsnelheid
 			
 	}
-	/**
-	 * flag registering whether a Unit is Moving
-	*/
-	private boolean isMoving = false;
-	/**
-	 * flag registering whether a Unit is Sprinting
-	*/
-	private boolean isSprinting = false;
+
+	public void setDestination(Coordinate destination){
+		this.destination = destination;
+	}
+	public Coordinate getDestination(){
+		return this.destination;
+	}
+	private Coordinate destination;
+	
+	// Activity variable //
+	
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
+	
+	public Activity getActivity(){
+		return this.activity;
+	}
+	private Activity activity = Activity.IDLE;
 
 	// Working (defensive) //
 	
@@ -753,7 +692,7 @@ public class Unit {
 	 * @post | this.getRemainingWorkTime == this.workTime()
 	 * @throws ModelException
 	 */
- 	public void work() throws ModelException {
+  	public void work() throws ModelException {
 		this.setRemainingWorkTime(this.workTime());
 		this.isWorking = true;
 
@@ -845,7 +784,8 @@ public class Unit {
 	public void attack(Unit victim) throws ModelException {
 		this.setRemainingAttackTime(this.attackTime());
 		this.victim = victim;
-		this.isAttacking = true;
+		this.setActivity(Activity.ATTACKING);
+		victim.setActivity(Activity.DEFENDING);
 	}
 	private Unit victim;
 	
@@ -966,14 +906,7 @@ public class Unit {
 				* ((double) this.getAgility() / attacker.getAgility());
 		double random = Math.random();
 		if (random < chance) {
-			double[] jump = {0,0,0};
-			do {
-				double xjump = Math.random() * 2 - 2;
-				double yjump = Math.random() * 2 - 2;
-				jump[0] = this.getPosition()[0] + xjump;
-				jump[1] = this.getPosition()[1] + yjump;
-			} while (! isValidPosition(jump));
-			this.setPosition(jump);
+			//
 			return true;
 		};
 		return false;
@@ -1019,10 +952,10 @@ public class Unit {
 	 * @post the Units will face each other
 	 */
 	public void orientWith(Unit defender) {
-		this.setOrientation((float) Math.atan2(defender.getPosition()[1]-this.getPosition()[1],
-				(defender.getPosition()[0]-this.getPosition()[0])));
-		defender.setOrientation((float) Math.atan2(this.getPosition()[1]-defender.getPosition()[1],
-				(this.getPosition()[0]-defender.getPosition()[0])));
+		this.setOrientation((float) Math.atan2(defender.getPosition().getY()-this.getPosition().getY(),
+				(defender.getPosition().getX()-this.getPosition().getX())));
+		defender.setOrientation((float) Math.atan2(this.getPosition().getY()-defender.getPosition().getY(),
+				(this.getPosition().getX()-defender.getPosition().getX())));
 	}
 
 	// Resting (defensive) //
