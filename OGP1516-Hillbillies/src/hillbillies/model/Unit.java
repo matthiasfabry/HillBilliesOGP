@@ -1,6 +1,7 @@
 
 package hillbillies.model;
 
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -568,72 +569,105 @@ public class Unit {
 	// Time control (defensive) //
 
 	public void advanceTime(double deltaT) throws ModelException {
-		if (this.activity == Activity.WORKING) {
+		if (this.getActivity() == Activity.WORKING) {
 			this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
 			if (this.getRemainingWorkTime() < 0) {
 				this.stopWork();
 			}
 		}
-		if (this.activity == Activity.ATTACKING) {
+		if (this.getActivity() == Activity.ATTACKING) {
 			this.setRemainingAttackTime(this.getRemainingAttackTime() - deltaT);
 			if (this.getRemainingAttackTime() < 0) {
 				this.stopAttack();
 			}
 		}
-		if (this.activity == Activity.MOVING || this.activity == Activity.SPRINTING) {
+		if (this.getActivity() == Activity.MOVING || this.activity == Activity.SPRINTING) {
 			this.updatePosition(deltaT);
 		}
-		if (this.activity == Activity.RESTING){
+		if (this.getActivity() == Activity.RESTING){
 			this.resting(deltaT);
 		}
 	}
 	
 	// Moving (defensive) //
 	
-	public void moveToAdjacent(int x, int y, int z){
-		Coordinate goal = new Coordinate(x,y,z);
+	public void moveToAdjacent(int x, int y, int z) throws ModelException{
+		if ((this.getActivity() != Activity.SPRINTING) && (this.getActivity() != Activity.MOVING)){
+			this.clearPath();
+			this.addToPath(this.getPosition());
+		}
+		Coordinate direction = new Coordinate(x+0.5,y+0.5,z+0.5);
+		Coordinate goal = direction.sum(this.getInWorldPosition());
+		if (goal.isValidCoordinate()) {
+			this.addToPath(goal);
+			this.setActivity(Activity.MOVING);
+		}
+		else
+			throw new ModelException("invalid move");
 		
 
 	}
-	public Coordinate velocityVector(Coordinate goal){
-		Coordinate velocity = this.getPosition().difference(goal);
-		velocity.normalize();
-		return velocity;
-		
+	
+	public void addToPath(Coordinate target){
+		this.getPath().addLast(target);
+	}
+	public void clearPath(){
+		this.getPath().clear();
 	}
 	
-	public void moveTo(int x, int y, int z){
-		this.setActivity(Activity.MOVING);
-		Coordinate destination = new Coordinate(x,y,z);
-		this.setDestination(destination);
-		this.findPath();
+	
+	public LinkedList<Coordinate> getPath(){
+		return this.path;
+	}
+	private LinkedList<Coordinate> path = new LinkedList<>();
+	
+
+	
+	public void moveTo(int x, int y, int z) throws ModelException{
+		if ((this.getActivity() != Activity.MOVING) && (this.getActivity() != Activity.SPRINTING)){
+			this.clearPath();
+			Coordinate destinationCube = new Coordinate(Math.floor(x),Math.floor(y),Math.floor(z));
+			this.setDestination(destinationCube);
+			this.addToPath(this.getInWorldPosition());
+			this.findPath();
+			}
 	}
 	
-	public void findPath(){
+	public void setDestination(Coordinate destinationCube){
+		this.destinationCube = destinationCube;
+	}
+	public Coordinate getDestinationCube(){
+		return this.destinationCube;
+	}
+	private Coordinate destinationCube;
+	
+	public void findPath() throws ModelException{
 		int x = 0;
 		int y = 0;
 		int z = 0;
-		while (this.getDestination() != this.getInWorldPosition()){
-			if (this.getDestination().getX() == this.getInWorldPosition().getX())
+		while ( (int) this.getDestinationCube().getX() != (int) this.getPath().getLast().getX() || 
+				(int) this.getDestinationCube().getY() != (int) this.getPath().getLast().getY() ||
+				(int) this.getDestinationCube().getZ() != (int) this.getPath().getLast().getZ()){
+			if (this.getDestinationCube().getX() == this.getInWorldPosition().getX())
 				x = 0;
-			else if (this.getDestination().getX() < this.getInWorldPosition().getX())
+			else if (this.getDestinationCube().getX() < this.getInWorldPosition().getX())
 				x = -1;
 			else
 				x = 1;
-			if (this.getDestination().getY() == this.getInWorldPosition().getY())
+			if (this.getDestinationCube().getY() == this.getInWorldPosition().getY())
 				y = 0;
-			else if (this.getDestination().getY() < this.getInWorldPosition().getY())
+			else if (this.getDestinationCube().getY() < this.getInWorldPosition().getY())
 				y = -1;
 			else
 				y = 1;
-			if (this.getDestination().getZ() == this.getInWorldPosition().getZ())
+			if (this.getDestinationCube().getZ() == this.getInWorldPosition().getZ())
 				z = 0;
-			else if (this.getDestination().getZ() < this.getInWorldPosition().getZ())
+			else if (this.getDestinationCube().getZ() < this.getInWorldPosition().getZ())
 				z = -1;
 			else
 				z = 1;
+		this.moveToAdjacent(x, y, z);
 		}
-		this.moveToAdjacent(x, y, z);		
 	}
 
 	/**
@@ -642,15 +676,19 @@ public class Unit {
 	 * @post | this.isMoving == false
 	 */
 	public void stopMoving(){
-		this.activity = Activity.IDLE;
+		this.setActivity( Activity.IDLE);
 	}
 
+	public void startSprinting(){
+		if (this.canSprint())
+			this.setActivity(Activity.SPRINTING);
+	}
 	/**
 	 * Method that indicates whether a Unit is able to sprint
 	 * 
 	 * result == 
 	 */
-	public boolean canSprint(){
+ 	public boolean canSprint(){
 		return (this.getActivity() == Activity.MOVING && this.getStamina() > 0);
 	}
 	/**
@@ -677,24 +715,46 @@ public class Unit {
 	public double getCurrentSpeed(){
 		if (this.getActivity() != Activity.SPRINTING && this.getActivity() != Activity.MOVING )
 			return 0;
-		int destinationZ = (int) Math.floor(this.getDestination().getZ());
+		int targetZ = (int) Math.floor(this.getPath().get(0).getZ());
 		if (this.getActivity() == Activity.MOVING)
-			if (this.getActivity() == Activity.SPRINTING)
-				return 2*this.walkingSpeed(destinationZ);
-			return this.walkingSpeed(destinationZ);
+			return this.walkingSpeed(targetZ);
+		else if (this.getActivity() == Activity.SPRINTING)
+			return 2*this.walkingSpeed(targetZ);
+		else
+			return 0;
+			
 			
 	}
-	public void updatePosition(double deltaT){
+	public void updatePosition(double deltaT) throws ModelException{
+		if (this.getPath().size() >= 2){
+			Coordinate start = this.getPath().get(0);
+			Coordinate target = this.getPath().get(1);
+			Coordinate direction = start.directionVector(target);
+			Coordinate displacement = direction
+					.scalarMult(this.getCurrentSpeed() * deltaT);
+			if (this.remaininglegDistance() > 0) {
+				if (displacement.length() < this.remaininglegDistance()) {
+					this.setPosition(this.getPosition().sum(displacement));
+					this.setOrientation((float) Math.atan2(direction.getY(),
+							direction.getX()));
+				} else {
+					this.setPosition(target);
+					this.getPath().remove(0);
+				}
+				
+			}
+			else
+				throw new ModelException("invalid target position");
+		}
+		else
+			this.stopMoving();
 		
 	}
 
-	public void setDestination(Coordinate destination){
-		this.destination = destination;
+	private double remaininglegDistance(){
+		Coordinate vector = this.getPath().get(1).difference(this.getPosition());
+		return vector.length();
 	}
-	public Coordinate getDestination(){
-		return this.destination;
-	}
-	private Coordinate destination;
 	
 	// Activity variable //
 	
@@ -735,7 +795,7 @@ public class Unit {
 	 * @return 500.0 / this.getStrength()
 	 */
 	public double workTime() {
-		return 500.0 / this.getStrength();
+		return (500.0d / this.getStrength());
 	}
 
 	/** TO BE ADDED TO CLASS HEADING
@@ -763,7 +823,7 @@ public class Unit {
 	 *       | result == remainingWorkTime < this.workTime()
 	*/
 	public boolean isValidRemainingWorkTime(double remainingWorkTime) {
-		return (remainingWorkTime < this.workTime());
+		return (remainingWorkTime <= this.workTime());
 	}
 
 	/**
@@ -982,8 +1042,8 @@ public class Unit {
 	 * @post | this.isResting == true
 	 */
 	public void rest() {
-		this.isResting = true;
-
+		if (! (this.getActivity() == Activity.DEFENDING))
+			this.setActivity(Activity.RESTING);
 	}
 	/**
 	 * Method that governs the resting process
@@ -992,13 +1052,14 @@ public class Unit {
 	 * @throws ModelException
 	*/
 	public void resting(double DeltaT) throws ModelException{
-		if (this.isResting == false)
+		if ((this.getActivity() != Activity.RESTING))
 			throw new ModelException();
-		if (this.getHitpoints() < this.maxSecondaryAttribute())
-			this.setHitpoints((int) (this.getHitpoints() + (this.getToughness()/200)*(DeltaT/0.2)));
-		if (this.getStamina() < this.maxSecondaryAttribute())
-			this.setStamina((int) (this.getStamina() + (this.getToughness()/100)*(DeltaT/0.2)));
-		this.stopResting();
+		if (this.getHitpoints() < this.maxSecondaryAttribute()){
+			this.setHitpoints((int) (this.getHitpoints() + (this.getToughness()/200)*(DeltaT/0.2)));}
+		else if (this.getStamina() < this.maxSecondaryAttribute()){
+			this.setStamina((int) (this.getStamina() + (this.getToughness()/100)*(DeltaT/0.2)));}
+		else {
+			this.stopResting();}
 	}
 	/**
 	 * Method that stops a unit from resting.
@@ -1006,13 +1067,9 @@ public class Unit {
 	 * @post | this.isResting == false
 	 */
 	public void stopResting(){
-		this.isResting = false;
+		this.setActivity(Activity.IDLE);
 	}
-	/**
-	 * flag registering whether a Unit is resting.
-	 */
-	private boolean isResting = false;
-
+	
 	// Default behavior (defensive) //
 	
 	/**

@@ -200,7 +200,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void startSprinting(Unit unit) throws ModelException {
-		unit.setActivity(Activity.SPRINTING);
+		unit.startSprinting();
 	}
 
 	/* (non-Javadoc)
@@ -240,7 +240,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void work(Unit unit) throws ModelException {
-		unit.setActivity(Activity.WORKING);
+		unit.work();
 	}
 
 	/* (non-Javadoc)
@@ -272,7 +272,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void rest(Unit unit) throws ModelException {
-		unit.setActivity(Activity.RESTING);
+		unit.rest();
 	}
 
 	/* (non-Javadoc)

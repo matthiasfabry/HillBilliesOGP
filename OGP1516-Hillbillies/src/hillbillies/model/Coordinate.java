@@ -1,11 +1,14 @@
 package hillbillies.model;
 
+import be.kuleuven.cs.som.annotate.Value;
 
 /**
  * Class that handles coordinates in the gameworld
+ * 
  * @author Matthias Fabry & Lukas Van Riel
  *
  */
+@Value
 public class Coordinate {
 	public Coordinate(double x, double y, double z){
 		this.setX(x);
@@ -39,6 +42,12 @@ public class Coordinate {
 		result.setZ(this.getZ()-other.getZ());
 		return result;
 	}
+	public Coordinate directionVector(Coordinate goal){
+		Coordinate direction = goal.difference(this);
+		direction.normalize();
+		return direction;
+		
+	}
 	
 	public Coordinate scalarMult(double p){
 		Coordinate result = new Coordinate(0,0,0);
@@ -54,7 +63,7 @@ public class Coordinate {
 		return this.x;
 	}
 	public void setX(double x){
-		this.x = x;
+		this.x = x*CUBE_LENGTH;
 	}
 	/**
 	 * Return the y-position of this Unit.
@@ -63,7 +72,7 @@ public class Coordinate {
 		return this.y;
 	}
 	public void setY(double y){
-		this.y = y;
+		this.y = y*CUBE_LENGTH;
 	}
 	/**
 	 * Return the z-position of this Unit.
@@ -72,12 +81,13 @@ public class Coordinate {
 		return this.z;
 	}
 	public void setZ(double z){
-		this.z = z;
+		this.z = z*CUBE_LENGTH;
 	}
 	
 	private double x,y,z;
 	private static final double MAX_POSITION = 50.0;
 	private static final double MIN_POSITION = 0.0;
+	private static final double CUBE_LENGTH = 1.0;
 	
 	/**
 	 * Check whether the given position component is a valid position component for
