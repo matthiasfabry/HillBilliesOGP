@@ -56,6 +56,14 @@ public class Coordinate {
 		result.setZ(this.getZ()*p);
 		return result;
 	}
+	
+	public Coordinate floor(){
+		Coordinate result = new Coordinate(0,0,0);
+		result.setX(Math.floor(this.getX()));
+		result.setX(Math.floor(this.getY()));
+		result.setX(Math.floor(this.getZ()));
+		return result;
+	}
 	/**
 	 * Return the x-position of this Unit.
 	 */

@@ -89,9 +89,9 @@ public class Unit {
 	 */
 	public Coordinate getInWorldPosition() {
 		Coordinate inworldposition = new Coordinate(0,0,0);
-		inworldposition.setX(Math.floor(this.position.getX()));
-		inworldposition.setY(Math.floor(this.position.getY()));
-		inworldposition.setZ(Math.floor(this.position.getZ()));
+		inworldposition.setX(this.getPosition().floor().getX());
+		inworldposition.setX(this.getPosition().floor().getY());
+		inworldposition.setX(this.getPosition().floor().getZ());;
 		return inworldposition;
 	}
 
@@ -591,13 +591,13 @@ public class Unit {
 	
 	// Moving (defensive) //
 	
-	public void moveToAdjacent(int x, int y, int z) throws ModelException{
+	public void moveToAdjacent(int x, int y, int z) throws ModelException {
 		if ((this.getActivity() != Activity.SPRINTING) && (this.getActivity() != Activity.MOVING)){
 			this.clearPath();
 			this.addToPath(this.getPosition());
 		}
-		Coordinate direction = new Coordinate(x+0.5,y+0.5,z+0.5);
-		Coordinate goal = direction.sum(this.getInWorldPosition());
+		Coordinate displacement = new Coordinate(x,y,z);
+		Coordinate goal = displacement.sum(this.getPath().getLast());
 		if (goal.isValidCoordinate()) {
 			this.addToPath(goal);
 			this.setActivity(Activity.MOVING);
@@ -611,6 +611,8 @@ public class Unit {
 	public void addToPath(Coordinate target){
 		this.getPath().addLast(target);
 	}
+	
+
 	public void clearPath(){
 		this.getPath().clear();
 	}
@@ -626,9 +628,10 @@ public class Unit {
 	public void moveTo(int x, int y, int z) throws ModelException{
 		if ((this.getActivity() != Activity.MOVING) && (this.getActivity() != Activity.SPRINTING)){
 			this.clearPath();
-			Coordinate destinationCube = new Coordinate(Math.floor(x),Math.floor(y),Math.floor(z));
+			Coordinate destinationCube = new Coordinate(x,y,z);
 			this.setDestination(destinationCube);
-			this.addToPath(this.getInWorldPosition());
+			this.addToPath(this.getPosition());
+			this.setActivity(Activity.MOVING);
 			this.findPath();
 			}
 	}
@@ -648,24 +651,24 @@ public class Unit {
 		while ( (int) this.getDestinationCube().getX() != (int) this.getPath().getLast().getX() || 
 				(int) this.getDestinationCube().getY() != (int) this.getPath().getLast().getY() ||
 				(int) this.getDestinationCube().getZ() != (int) this.getPath().getLast().getZ()){
-			if (this.getDestinationCube().getX() == this.getInWorldPosition().getX())
-				x = 0;
-			else if (this.getDestinationCube().getX() < this.getInWorldPosition().getX())
+			if ((int) this.getDestinationCube().getX() > (int) this.getPath().getLast().getX())
+				x = 1;
+			else if ((int) this.getDestinationCube().getX() < (int) this.getPath().getLast().getX())
 				x = -1;
 			else
-				x = 1;
-			if (this.getDestinationCube().getY() == this.getInWorldPosition().getY())
-				y = 0;
-			else if (this.getDestinationCube().getY() < this.getInWorldPosition().getY())
+				x = 0;
+			if ((int) this.getDestinationCube().getY() > (int) this.getPath().getLast().getY())
+				y = 1;
+			else if ((int) this.getDestinationCube().getY() < (int) this.getPath().getLast().getY())
 				y = -1;
 			else
-				y = 1;
-			if (this.getDestinationCube().getZ() == this.getInWorldPosition().getZ())
-				z = 0;
-			else if (this.getDestinationCube().getZ() < this.getInWorldPosition().getZ())
+				y = 0;
+			if ((int) this.getDestinationCube().getZ() > (int) this.getPath().getLast().getZ())
+				z = 1;
+			else if ((int) this.getDestinationCube().getZ() < (int) this.getPath().getLast().getZ())
 				z = -1;
 			else
-				z = 1;
+				z = 0;
 		this.moveToAdjacent(x, y, z);
 		}
 	}
@@ -673,10 +676,10 @@ public class Unit {
 	/**
 	 * Method that stops a unit from moving.
 	 * 
-	 * @post | this.isMoving == false
+	 * @post | this.activity == IDLE
 	 */
 	public void stopMoving(){
-		this.setActivity( Activity.IDLE);
+		this.setActivity(Activity.IDLE);
 	}
 
 	public void startSprinting(){
@@ -703,19 +706,19 @@ public class Unit {
 	public double walkingSpeed(int z){
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5*(this.getAgility()+this.getStrength())/(2*this.getWeight());
-		if (z-this.getInWorldPosition().getZ() == -1)
-			walkingSpeed = 0.5*baseSpeed;
-		if (z-this.getInWorldPosition().getZ() == 1)
+		if (z-(int)this.getPath().get(0).getZ() == -1)
 			walkingSpeed = 1.2*baseSpeed;
+		else if (z-(int)this.getPath().get(0).getZ() == 1)
+			walkingSpeed = 0.5*baseSpeed;
 		else
 			walkingSpeed = baseSpeed;
 		return walkingSpeed;
 	}
 	
 	public double getCurrentSpeed(){
-		if (this.getActivity() != Activity.SPRINTING && this.getActivity() != Activity.MOVING )
+		if (this.getActivity() != Activity.SPRINTING && this.getActivity() != Activity.MOVING)
 			return 0;
-		int targetZ = (int) Math.floor(this.getPath().get(0).getZ());
+		int targetZ = (int) Math.floor(this.getPath().get(1).getZ());
 		if (this.getActivity() == Activity.MOVING)
 			return this.walkingSpeed(targetZ);
 		else if (this.getActivity() == Activity.SPRINTING)
@@ -732,24 +735,23 @@ public class Unit {
 			Coordinate direction = start.directionVector(target);
 			Coordinate displacement = direction
 					.scalarMult(this.getCurrentSpeed() * deltaT);
-			if (this.remaininglegDistance() > 0) {
-				if (displacement.length() < this.remaininglegDistance()) {
-					this.setPosition(this.getPosition().sum(displacement));
-					this.setOrientation((float) Math.atan2(direction.getY(),
-							direction.getX()));
-				} else {
-					this.setPosition(target);
-					this.getPath().remove(0);
+			if (displacement.length() >= this.remaininglegDistance()) {
+				this.setPosition(target);
+				this.getPath().remove(0);
+				if (this.getPath().size() < 2)
+					this.stopMoving();
+			} else {
+				this.setPosition(this.getPosition().sum(displacement));
+				this.setOrientation((float) Math.atan2(direction.getY(),
+						direction.getX()));
 				}
-				
+			
 			}
-			else
-				throw new ModelException("invalid target position");
-		}
+		
 		else
 			this.stopMoving();
-		
 	}
+	
 
 	private double remaininglegDistance(){
 		Coordinate vector = this.getPath().get(1).difference(this.getPosition());
