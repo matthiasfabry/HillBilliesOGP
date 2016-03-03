@@ -60,8 +60,8 @@ public class Coordinate {
 	public Coordinate floor(){
 		Coordinate result = new Coordinate(0,0,0);
 		result.setX(Math.floor(this.getX()));
-		result.setX(Math.floor(this.getY()));
-		result.setX(Math.floor(this.getZ()));
+		result.setY(Math.floor(this.getY()));
+		result.setZ(Math.floor(this.getZ()));
 		return result;
 	}
 	/**
@@ -93,23 +93,5 @@ public class Coordinate {
 	}
 	
 	private double x,y,z;
-	private static final double MAX_POSITION = 50.0;
-	private static final double MIN_POSITION = 0.0;
-	private static final double CUBE_LENGTH = 1.0;
-	
-	/**
-	 * Check whether the given position component is a valid position component for
-	 * any Unit.
-	 *  
-	 * @return True if the given position component is valid for this Unit
-	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
-	 *       | 		return True
-	 *       | else
-	 *       | 		return False
-	*/
-	public boolean isValidCoordinate() {
-		return (this.getX() >= MIN_POSITION && this.getX() <= MAX_POSITION &&
-				this.getY() >= MIN_POSITION && this.getY() <= MAX_POSITION &&
-				this.getZ() >= MIN_POSITION && this.getZ() <= MAX_POSITION);
-	}
+	static final double CUBE_LENGTH = 1.0;
 }
