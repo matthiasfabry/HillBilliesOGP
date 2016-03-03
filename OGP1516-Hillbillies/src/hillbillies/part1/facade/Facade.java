@@ -136,7 +136,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getMaxHitPoints(Unit unit) throws ModelException {
-		return unit.maxSecondaryAttribute();
+		return (int) unit.maxSecondaryAttribute();
 	}
 
 	/* (non-Javadoc)
@@ -144,7 +144,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getCurrentHitPoints(Unit unit) throws ModelException {
-		return unit.getHitpoints();
+		return (int) Math.floor(unit.getHitpoints());
 	}
 
 	/* (non-Javadoc)
@@ -152,7 +152,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getMaxStaminaPoints(Unit unit) throws ModelException {
-		return unit.maxSecondaryAttribute();
+		return (int) unit.maxSecondaryAttribute();
 	}
 
 	/* (non-Javadoc)
@@ -160,7 +160,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getCurrentStaminaPoints(Unit unit) throws ModelException {
-		return unit.getStamina();
+		return (int) Math.floor(unit.getStamina());
 	}
 
 	/* (non-Javadoc)
