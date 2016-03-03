@@ -176,6 +176,12 @@ public class Unit {
 		else
 			return lowestValidWeigth(weight);
 	}
+	/**
+	 * Return the lowest valid Weight of a Unit.
+	 * 
+	 * @param weight
+	 *            The lowest possible weight for a Unit.
+	 */
 	public int lowestValidWeigth(int weight) {
 		return (int) Math.ceil((this.getAgility() + this.getStrength()) / 2.0);
 	}
@@ -615,7 +621,17 @@ public class Unit {
 	}
 
 	// Moving (defensive) //
-
+	
+	/**
+	 * Method that makes the Unit move to the specified adjacent cube.
+	 * @param	x
+	 * 			the x-component of the cube the Unit will move to.
+	 * @param	y
+	 * 			the y-component of the cube the Unit will move to.
+	 * @param	z
+	 * 			the z-component of the cube the Unit will move to.
+	 * @throws	ModelException
+	 */
 	public void moveToAdjacent(int x, int y, int z) throws ModelException {
 		if ((this.getActivity() != Activity.SPRINTING)
 				&& (this.getActivity() != Activity.MOVING)) {
@@ -631,7 +647,16 @@ public class Unit {
 			throw new ModelException("invalid move");
 
 	}
-
+	/**
+	 * Method that makes the Unit move to a specified position.
+	 * @param	x
+	 * 			the x-component of the cube the Unit will move to.
+	 * @param	y
+	 * 			the y-component of the cube the Unit will move to.
+	 * @param	z
+	 * 			the z-component of the cube the Unit will move to.
+	 * @throws	ModelException
+	 */
 	public void moveTo(int x, int y, int z) throws ModelException {
 		if ((this.getActivity() != Activity.MOVING)
 				&& (this.getActivity() != Activity.SPRINTING)) {
@@ -643,7 +668,11 @@ public class Unit {
 			this.findPath();
 		}
 	}
-
+	/**
+	 * Method that seeks the right path for the Unit to move to its destination.
+	 *
+	 * @throws	ModelException
+	 */
 	public void findPath() throws ModelException {
 		int x = 0;
 		int y = 0;
@@ -690,7 +719,11 @@ public class Unit {
 	public void stopMoving() {
 		this.setActivity(Activity.IDLE);
 	}
-
+	/**
+	 * Method that initiates a unit to sprint.
+	 * 
+	 * @post | this.activity == SPRINTING
+	 */
 	public void startSprinting() {
 		if (this.canSprint())
 			this.setActivity(Activity.SPRINTING);
@@ -698,7 +731,11 @@ public class Unit {
 	/**
 	 * Method that indicates whether a Unit is able to sprint
 	 * 
-	 * result == 
+	 * return true is and only if the Unit is moving and has stamina that is greater than 0
+	 * 	|if this.getActivity() == Activity.MOVING && this.getStamina() > 0
+	 * 	| 	return true
+	 *	|else
+	 *	|	return false
 	 */
 	public boolean canSprint() {
 		return (this.getActivity() == Activity.MOVING && this.getStamina() > 0);
@@ -706,12 +743,14 @@ public class Unit {
 	/**
 	 * Method that stops a unit from sprinting.
 	 * 
-	 * @post | this.isSprinting == false
+	 * @post | this.setActivity(Activity.MOVING)
 	 */
 	public void stopSprinting() {
 		this.setActivity(Activity.MOVING);
 	}
-
+	/**
+	 * Method that computes the Units walkingspeed.
+	 */
 	public double walkingSpeed(int z) {
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5 * (this.getAgility() + this.getStrength())
@@ -724,7 +763,9 @@ public class Unit {
 			walkingSpeed = baseSpeed;
 		return walkingSpeed;
 	}
-
+	/**
+	 * Method that returns the current speed.
+	 */
 	public double getCurrentSpeed() {
 		if (this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.MOVING)
@@ -738,6 +779,12 @@ public class Unit {
 			return 0;
 
 	}
+	/**
+	 * Method that updates the current position of the Unit.
+	 * @param DeltaT
+	 * 			the time-interval used in advanceTime()
+	 * @throws ModelException
+	*/
 	public void updatePosition(double deltaT) throws ModelException {
 		if (this.getPath().size() >= 2) {
 			Coordinate start = this.getPath().get(0);
@@ -761,43 +808,76 @@ public class Unit {
 		else
 			this.stopMoving();
 	}
-
+	/**
+	 * Method that returns the remaining distance to reach the first target cube in the path.	
+	 */
 	private double remaininglegDistance() {
 		Coordinate vector = this.getPath().get(1)
 				.difference(this.getPosition());
 		return vector.length();
 	}
-
+	/**
+	 * Method that returns adds a next destination to the path.
+	 * @param 	target
+	 * 			the coordinate that needs to be added to the path.
+	 */
 	public void addToPath(Coordinate target) {
 		this.getPath().addLast(target);
 	}
-
+	/**
+	 * Method that clears the Units path.
+	 */
 	public void clearPath() {
 		this.getPath().clear();
 	}
-
+	/**
+	 * Method that sets the cube the Unit will move to.
+	 * @param	destinationCube
+	 * 			the cube the Unit will move to.
+	 */
 	public void setDestination(Coordinate destinationCube) {
 		this.destinationCube = destinationCube;
 	}
+	/**
+	 * Method that returns the cube the Unit is moving to.
+	 */
 	public Coordinate getDestinationCube() {
 		return this.destinationCube;
 	}
+	/**
+	 * Coordinate that keeps the cube the Unit is moving to.
+	 */
 	private Coordinate destinationCube;
-
+	/**
+	 * Method that returns the current Path.
+	 */
 	public LinkedList<Coordinate> getPath() {
 		return this.path;
 	}
+	/**
+	 * Linked list that keeps the Path the Unit is about to walk.
+	 */
 	private LinkedList<Coordinate> path = new LinkedList<>();
 
 	// Activity variable //
-
+	
+	/**
+	 * Method that sets the current activity of the Unit.
+	 * @param 	activity
+	 * 			the acivity the Unit is about to execute
+	 */
 	public void setActivity(Activity activity) {
 		this.activity = activity;
 	}
-
+	/**
+	 * Method returns the current activity of the Unit.
+	 */
 	public Activity getActivity() {
 		return this.activity;
 	}
+	/**
+	 * Variable registering the current activity.
+	 */
 	private Activity activity = Activity.IDLE;
 
 	// Working (defensive) //
@@ -805,7 +885,7 @@ public class Unit {
 	/**
 	 * Method that initiates a work task for a Unit.
 	 * 
-	 * @post | this.isWorking == true
+	 * @post | this.getActivity() == WORKING
 	 * @post | this.getRemainingWorkTime == this.workTime()
 	 * @throws ModelException
 	 */
@@ -817,7 +897,7 @@ public class Unit {
 	/**
 	 * Method that stops a work task for a Unit
 	 * 
-	 * @post | this.isWorking == false
+	 * @post | this.setActivity(Activity.IDLE)
 	 */
 	public void stopWork() {
 		this.setActivity(Activity.IDLE);
@@ -906,15 +986,21 @@ public class Unit {
 		else
 			throw new ModelException("target too far away");
 	}
-
+	/**
+	 * Method that gets the attacked Unit.
+	 */
 	public Unit getVictim() {
 		return victim;
 	}
-
+	/**
+	 * Method that makes the attacked Unit the defender.
+	 */
 	public void setVictim(Unit victim) {
 		this.victim = victim;
 	}
-
+	/**
+	 * Variable registering the Unit that is being attacked.
+	 */
 	private Unit victim;
 
 	/**
@@ -1090,6 +1176,7 @@ public class Unit {
 	}
 
 	// Resting (defensive) //
+	
 	/**
 	 * Method that initiates the unit is resting.
 	 * 
@@ -1112,13 +1199,13 @@ public class Unit {
 		if ((this.getActivity() != Activity.RESTING))
 			throw new ModelException();
 		if (this.getHitpoints() < this.maxSecondaryAttribute()) {
-
 			if (this.getTimeResting() >= this.minTimeRestingHitpoint()) {
 				this.setHitpoints(this.getHitpoints() + 1);
 				this.setHitpoints((int) (this.getHitpoints()
 						+ (this.getToughness() / 200) * (DeltaT / 0.2)));
 			}
-		} else if (this.getStamina() < this.maxSecondaryAttribute()) {
+		} 
+		else if (this.getStamina() < this.maxSecondaryAttribute()) {
 			this.setHitpoints(this.maxSecondaryAttribute());
 			this.setStamina((int) (this.getStamina()
 					+ (this.getToughness() / 100) * (DeltaT / 0.2)));
@@ -1130,37 +1217,57 @@ public class Unit {
 	/**
 	 * Method that stops a unit from resting.
 	 * 
-	 * @post | this.isResting == false
+	 * @post | this.setActivity(Activity.IDLE)
 	 */
 	public void stopResting() {
 		this.setTimeSinceLastRest(0);
 		this.setActivity(Activity.IDLE);
 	}
-
+	/**
+	 * Method that gets the time the Unit needs to rest in order to gain 1 Hitpoint-point.
+	 */
 	public double minTimeRestingHitpoint() {
 		return 0.2 * (200.0 / this.getToughness());
 	}
+	/**
+	 * Method that gets the time the Unit needs to rest in order to gain 1 Stamina-point.
+	 */
 	public double minTimeRestingStamina() {
 		return 0.2 * (100.0 / this.getToughness());
 	}
+	/**
+	 * Method that gets the time the Unit needs to rest.
+	 */
 	public double getTimeResting() {
 		return timeResting;
 	}
-
+	/**
+	 * Method that sets the time the Unit needs to rest.
+	 */
 	public void setTimeResting(double timeResting) {
 		this.timeResting = timeResting;
 	}
-
+	/**
+	 * Variable registering the time a Unit will rest.
+	 */
 	private double timeResting = 0;
-
+	/**
+	 * Method that counts the time since the Unit last had a rest.
+	 * 
+	 */
 	public double getTimeSinceLastRest() {
 		return timeSinceLastRest;
 	}
-
+	/**
+	 * Method that sets the time since the Unit last had a rest.
+	 * 
+	 */
 	public void setTimeSinceLastRest(double timeSinceLastRest) {
 		this.timeSinceLastRest = timeSinceLastRest;
 	}
-
+	/**
+	 * Variable registering the time since the Unit last had a rest.
+	 */
 	private double timeSinceLastRest = 0;
 
 	// Default behavior (defensive) //
@@ -1198,12 +1305,14 @@ public class Unit {
 				throw new ModelException();
 		}
 	}
-
+	/**
+	 * Method that stops a Unit from executing default behaviour.
+	*/
 	public void stopDefaultBehavior() {
 		this.setDefaultBehavior(false);
 	}
 	/**
-	 * flag registering whether a Unit is executing defaultbehaviour.
+	 * Method that makes a Unit execute default behaviour.
 	*/
 	public void setDefaultBehavior(boolean flag) {
 		this.defaultBehavior = flag;
@@ -1211,7 +1320,9 @@ public class Unit {
 	public boolean getDefaultBehavior() {
 		return this.defaultBehavior;
 	}
-
+	/**
+	 * flag registering whether a Unit is executing defaultbehaviour.
+	*/
 	private boolean defaultBehavior = false;
 
 	// Orientation (total) //
