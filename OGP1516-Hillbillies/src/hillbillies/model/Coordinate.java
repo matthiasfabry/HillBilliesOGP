@@ -1,6 +1,6 @@
 package hillbillies.model;
 
-import be.kuleuven.cs.som.annotate.Value;
+import be.kuleuven.cs.som.annotate.*;
 
 /**
  * Class that handles coordinates in the gameworld

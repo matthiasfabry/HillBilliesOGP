@@ -89,7 +89,11 @@ public class Unit {
 			this.setWeight(this.nearestValidInitialWeight(weight));
 		Coordinate newPosition = new Coordinate(position[0], position[1],
 				position[2]).sum(centerCube());
-		this.setPosition(newPosition);
+		try {
+			this.setPosition(newPosition);
+		} catch (ModelException exc) {
+			throw new ModelException("Can't create a unit here");
+		}
 		this.setName(name);
 		this.setOrientation((float) (Math.PI / 2));
 		this.setStamina(this.maxSecondaryAttribute());
@@ -127,7 +131,7 @@ public class Unit {
 	 * @post   The position of this new Unit is equal to
 	 *         the given position.
 	 *       | new.getPosition() == position
-	 * @throws RangeException
+	 * @throws ModelException
 	 *         The given position is not a valid position for any
 	 *         Unit.
 	 *       | ! isValidPosition(getPosition())
@@ -716,13 +720,22 @@ public class Unit {
 
 	/**
 	 * Method that makes the Unit move to the specified adjacent cube.
+	 * 
 	 * @param	x
 	 * 			the x-component of the cube the Unit will move to.
 	 * @param	y
 	 * 			the y-component of the cube the Unit will move to.
 	 * @param	z
 	 * 			the z-component of the cube the Unit will move to.
-	 * @throws	ModelException is the unit is already moving (or sprinting)
+	 * @effect	The current coordinates will be the first in the unit's
+	 * 			movement path
+	 * 		| this.pathExtension(this.getPosition)
+	 * @effect 	The given coordinates will be added to the unit's movement path
+	 * 		| this.pathExtension(x,y,z)
+	 * @post	The Unit will be in the moving state
+	 * 		| new.getActivity == MOVING
+	 * @throws	ModelException 
+	 * 			the unit is already moving (or sprinting)
 	 * 		| (this.getActivity() != Activity.SPRINTING)
 	 *		|	&& (this.getActivity() != Activity.MOVING)
 	 */
@@ -731,47 +744,54 @@ public class Unit {
 				&& (this.getActivity() != Activity.MOVING)) {
 			this.clearPath();
 			this.addToPath(this.getPosition());
-		}
-		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
-				.sum(this.getPath().getLast().floor());
-		if (isValidPosition(target)) {
-			this.addToPath(target);
+			this.pathExtension(x, y, z);
 			this.setActivity(Activity.MOVING);
-		} else
+		}
+		else
 			throw new ModelException("Already Moving");
+		
 	}
 	/**
 	 * Method that makes the Unit move to a specified position.
+	 * 
 	 * @param	x
 	 * 			the x-component of the cube the Unit will move to.
 	 * @param	y
 	 * 			the y-component of the cube the Unit will move to.
 	 * @param	z
 	 * 			the z-component of the cube the Unit will move to.
+	 * @post	The unit will have a valid path added to its movement path,
+	 * 			as given by the method findPath()
+	 * @post	The unit will be in the moving state
+	 * 		| new.getActivity == MOVING
+	 * @effect	In order to find the path to the given square, findPath() is called
+	 * 		| findPath()
 	 * @throws	ModelException
+	 * 			When the unit is already in a moving state
+	 * 		| this.getActivity == MOVING || this.getActivity == STPRINTING
 	 */
 	public void moveTo(int x, int y, int z) throws ModelException {
 		if ((this.getActivity() != Activity.MOVING)
 				&& (this.getActivity() != Activity.SPRINTING)) {
 			this.clearPath();
-			Coordinate destinationCube = new Coordinate(x, y, z);
-			this.setDestination(destinationCube);
+			Coordinate destination = new Coordinate(x, y, z);
+			this.setDestinationCube(destination);
 			this.addToPath(this.getPosition());
-			this.setActivity(Activity.MOVING);
 			this.findPath();
+			this.setActivity(Activity.MOVING);
 		} else
 			throw new ModelException("Already Moving");
-
 	}
 	/**
 	 * Method that seeks the right path for the Unit to move to its destination.
 	 *
 	 * @throws	ModelException
 	 */
-	public void findPath() {
+	public void findPath() throws ModelException {
 		int x = 0;
 		int y = 0;
 		int z = 0;
+		
 		while ((int) this.getDestinationCube().getX() != (int) this.getPath()
 				.getLast().floor().getX()
 				|| (int) this.getDestinationCube().getY() != (int) this
@@ -802,12 +822,28 @@ public class Unit {
 				z = -1;
 			else
 				z = 0;
-			try {
-				this.moveToAdjacent(x, y, z);
-			} catch (ModelException e) {
-				// shouldn't happen
+			
+			this.pathExtension(x, y, z);
 			}
+	}
+	
+	/**
+	 * Method that adds a given set of coordinates to the
+	 * movement path of the unit
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @throws ModelException
+	 */
+	public void pathExtension(int x, int y, int z) throws ModelException{
+		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
+				.sum(this.getPath().getLast().floor());
+		if (isValidPosition(target)) {
+			this.addToPath(target);
 		}
+		else
+			throw new ModelException("Cannot move here");
 	}
 
 	/**
@@ -890,6 +926,13 @@ public class Unit {
 		if (this.getActivity() == Activity.MOVING
 				|| this.activity == Activity.SPRINTING) {
 			if (this.getPath().size() >= 2) {
+				if (this.getDefaultBehavior()
+						&& this.getActivity() != Activity.SPRINTING && this.canSprint()) {
+					Random rand = new Random();
+					int decider = rand.nextInt(2);
+					if (decider == 1)
+						this.setActivity(Activity.SPRINTING);
+				}
 				Coordinate start = this.getPath().get(0);
 				Coordinate target = this.getPath().get(1);
 				Coordinate direction = start.directionVector(target);
@@ -948,12 +991,13 @@ public class Unit {
 	public void clearPath() {
 		this.getPath().clear();
 	}
+	
 	/**
 	 * Method that sets the cube the Unit will move to.
 	 * @param	destinationCube
 	 * 			the cube the Unit will move to.
 	 */
-	public void setDestination(Coordinate destinationCube) {
+	public void setDestinationCube(Coordinate destinationCube) {
 		this.destinationCube = destinationCube;
 	}
 	/**
@@ -977,6 +1021,8 @@ public class Unit {
 	 */
 	private LinkedList<Coordinate> path = new LinkedList<>();
 
+	// Working (defensive) //
+	
 	// Working (defensive) //
 
 	/**
@@ -1019,6 +1065,7 @@ public class Unit {
 				this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
 			} catch (ModelException e) {
 				this.setRemainingWorkTime(0);
+				this.stopWork();
 			}
 	}
 	/**
@@ -1083,6 +1130,8 @@ public class Unit {
 	 */
 	private double remainingWorkTime;
 
+	// Attacking & Defending (defensive) //
+	
 	// Fighting (defensive) //
 
 	/**
@@ -1343,6 +1392,8 @@ public class Unit {
 	public static double attackTime = 1.0;
 
 	// Resting (defensive) //
+	
+	// Resting (defensive) //
 
 	/**
 	 * Method that initiates the unit is resting.
@@ -1455,6 +1506,8 @@ public class Unit {
 	 */
 	private double timeSinceLastRest = 0;
 
+	// Default Behavior (defensive) //
+	
 	// Default behavior (defensive) //
 
 	/**
