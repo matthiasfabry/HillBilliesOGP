@@ -24,46 +24,58 @@ public class Part1TestPartial {
 
 	@Test
 	public void testCubeCoordinate() throws ModelException {
-		Unit unit = facade.createUnit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
-		assertIntegerPositionEquals("A valid position should be accepted", 1, 2, 3, facade.getCubeCoordinate(unit));
+		Unit unit = facade.createUnit("TestUnit", new int[]{1, 2, 3}, 50, 50,
+				50, 50, false);
+		assertIntegerPositionEquals("A valid position should be accepted", 1, 2,
+				3, facade.getCubeCoordinate(unit));
 	}
 
 	@Test
 	public void testPosition() throws ModelException {
-		Unit unit = facade.createUnit("TestUnit", new int[] { 12, 11, 5 }, 50, 50, 50, 50, false);
-		assertDoublePositionEquals("Position must be the center of the cube", 12.5, 11.5, 5.5,
-				facade.getPosition(unit));
+		Unit unit = facade.createUnit("TestUnit", new int[]{12, 11, 5}, 50, 50,
+				50, 50, false);
+		assertDoublePositionEquals("Position must be the center of the cube",
+				12.5, 11.5, 5.5, facade.getPosition(unit));
 	}
 
 	@Test
 	public void testInitialAgilityTooLow() throws ModelException {
-		Unit unit = facade.createUnit("TestUnit", new int[] { 1, 2, 3 }, 50, 24, 50, 50, false);
-		assertTrue("An attribute value of 24 should be replaced with a valid value",
-				25 <= facade.getAgility(unit) && facade.getAgility(unit) <= 100);
+		Unit unit = facade.createUnit("TestUnit", new int[]{1, 2, 3}, 50, 24,
+				50, 50, false);
+		assertTrue(
+				"An attribute value of 24 should be replaced with a valid value",
+				25 <= facade.getAgility(unit)
+						&& facade.getAgility(unit) <= 100);
 	}
 
 	@Test
 	public void testSetValidName() throws ModelException {
-		Unit unit = facade.createUnit("TestUnit", new int[] { 1, 1, 1 }, 50, 50, 50, 50, false);
+		Unit unit = facade.createUnit("TestUnit", new int[]{1, 1, 1}, 50, 50,
+				50, 50, false);
 		facade.setName(unit, "John \"Johnnie\" O'Hare the first");
-		assertEquals("This should be a valid name", "John \"Johnnie\" O'Hare the first", facade.getName(unit));
+		assertEquals("This should be a valid name",
+				"John \"Johnnie\" O'Hare the first", facade.getName(unit));
 	}
 
 	@Test
 	public void testSetNameWithoutCapital() throws ModelException {
-		Unit unit = facade.createUnit("TestUnit", new int[] { 1, 1, 1 }, 50, 50, 50, 50, false);
+		Unit unit = facade.createUnit("TestUnit", new int[]{1, 1, 1}, 50, 50,
+				50, 50, false);
 		try {
 			facade.setName(unit, "john O'Hare");
 		} catch (ModelException e) {
 			// that's OK
 		}
-		assertEquals("This name is invalid because it doesn't start with a capital", "TestUnit", facade.getName(unit));
+		assertEquals(
+				"This name is invalid because it doesn't start with a capital",
+				"TestUnit", facade.getName(unit));
 	}
 
 	@Test
 	public void testCorrectPosition() throws ModelException {
 		IFacade facade = new Facade();
-		Unit unit = facade.createUnit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
+		Unit unit = facade.createUnit("TestUnit", new int[]{1, 2, 3}, 50, 50,
+				50, 50, false);
 		facade.moveToAdjacent(unit, 1, 0, -1);
 		double speed = facade.getCurrentSpeed(unit);
 		double distance = Math.sqrt(2);
@@ -80,7 +92,8 @@ public class Part1TestPartial {
 	 * @param step
 	 *            The step size, in seconds, by which to advance.
 	 */
-	private static void advanceTimeFor(IFacade facade, Unit unit, double time, double step) throws ModelException {
+	private static void advanceTimeFor(IFacade facade, Unit unit, double time,
+			double step) throws ModelException {
 		int n = (int) (time / step);
 		for (int i = 0; i < n; i++)
 			facade.advanceTime(unit, step);

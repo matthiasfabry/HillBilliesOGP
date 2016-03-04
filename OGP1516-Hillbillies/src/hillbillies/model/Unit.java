@@ -63,18 +63,35 @@ public class Unit {
 	public Unit(String name, int[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior)
 					throws ModelException {
-		this.setAgility(agility);
-		this.setStrength(strength);
-		this.setToughness(toughness);
-		this.setWeight(weight);
+		if (isValidInitialAttribute(agility)) {
+			this.setAgility(agility);
+		}
+		else
+			this.setAgility(nearestValidInitialAttribute(agility));
+		if (isValidInitialAttribute(strength)) {
+			this.setStrength(strength);
+		}
+		else
+			this.setStrength(nearestValidInitialAttribute(strength));
+		if (isValidInitialAttribute(toughness)) {
+			this.setToughness(toughness);
+		}
+		else
+			this.setToughness(nearestValidInitialAttribute(toughness));
+		if (this.isValidInitialWeight(weight)) {
+			this.setWeight(weight);
+		}
+		else
+			this.setWeight(this.nearestValidInitialWeight(weight));
 		Coordinate newPosition = new Coordinate(position[0],
-				position[1], position[2]).sum(centerCube);
+				position[1], position[2]).sum(centerCube());
 		this.setPosition(newPosition);
 		this.setName(name);
 		this.setOrientation((float) (Math.PI / 2));
 		this.setStamina(this.maxSecondaryAttribute());
 		this.setHitpoints(this.maxSecondaryAttribute());
-		this.defaultBehavior = enableDefaultBehavior;
+		this.setActivity(Activity.IDLE);
+		this.setDefaultBehavior(enableDefaultBehavior);
 
 	}
 
@@ -113,7 +130,7 @@ public class Unit {
 	 */
 	@Raw
 	public void setPosition(Coordinate position) throws ModelException {
-		if (!isValidCoordinate(position))
+		if (!isValidPosition(position))
 			throw new ModelException("Invalid Position");
 		this.position = new Coordinate(position.getX(), position.getY(),
 				position.getZ());
@@ -128,7 +145,7 @@ public class Unit {
 	 *       | else
 	 *       | 		return False
 	*/
-	public static boolean isValidCoordinate(Coordinate coordinate) {
+	public static boolean isValidPosition(Coordinate coordinate) {
 		return (coordinate.getX() >= MIN_POSITION
 				&& coordinate.getX() <= MAX_POSITION
 				&& coordinate.getY() >= MIN_POSITION
@@ -146,9 +163,12 @@ public class Unit {
 	private static final double MIN_POSITION = 0.0;
 
 	
-	Coordinate centerCube = new Coordinate(0.5, 0.5, 0.5);
+	public static Coordinate centerCube(){
+		return new Coordinate(0.5, 0.5, 0.5);
+	}
 
 	// Primary Attributes (Total) //
+	
 
 	/**
 	 * Checks whether the given attribute is a valid initial value for that attribute
@@ -180,6 +200,17 @@ public class Unit {
 		else
 			return 100;
 	}
+	
+	public boolean isValidInitialWeight(int weight){
+		return (weight >= this.lowestValidWeight() && weight <= 100);
+	}
+	
+	public int nearestValidInitialWeight(int weight){
+		if (weight < this.lowestValidWeight())
+			return this.lowestValidWeight();
+		else
+			return 100;
+	}
 
 	/**
 	 * Return the nearest valid Weight of a Unit.
@@ -198,7 +229,7 @@ public class Unit {
 		if (weight > MAX_ATTRIBUTE)
 			return MAX_ATTRIBUTE;
 		else
-			return lowestValidWeigth(weight);
+			return this.lowestValidWeight();
 	}
 	/**
 	 * Return the lowest valid Weight of a Unit.
@@ -206,7 +237,7 @@ public class Unit {
 	 * @param weight
 	 *            The lowest possible weight for a Unit.
 	 */
-	public int lowestValidWeigth(int weight) {
+	public int lowestValidWeight() {
 		return (int) Math.ceil((this.getAgility() + this.getStrength()) / 2.0);
 	}
 
@@ -228,7 +259,7 @@ public class Unit {
 	 *         weight <= 200)
 	 */
 	public boolean isValidWeight(int weight) {
-		return ((this.getStrength() + this.getAgility()) / 2 > weight
+		return (weight >= this.lowestValidWeight()
 				&& weight <= MAX_ATTRIBUTE);
 	}
 
@@ -660,10 +691,10 @@ public class Unit {
 			this.clearPath();
 			this.addToPath(this.getPosition());
 		}
-		Coordinate target = new Coordinate(x, y, z).sum(centerCube)
+		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
 				.sum(this.getPath().getLast().floor());
 
-		if (isValidCoordinate(target)) {
+		if (isValidPosition(target)) {
 			this.addToPath(target);
 			this.setActivity(Activity.MOVING);
 		} else
@@ -1170,16 +1201,16 @@ public class Unit {
 			int x = 0;
 			int y = 0;
 			int z = 0;
-			Coordinate target = this.getInWorldPosition().sum(centerCube);
+			Coordinate target = this.getInWorldPosition().sum(centerCube());
 			while ((x == 0 && y == 0 && z == 0)
-					|| !isValidCoordinate(target)) {
+					|| !isValidPosition(target)) {
 				Random posDecider = new Random();
 				x = (posDecider.nextInt(3)) - 1;
 				y = (posDecider.nextInt(3)) - 1;
 				z = (posDecider.nextInt(3)) - 1;
 				target = new Coordinate(x, y, z);
 				target = target
-						.sum(this.getInWorldPosition().sum(centerCube));
+						.sum(this.getInWorldPosition().sum(centerCube()));
 			}
 			try {
 				this.setPosition(target);
