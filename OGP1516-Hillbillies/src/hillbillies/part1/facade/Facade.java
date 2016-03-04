@@ -208,7 +208,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void stopSprinting(Unit unit) throws ModelException {
-		unit.setActivity(Activity.MOVING);
+		unit.stopSprinting();
 	}
 
 	/* (non-Javadoc)
