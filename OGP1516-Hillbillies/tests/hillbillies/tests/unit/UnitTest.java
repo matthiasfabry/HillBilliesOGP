@@ -4,14 +4,15 @@
 package hillbillies.tests.unit;
 
 import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
-import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
+
 import static org.junit.Assert.*;
 import ogp.framework.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 
+
 import hillbillies.model.*;
-import hillbillies.part1.facade.IFacade;
+
 import ogp.framework.util.ModelException;
 
 /**
@@ -319,16 +320,203 @@ public class UnitTest {
 		assertTrue(Util.fuzzyEquals(0, legalUnit.getCurrentSpeed()));
 	}
 	
+	@Test
+	public void moveToAjacent_LegalDestination() throws ModelException{
+		legalUnit.moveToAdjacent(1, 1, 0);
+		advanceTimeFor(legalUnit, 3, 0.1);
+		assertDoublePositionEquals(legalUnit.getPosition().getX(),
+				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
+				new double[]{3.5, 3.5, 2.5});
+	}
 	
+	@Test (expected = ModelException.class)
+	public void moveToAjacent_IllegalDestination() throws ModelException{
+		legalUnit.setPosition(new Coordinate(49,49,20));
+		legalUnit.moveToAdjacent(1, 1, 0);
+	}
 	
+	@Test
+	public void moveTo_LegalDestination() throws ModelException{
+		legalUnit.moveTo(30, 15, 20);
+		advanceTimeFor(legalUnit, 100, 0.1);
+		assertDoublePositionEquals(legalUnit.getPosition().getX(),
+				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
+				new double[]{30.5, 15.5, 20.5});
+	}
+	
+	@Test (expected = ModelException.class)
+	public void moveTo_IllegalDestination() throws ModelException{
+		legalUnit.moveTo(-2, 15, 20);
+	}
+	
+	@Test (expected = ModelException.class)
+	public void moveTo_AlreadyMoving() throws ModelException{
+		legalUnit.moveTo(2, 15, 20);
+		legalUnit.moveTo(3, 1, 2);
+	}
+
+	@Test
+	public void startSprinting_LegalCase() throws ModelException{
+		legalUnit.moveTo(2, 15, 20);
+		legalUnit.startSprinting();
+		assertEquals(Activity.SPRINTING, legalUnit.getActivity());
+	}
+	
+	@Test(expected = ModelException.class)
+	public void startSprinting_IllegalCase_NotMoving() throws ModelException{
+		legalUnit.startSprinting();
+	}
+	
+	@Test(expected = ModelException.class)
+	public void startSprinting_IllegalCase_StaminaDepleted() throws ModelException{
+		legalUnit.setStamina(0);
+		legalUnit.startSprinting();
+	}
+
+	@Test
+	public void sprinting_DepletesStamina() throws ModelException{
+		legalUnit.moveTo(49, 49, 49);
+		legalUnit.startSprinting();
+		advanceTimeFor(legalUnit, 10, 0.2);
+		assertEquals(Activity.MOVING, legalUnit.getActivity());
+	}
+	
+	// Working //
+	
+	@Test
+	public void work_LegalCase() throws ModelException{
+		legalUnit.work();
+		assertEquals(Activity.WORKING, legalUnit.getActivity());
+		advanceTimeFor(legalUnit, 20, 0.1);
+		assertEquals(Activity.IDLE, legalUnit.getActivity());
+	}
+	
+	@Test(expected = ModelException.class)
+	public void work_IllegalCase() throws ModelException{
+		legalUnit.moveTo(2, 2, 3);
+		legalUnit.work();
+	}
 	
 	// Attacking //
 	
+	@Test
+	public void attack_LegalCase() throws ModelException{
+		Unit victim = new Unit("Victim", new int[]{1, 1, 2}, 50, 24, 50, 50,
+				false);
+		legalUnit.attack(victim);
+		assertEquals(Activity.ATTACKING, legalUnit.getActivity());
+		assertEquals(Activity.DEFENDING, victim.getActivity());
+		assertEquals(victim, legalUnit.getVictim());
+		assertTrue(Util.fuzzyEquals(legalUnit.getOrientation(), victim.getOrientation()-Math.PI));
+		advanceTimeFor(legalUnit, 2, 0.1);
+		assertEquals(Activity.IDLE, legalUnit.getActivity());
+		assertTrue(victim.getHitpoints() <= victim.maxSecondaryAttribute());
+		assertEquals(Activity.IDLE, victim.getActivity());
+		assertEquals(null, legalUnit.getVictim());
+	}
+	
+	@Test(expected = ModelException.class)
+	public void attack_IllegalCase_VictimTooFar() throws ModelException{
+		Unit victim = new Unit("Victim", new int[]{10, 1, 1}, 50, 24, 50, 50,
+				false);
+		legalUnit.attack(victim);
+	}
+	
+	@Test(expected = ModelException.class)
+	public void attack_IllegalCase_NotReady() throws ModelException{
+		Unit victim = new Unit("Victim", new int[]{1, 1, 1}, 50, 24, 50, 50,
+				false);
+		legalUnit.moveTo(10, 2, 3);
+		legalUnit.attack(victim);
+	}
+	
 	// Resting //
+	
+	@Test
+	public void rest_LegalCase() throws ModelException {
+		legalUnit.setHitpoints(0.0);
+		legalUnit.setStamina(10);
+		legalUnit.rest();
+		assertEquals(Activity.RESTING, legalUnit.getActivity());
+		advanceTimeFor(legalUnit, 4, 0.05);
+		assertTrue(Util.fuzzyEquals(5, legalUnit.getHitpoints()));
+	}
+	
+	@Test
+	public void rest_LegalCase_HPToStamina() throws ModelException {
+		legalUnit.setHitpoints(45.0);
+		legalUnit.setStamina(10);
+		legalUnit.rest();
+		assertEquals(Activity.RESTING, legalUnit.getActivity());
+		advanceTimeFor(legalUnit, 6, 0.05);
+		assertTrue(Util.fuzzyEquals(50, legalUnit.getHitpoints()));
+		assertTrue(Util.fuzzyEquals(15, legalUnit.getStamina()));
+	}
+	
+	@Test
+	public void rest_LegalCase_StaminaToFull() throws ModelException {
+		legalUnit.setStamina(10);
+		legalUnit.rest();
+		assertEquals(Activity.RESTING, legalUnit.getActivity());
+		advanceTimeFor(legalUnit, 20, 0.05);
+		assertTrue(Util.fuzzyEquals(50, legalUnit.getHitpoints()));
+		assertTrue(Util.fuzzyEquals(50, legalUnit.getStamina()));
+		assertEquals(Activity.IDLE, legalUnit.getActivity());
+	}
+	
+	@Test
+	public void autoRest_After3Mins() throws ModelException{
+		legalUnit.setStamina(12);
+		assertEquals(Activity.IDLE, legalUnit.getActivity());
+		advanceTimeFor(legalUnit, 181, 0.2);
+		assertEquals(Activity.RESTING, legalUnit.getActivity());
+	}
+	
+	@Test(expected = ModelException.class)
+	public void rest_IllegalCase_NotReady() throws ModelException{
+		legalUnit.setStamina(12);
+		legalUnit.moveTo(2, 3, 4);
+		legalUnit.rest();
+	}
+	
+	@Test(expected = ModelException.class)
+	public void rest_IllegalCase_WhileAttacked() throws ModelException{
+		Unit victim = new Unit("Victim", new int[]{1, 1, 1}, 50, 24, 50, 50,
+				false);
+		victim.setStamina(12);
+		legalUnit.attack(victim);
+		victim.rest();
+	}
 	
 	// Default Behavior //
 	
+	@Test
+	public void defaultBehavior_OnFromIdle() throws ModelException{
+		legalUnit.setStamina(25);
+		legalUnit.setDefaultBehavior(true);
+		assertTrue(legalUnit.getDefaultBehavior());
+		advanceTimeFor(legalUnit, 0.2, 0.1);
+		assertFalse(legalUnit.getActivity() == Activity.IDLE);
+		assertTrue(legalUnit.getDefaultBehavior());
+	}
 	
+	@Test(expected = ModelException.class)
+	public void defaultBehavior_OnWhenNotIdle() throws ModelException{
+		legalUnit.moveToAdjacent(1, 1, 1);
+		legalUnit.setDefaultBehavior(true);
+	}
+	
+	@Test
+	public void defaultBehavior_Off() throws ModelException{
+		legalUnit.setStamina(12);
+		legalUnit.setDefaultBehavior(true);
+		assertTrue(legalUnit.getDefaultBehavior());
+		advanceTimeFor(legalUnit, 0.2, 0.1);
+		assertFalse(legalUnit.getActivity() == Activity.IDLE);
+		legalUnit.setDefaultBehavior(false);
+		advanceTimeFor(legalUnit, 50, 0.1);
+		assertFalse(legalUnit.getDefaultBehavior());
+	}
 	
 	// Time Control //
 

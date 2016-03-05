@@ -8,9 +8,14 @@ import java.util.regex.Pattern;
 import be.kuleuven.cs.som.annotate.*;
 import ogp.framework.util.ModelException;
 
+
 /**
  *	A class describing the Hillbillie Unit
  *
+ *
+ *
+ * @invar The Coordinate must be valid for the game world configuration. 
+ * 			| isValidPosition(getPosition())
  * @invar The Weight of each Unit must be a valid Weight for any Unit. 
  * 			| isValidWeight(getWeight())
  * @invar The Agility of each Unit must be a valid Agility for any Unit. 
@@ -181,7 +186,11 @@ public class Unit {
 	static Coordinate centerCube() {
 		return new Coordinate(0.5, 0.5, 0.5);
 	}
-
+	/**
+	 * Symbolic constant registering the length of a cube
+	 */
+	public static final double CUBE_LENGTH = 1.0;
+	
 	// Primary Attributes (Total) //
 
 	/**
@@ -686,7 +695,7 @@ public class Unit {
 			try {
 				this.rest();
 			} catch (ModelException e) {
-				// unit not yet ready to rest
+				// unit not ready to rest
 			}
 		}
 		try {
@@ -746,10 +755,9 @@ public class Unit {
 			this.addToPath(this.getPosition());
 			this.pathExtension(x, y, z);
 			this.setActivity(Activity.MOVING);
-		}
-		else
+		} else
 			throw new ModelException("Already Moving");
-		
+
 	}
 	/**
 	 * Method that makes the Unit move to a specified position.
@@ -824,12 +832,11 @@ public class Unit {
 					z = 0;
 
 				this.pathExtension(x, y, z);
-			} 
-		}
-		else
+			}
+		} else
 			throw new ModelException("No destination!");
 	}
-	
+
 	/**
 	 * Method that adds a given set of coordinates to the
 	 * movement path of the unit
@@ -839,13 +846,12 @@ public class Unit {
 	 * @param z
 	 * @throws ModelException
 	 */
-	void pathExtension(int x, int y, int z) throws ModelException{
+	void pathExtension(int x, int y, int z) throws ModelException {
 		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
 				.sum(this.getPath().getLast().floor());
 		if (isValidPosition(target)) {
 			this.addToPath(target);
-		}
-		else
+		} else
 			throw new ModelException("Cannot move here");
 	}
 
@@ -854,7 +860,7 @@ public class Unit {
 	 * 
 	 * @post | this.activity == IDLE
 	 */
-	public void stopMoving() {
+	void stopMoving() {
 		this.setActivity(Activity.IDLE);
 	}
 	/**
@@ -862,9 +868,11 @@ public class Unit {
 	 * 
 	 * @post | this.activity == SPRINTING
 	 */
-	public void startSprinting() {
+	public void startSprinting() throws ModelException {
 		if (this.canSprint())
 			this.setActivity(Activity.SPRINTING);
+		else
+			throw new ModelException("Can't sprint!");
 	}
 	/**
 	 * Method that indicates whether a Unit is able to sprint
@@ -884,7 +892,9 @@ public class Unit {
 	 * @post | this.setActivity(Activity.MOVING)
 	 */
 	public void stopSprinting() {
-		this.setActivity(Activity.MOVING);
+		if (this.getActivity() == Activity.SPRINTING) {
+			this.setActivity(Activity.MOVING);
+		}
 	}
 
 	/**
@@ -906,9 +916,11 @@ public class Unit {
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5 * (this.getAgility() + this.getStrength())
 				/ (2 * this.getWeight());
-		if (this.getPath().get(1).floor().getZ() - this.getPath().get(0).floor().getZ() < 0 )
+		if (this.getPath().get(1).floor().getZ()
+				- this.getPath().get(0).floor().getZ() < 0)
 			walkingSpeed = 1.2 * baseSpeed;
-		else if (this.getPath().get(1).floor().getZ() - this.getPath().get(0).floor().getZ() > 0)
+		else if (this.getPath().get(1).floor().getZ()
+				- this.getPath().get(0).floor().getZ() > 0)
 			walkingSpeed = 0.5 * baseSpeed;
 		else
 			walkingSpeed = baseSpeed;
@@ -947,7 +959,8 @@ public class Unit {
 				|| this.activity == Activity.SPRINTING) {
 			if (this.getPath().size() >= 2) {
 				if (this.getDefaultBehavior()
-						&& this.getActivity() != Activity.SPRINTING && this.canSprint()) {
+						&& this.getActivity() != Activity.SPRINTING
+						&& this.canSprint()) {
 					Random rand = new Random();
 					int decider = rand.nextInt(2);
 					if (decider == 1)
@@ -957,7 +970,7 @@ public class Unit {
 				Coordinate target = this.getPath().get(1);
 				Coordinate direction = start.directionVector(target);
 				Coordinate displacement = direction
-						.scalarMult(this.getCurrentSpeed() * deltaT);
+						.scalarMult((this.getCurrentSpeed() * deltaT)/CUBE_LENGTH);
 				if (displacement.length() >= this.remaininglegDistance()) {
 					try {
 						this.setPosition(target);
@@ -1011,17 +1024,19 @@ public class Unit {
 	void clearPath() {
 		this.getPath().clear();
 	}
-	
+
 	/**
 	 * Method that sets the cube the Unit will move to.
 	 * @param	destinationCube
 	 * 			the cube the Unit will move to.
+	 * @throws ModelException
+	 * 			The destination is not a valid Game position
+	 * 		| ! isValidPosition(destinationCube)
 	 */
 	void setDestinationCube(Coordinate destinationCube) throws ModelException {
 		if (isValidPosition(destinationCube)) {
 			this.destinationCube = destinationCube;
-		} 
-		else
+		} else
 			throw new ModelException("Can't go there");
 	}
 	/**
@@ -1046,7 +1061,7 @@ public class Unit {
 	 * Linked list that keeps the Path the Unit is about to walk.
 	 */
 	private LinkedList<Coordinate> path = new LinkedList<>();
-
+	
 	// Working (defensive) //
 
 	/**
@@ -1062,11 +1077,7 @@ public class Unit {
 				&& this.getActivity() != Activity.WORKING
 				&& this.getActivity() != Activity.ATTACKING
 				&& this.getActivity() != Activity.DEFENDING) {
-			try {
-				this.setRemainingWorkTime(this.workTime());
-			} catch (ModelException exc) {
-				// shouldn't happen
-			}
+			this.setRemainingWorkTime(this.workTime());
 			this.setActivity(Activity.WORKING);
 		} else
 			throw new ModelException("Unit not ready to work");
@@ -1097,7 +1108,7 @@ public class Unit {
 	 * 
 	 * @post | this.setActivity(Activity.IDLE)
 	 */
-	public void stopWork() {
+	void stopWork() {
 		this.setActivity(Activity.IDLE);
 	}
 
@@ -1135,8 +1146,7 @@ public class Unit {
 	 *       | ! isValidRemainingWorkTime(getRemainingWorkTime())
 	 */
 	@Raw
-	void setRemainingWorkTime(double remainingWorkTime)
-			throws ModelException {
+	void setRemainingWorkTime(double remainingWorkTime) throws ModelException {
 		if (!isValidRemainingWorkTime(remainingWorkTime))
 			throw new ModelException();
 		this.remainingWorkTime = remainingWorkTime;
@@ -1163,16 +1173,23 @@ public class Unit {
 	 * @throws ModelException
 	 */
 	public void attack(Unit victim) throws ModelException {
-		this.setVictim(victim);
-		Coordinate attackVector = this.getVictim().getPosition()
-				.difference(this.getPosition());
-		if (attackVector.length() <= Math.sqrt(3)) {
-			this.setRemainingAttackTime(attackTime);
-			this.setActivity(Activity.ATTACKING);
-			this.getVictim().setActivity(Activity.DEFENDING);
-			this.orientWith(this.getVictim());
+		if (this.getActivity() != Activity.ATTACKING
+				&& this.getActivity() != Activity.MOVING
+				&& this.getActivity() != Activity.SPRINTING
+				&& this.getActivity() != Activity.DEFENDING) {
+			this.setVictim(victim);
+			Coordinate attackVector = this.getVictim().getInWorldPosition()
+					.difference(this.getInWorldPosition());
+			if (attackVector.length() <= Math.sqrt(2)) {
+				this.setRemainingAttackTime(attackTime);
+				this.setActivity(Activity.ATTACKING);
+				this.getVictim().setActivity(Activity.DEFENDING);
+				this.getVictim().setDefaultBehavior(false);
+				this.orientWith(this.getVictim());
+			} else
+				throw new ModelException("target too far away");
 		} else
-			throw new ModelException("target too far away");
+			throw new ModelException("Not ready");
 	}
 	/**
 	 * Method that simulates the attacking behavior of a unit
@@ -1201,7 +1218,7 @@ public class Unit {
 	 * when the victim doesn't successfully defend
 	 * @throws ModelException 
 	 */
-	public void stopAttack() {
+	void stopAttack() {
 		if (!this.getVictim().defend(this))
 			this.doesDamage(this.getVictim());
 		this.setActivity(Activity.IDLE);
@@ -1271,8 +1288,7 @@ public class Unit {
 	 * @return 
 	 *       | result == 
 	*/
-	static boolean isValidRemainingAttackTime(
-			double remainingAttackTime) {
+	static boolean isValidRemainingAttackTime(double remainingAttackTime) {
 		return (remainingAttackTime >= 0 && remainingAttackTime <= attackTime);
 	}
 	/**
@@ -1457,10 +1473,9 @@ public class Unit {
 			if (timeBefore < this.timeToRecoverOneHP()
 					&& timeAfter >= this.timeToRecoverOneHP())
 				this.setHitpoints(this.getHitpoints() + 1);
-			else if (this.getTimeResting() >= this.timeToRecoverOneHP()) {
+			else if (this.getTimeResting() >= this.timeToRecoverOneHP())
 				this.setHitpoints((this.getHitpoints()
-						+ (this.getToughness() / 40 * DeltaT)));
-			}
+						+ ((this.getToughness() * DeltaT) / 40)));
 		} else if (this.getStamina()
 				+ (this.getToughness() / 20) * DeltaT < this
 						.maxSecondaryAttribute()) {
@@ -1468,11 +1483,11 @@ public class Unit {
 			if (timeBefore < this.timeToRecoverOneStamina()
 					&& timeAfter >= this.timeToRecoverOneStamina())
 				this.setStamina(this.getStamina() + 1);
-			else if (this.getTimeResting() >= this.timeToRecoverOneStamina()) {
+			else if (this.getTimeResting() >= this.timeToRecoverOneStamina())
 				this.setStamina((this.getStamina()
-						+ (this.getToughness() / 20) * DeltaT));
-			}
+						+ ((this.getToughness() * DeltaT) / 20)));
 		} else {
+			this.setHitpoints(this.maxSecondaryAttribute());
 			this.setStamina(this.maxSecondaryAttribute());
 			this.stopResting();
 		}
@@ -1490,13 +1505,13 @@ public class Unit {
 	 * Method that gets the time the Unit needs to rest in order to gain 1 Hit-point.
 	 */
 	double timeToRecoverOneHP() {
-		return 0.2 * (200.0 / this.getToughness());
+		return (40.0 / this.getToughness());
 	}
 	/**
-	 * Method that gets the time the Unit needs to rest in order to gain 1 Stamina-point.
+	 * Method that gets the time the Unit needs to rest in order to gain 1 Stamina.
 	 */
 	double timeToRecoverOneStamina() {
-		return 0.2 * (100.0 / this.getToughness());
+		return (20.0 / this.getToughness());
 	}
 	/**
 	 * Method that gets the time the Unit needs to rest.
@@ -1537,18 +1552,26 @@ public class Unit {
 	// Default Behavior (defensive) //
 
 	/**
-	 * Method that initiates the unit's default behavior.
+	 * Method that sets the unit's default behavior.
 	 * 
-	 * @throws ModelException when the unit isn't Idle
-	 * 		 | this.getActivity != Idle
+	 * @param flag
+	 * 			The flag to set the unit's default behavior state to
+	 * @post | new.activeDefaultBehaviour == flag
 	 * 
-	 * @post | new.activeDefaultBehaviour == true
+  	 * @throws ModelException
+     * 			the unit isn't Idle and wants to engage in
+     * 			default behavior
+     * 		 | this.getActivity != Idle
 	 */
-	public void startDefaultBehavior() throws ModelException {
-		if (this.getActivity() == Activity.IDLE) {
-			this.setDefaultBehavior(true);
-		} else
-			throw new ModelException("Unit isn't Idle!");
+	public void setDefaultBehavior(boolean flag) throws ModelException {
+		if (flag) {
+			if (this.getActivity() == Activity.IDLE) {
+				this.defaultBehavior = true;
+			} else
+				throw new ModelException("Unit isn't Idle!");
+		}
+		else
+			this.defaultBehavior = false;
 	}
 	/**
 	 * Method that governs a Unit during default behavior
@@ -1562,36 +1585,30 @@ public class Unit {
 		if (this.getActivity() == Activity.IDLE) {
 			Random random = new Random();
 			int decider = random.nextInt(3);
-			if (this.getDefaultBehavior()) {
-				if (decider == 0) {
-					rest();
-				} else if (decider == 1) {
-					work();
-				} else {
-					int x = random.nextInt(51);
-					int y = random.nextInt(51);
-					int z = random.nextInt(51);
-					try {
-						moveTo(x, y, z);
-					} catch (Exception e) {
-						// shouldn't happen
-					}
+			if (decider == 0) {
+				rest();
+			} else if (decider == 1) {
+				work();
+			} else {
+				int x = random.nextInt(50);
+				int y = random.nextInt(50);
+				int z = random.nextInt(50);
+				try {
+					moveTo(x, y, z);
+				} catch (Exception e) {
+					// shouldn't happen
 				}
 			}
 		}
 	}
 	/**
 	 * Method that stops a Unit from executing default behaviour.
+	 * @throws ModelException 
 	*/
-	public void stopDefaultBehavior() {
+	void stopDefaultBehavior() throws ModelException {
 		this.setDefaultBehavior(false);
 	}
-	/**
-	 * Method that makes a Unit execute default behaviour.
-	*/
-	public void setDefaultBehavior(boolean flag) {
-		this.defaultBehavior = flag;
-	}
+
 	/**
 	 * Return the flag indicating whether the unit is executing default
 	 * behavior

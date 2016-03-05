@@ -1,13 +1,11 @@
 package hillbillies.model;
 
 import be.kuleuven.cs.som.annotate.*;
-import ogp.framework.util.ModelException;
+
 
 /**
- * A class that handles coordinates in the gameworld
+ * Value class that handles coordinates in the gam eworld
  * 
- * @invar The components of any Coordinate must be valid for the gameworld configuration. 
- * 			| unit.isValidPosition()
  * 
  * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
@@ -32,6 +30,7 @@ public class Coordinate {
 	}
 	/**
 	 * Method that computes the sum of 2 coordinates.
+	 * 
 	 * @param	other
 	 * 			the coordinate that will be added to the current coordinate.
 	 */
@@ -61,6 +60,7 @@ public class Coordinate {
 	}
 	/**
 	 * Method that computes the difference between 2 coordinates.
+	 * 
 	 * @param	other
 	 * 			the coordinate that will be subtracted from the
 	 * 			current coordinate.
@@ -120,7 +120,7 @@ public class Coordinate {
 	 * 			the new x-position
 	 */
 	public void setX(double x){
-		this.x = x*CUBE_LENGTH;
+		this.x = x;
 	}
 	/**
 	 * Return the y-value of the coordinate.
@@ -134,7 +134,7 @@ public class Coordinate {
 	 * 			the new y-position
 	 */
 	public void setY(double y){
-		this.y = y*CUBE_LENGTH;
+		this.y = y;
 	}
 	/**
 	 * Return the z-value of the coordinate.
@@ -148,14 +148,11 @@ public class Coordinate {
 	 * 			the new z-position
 	 */
 	public void setZ(double z){
-		this.z = z*CUBE_LENGTH;
+		this.z = z;
 	}
 	/**
 	 * Variables registering the x-, y- and z-component of the coordinate.
 	 */
 	private double x,y,z;
-	/**
-	 * Variable registering the cube length used ingame.
-	 */
-	static final double CUBE_LENGTH = 1.0;
+
 }
