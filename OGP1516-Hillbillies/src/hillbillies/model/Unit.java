@@ -153,7 +153,7 @@ public class Unit {
 	 *       | else
 	 *       | 		return False
 	*/
-	public static boolean isValidPosition(Coordinate coordinate) {
+	static boolean isValidPosition(Coordinate coordinate) {
 		return (coordinate.getX() >= MIN_POSITION
 				&& coordinate.getX() <= MAX_POSITION
 				&& coordinate.getY() >= MIN_POSITION
@@ -178,7 +178,7 @@ public class Unit {
 	 * Returns a Coordinate object which spans from the lower corner to the center of the cube
 	 * @return Coordinate(0.5,0.5,0.5)
 	 */
-	public static Coordinate centerCube() {
+	static Coordinate centerCube() {
 		return new Coordinate(0.5, 0.5, 0.5);
 	}
 
@@ -192,7 +192,7 @@ public class Unit {
 	 * @return Return true when the value lies between 25 and 100, both inclusive
 	 * 		| result == (attribute >= 25 && attribute <= 100);
 	 */
-	public static boolean isValidInitialAttribute(int attribute) {
+	static boolean isValidInitialAttribute(int attribute) {
 		return (attribute >= 25 && attribute <= 100);
 	}
 	/**
@@ -223,7 +223,7 @@ public class Unit {
 	 * 				and smaller than or equal to MAX_ATTRIBUTE
 	 * 			| result == attribute <= MAX_ATTRIBUTE && attribute >= MIN_ATTRIBUTE
 	 */
-	public static boolean isValidAttribute(int attribute) {
+	static boolean isValidAttribute(int attribute) {
 		return (attribute <= MAX_ATTRIBUTE && attribute >= MIN_ATTRIBUTE);
 	}
 	/**
@@ -257,7 +257,7 @@ public class Unit {
 	 * 		| else
 	 * 		| 	result == false
 	 */
-	public boolean isValidInitialWeight(int weight) {
+	boolean isValidInitialWeight(int weight) {
 		return (weight >= this.lowestValidWeight() && weight <= 100);
 	}
 	/**
@@ -323,7 +323,7 @@ public class Unit {
 	 * @return | result == (this.getStrength()+this.getAgility())/2 > weight &&
 	 *         weight <= 200)
 	 */
-	public boolean isValidWeight(int weight) {
+	boolean isValidWeight(int weight) {
 		return (weight >= this.lowestValidWeight() && weight <= MAX_ATTRIBUTE);
 	}
 	/**
@@ -474,7 +474,7 @@ public class Unit {
 	 * 			| result == (attribute >= MIN_SEC_ATTRIBUTE && attribute 
 	 * 							<= getStrength()*getToughness()/50)
 	 */
-	public boolean isValidSecAttribute(double attribute) {
+	boolean isValidSecAttribute(double attribute) {
 		return attribute >= MIN_SEC_ATTRIBUTE
 				&& attribute <= this.maxSecondaryAttribute();
 	}
@@ -562,7 +562,7 @@ public class Unit {
 	 * 			| else
 	 * 			|	result == false
 	 */
-	public static boolean isValidName(String name) {
+	static boolean isValidName(String name) {
 		if (name == null || name.length() == 0)
 			return false;
 		Matcher fullName = validCharacters.matcher(name);
@@ -622,7 +622,7 @@ public class Unit {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidOrientation(float orientation) {
+	static boolean isValidOrientation(float orientation) {
 		return (orientation > (float) -Math.PI
 				&& orientation <= (float) Math.PI);
 	}
@@ -787,44 +787,47 @@ public class Unit {
 	 *
 	 * @throws	ModelException
 	 */
-	public void findPath() throws ModelException {
-		int x = 0;
-		int y = 0;
-		int z = 0;
-		
-		while ((int) this.getDestinationCube().getX() != (int) this.getPath()
-				.getLast().floor().getX()
-				|| (int) this.getDestinationCube().getY() != (int) this
-						.getPath().getLast().floor().getY()
-				|| (int) this.getDestinationCube().getZ() != (int) this
-						.getPath().getLast().floor().getZ()) {
-			if ((int) this.getDestinationCube().getX() > (int) this.getPath()
-					.getLast().floor().getX())
-				x = 1;
-			else if ((int) this.getDestinationCube().getX() < (int) this
-					.getPath().getLast().floor().getX())
-				x = -1;
-			else
-				x = 0;
-			if ((int) this.getDestinationCube().getY() > (int) this.getPath()
-					.getLast().floor().getY())
-				y = 1;
-			else if ((int) this.getDestinationCube().getY() < (int) this
-					.getPath().getLast().floor().getY())
-				y = -1;
-			else
-				y = 0;
-			if ((int) this.getDestinationCube().getZ() > (int) this.getPath()
-					.getLast().floor().getZ())
-				z = 1;
-			else if ((int) this.getDestinationCube().getZ() < (int) this
-					.getPath().getLast().floor().getZ())
-				z = -1;
-			else
-				z = 0;
-			
-			this.pathExtension(x, y, z);
-			}
+	void findPath() throws ModelException {
+		if (this.getDestinationCube() != null) {
+			int x = 0;
+			int y = 0;
+			int z = 0;
+			while ((int) this.getDestinationCube().getX() != (int) this
+					.getPath().getLast().floor().getX()
+					|| (int) this.getDestinationCube().getY() != (int) this
+							.getPath().getLast().floor().getY()
+					|| (int) this.getDestinationCube().getZ() != (int) this
+							.getPath().getLast().floor().getZ()) {
+				if ((int) this.getDestinationCube().getX() > (int) this
+						.getPath().getLast().floor().getX())
+					x = 1;
+				else if ((int) this.getDestinationCube().getX() < (int) this
+						.getPath().getLast().floor().getX())
+					x = -1;
+				else
+					x = 0;
+				if ((int) this.getDestinationCube().getY() > (int) this
+						.getPath().getLast().floor().getY())
+					y = 1;
+				else if ((int) this.getDestinationCube().getY() < (int) this
+						.getPath().getLast().floor().getY())
+					y = -1;
+				else
+					y = 0;
+				if ((int) this.getDestinationCube().getZ() > (int) this
+						.getPath().getLast().floor().getZ())
+					z = 1;
+				else if ((int) this.getDestinationCube().getZ() < (int) this
+						.getPath().getLast().floor().getZ())
+					z = -1;
+				else
+					z = 0;
+
+				this.pathExtension(x, y, z);
+			} 
+		}
+		else
+			throw new ModelException("No destination!");
 	}
 	
 	/**
@@ -836,7 +839,7 @@ public class Unit {
 	 * @param z
 	 * @throws ModelException
 	 */
-	public void pathExtension(int x, int y, int z) throws ModelException{
+	void pathExtension(int x, int y, int z) throws ModelException{
 		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
 				.sum(this.getPath().getLast().floor());
 		if (isValidPosition(target)) {
@@ -872,7 +875,7 @@ public class Unit {
 	 *	|else
 	 *	|	return false
 	 */
-	public boolean canSprint() {
+	boolean canSprint() {
 		return (this.getActivity() == Activity.MOVING && this.getStamina() > 0);
 	}
 	/**
@@ -886,14 +889,26 @@ public class Unit {
 
 	/**
 	 * Method that computes the Unit's walking speed.
+	 * 
+	 * @return Returns the walking speed of the unit, which is its base speed
+	 * 			(getAgility*getStrength/(2*getWeight))
+	 * 			modified by the target cube's relative position. Walking uphill
+	 * 			goes slower, walking downhill is faster.
+	 * 		| if (target.getZ - getPosition.getZ == -1)
+	 * 		| 	then result == 1.2*baseSpeed
+	 * 		| else if (target.getZ - getPosition.getZ == 1)
+	 * 		| 	then result == 0.5*baseSpeed
+	 * 		| else
+	 * 		|	result == baseSpeed
+	 * 		
 	 */
-	public double walkingSpeed(int z) {
+	public double walkingSpeed() {
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5 * (this.getAgility() + this.getStrength())
 				/ (2 * this.getWeight());
-		if (z - (int) this.getPath().get(0).getZ() == -1)
+		if (this.getPath().get(1).floor().getZ() - this.getPath().get(0).floor().getZ() < 0 )
 			walkingSpeed = 1.2 * baseSpeed;
-		else if (z - (int) this.getPath().get(0).getZ() == 1)
+		else if (this.getPath().get(1).floor().getZ() - this.getPath().get(0).floor().getZ() > 0)
 			walkingSpeed = 0.5 * baseSpeed;
 		else
 			walkingSpeed = baseSpeed;
@@ -901,19 +916,24 @@ public class Unit {
 	}
 	/**
 	 * Method that returns the current speed.
+	 * 
+	 * @return Returns 0 if the unit isn't in a moving state,
+	 * 			returns the walking speed if the unit is moving,
+	 * 			return 2 times the walking speed if the unit is sprinting.
+	 * 		| if getActivity != MOVING && getActivity != SPRINTING
+	 * 		| 	then result == 0
+	 * 		| if getActivity == MOVING
+	 * 		| 	then result == walkingspeed()
+	 * 			
 	 */
 	public double getCurrentSpeed() {
 		if (this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.MOVING)
 			return 0;
-		int targetZ = (int) Math.floor(this.getPath().get(1).getZ());
-		if (this.getActivity() == Activity.MOVING)
-			return this.walkingSpeed(targetZ);
-		else if (this.getActivity() == Activity.SPRINTING)
-			return 2 * this.walkingSpeed(targetZ);
+		else if (this.getActivity() == Activity.MOVING)
+			return this.walkingSpeed();
 		else
-			return 0;
-
+			return 2 * this.walkingSpeed();
 	}
 
 	/**
@@ -922,7 +942,7 @@ public class Unit {
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
 	*/
-	public void updatePosition(double deltaT) throws ModelException {
+	void updatePosition(double deltaT) throws ModelException {
 		if (this.getActivity() == Activity.MOVING
 				|| this.activity == Activity.SPRINTING) {
 			if (this.getPath().size() >= 2) {
@@ -970,25 +990,25 @@ public class Unit {
 			throw new ModelException("Unit is not in a moving state");
 	}
 	/**
-	 * Method that returns the remaining distance to reach the first target cube in the path.	
+	 * Method that returns the remaining distance to reach the next target cube in the path.
 	 */
-	private double remaininglegDistance() {
+	double remaininglegDistance() {
 		Coordinate vector = this.getPath().get(1)
 				.difference(this.getPosition());
 		return vector.length();
 	}
 	/**
-	 * Method that returns adds a next destination to the path.
+	 * Method that adds a next target to the movement path.
 	 * @param 	target
 	 * 			the coordinate that needs to be added to the path.
 	 */
-	public void addToPath(Coordinate target) {
+	void addToPath(Coordinate target) {
 		this.getPath().addLast(target);
 	}
 	/**
 	 * Method that clears the Unit's path.
 	 */
-	public void clearPath() {
+	void clearPath() {
 		this.getPath().clear();
 	}
 	
@@ -997,12 +1017,17 @@ public class Unit {
 	 * @param	destinationCube
 	 * 			the cube the Unit will move to.
 	 */
-	public void setDestinationCube(Coordinate destinationCube) {
-		this.destinationCube = destinationCube;
+	void setDestinationCube(Coordinate destinationCube) throws ModelException {
+		if (isValidPosition(destinationCube)) {
+			this.destinationCube = destinationCube;
+		} 
+		else
+			throw new ModelException("Can't go there");
 	}
 	/**
 	 * Method that returns the cube the Unit is moving to.
 	 */
+	@Basic
 	public Coordinate getDestinationCube() {
 		return this.destinationCube;
 	}
@@ -1013,6 +1038,7 @@ public class Unit {
 	/**
 	 * Method that returns the current Path.
 	 */
+	@Basic
 	public LinkedList<Coordinate> getPath() {
 		return this.path;
 	}
@@ -1021,8 +1047,6 @@ public class Unit {
 	 */
 	private LinkedList<Coordinate> path = new LinkedList<>();
 
-	// Working (defensive) //
-	
 	// Working (defensive) //
 
 	/**
@@ -1057,7 +1081,7 @@ public class Unit {
 	 * 			if able, otherwise, it is set to 0
 	 * 		| new.getRemainingWorkTime == this.getRemainingWorkTime - deltaT
 	 */
-	public void working(double deltaT) throws ModelException {
+	void working(double deltaT) throws ModelException {
 		if (this.getActivity() != Activity.WORKING)
 			throw new ModelException("The unit isn't in a working state");
 		else
@@ -1094,7 +1118,7 @@ public class Unit {
 	 * @return 
 	 *       | result == remainingWorkTime < this.workTime()
 	*/
-	public boolean isValidRemainingWorkTime(double remainingWorkTime) {
+	boolean isValidRemainingWorkTime(double remainingWorkTime) {
 		return (remainingWorkTime <= this.workTime() && remainingWorkTime >= 0);
 	}
 	/**
@@ -1111,7 +1135,7 @@ public class Unit {
 	 *       | ! isValidRemainingWorkTime(getRemainingWorkTime())
 	 */
 	@Raw
-	public void setRemainingWorkTime(double remainingWorkTime)
+	void setRemainingWorkTime(double remainingWorkTime)
 			throws ModelException {
 		if (!isValidRemainingWorkTime(remainingWorkTime))
 			throw new ModelException();
@@ -1122,7 +1146,7 @@ public class Unit {
 	 * Method that computes how long it takes for a unit to finish a work task.
 	 * @return 500.0 / this.getStrength()
 	 */
-	public double workTime() {
+	double workTime() {
 		return (500.0d / this.getStrength());
 	}
 	/**
@@ -1131,8 +1155,6 @@ public class Unit {
 	private double remainingWorkTime;
 
 	// Attacking & Defending (defensive) //
-	
-	// Fighting (defensive) //
 
 	/**
 	 * Method that initiates an attack on another Unit
@@ -1152,7 +1174,13 @@ public class Unit {
 		} else
 			throw new ModelException("target too far away");
 	}
-	public void attacking(double DeltaT) throws ModelException {
+	/**
+	 * Method that simulates the attacking behavior of a unit
+	 * 
+	 * @param DeltaT
+	 * @throws ModelException
+	 */
+	void attacking(double DeltaT) throws ModelException {
 		if (this.getActivity() == Activity.ATTACKING) {
 			try {
 				this.setRemainingAttackTime(
@@ -1188,6 +1216,7 @@ public class Unit {
 	/**
 	 * Method that gets the attacked Unit.
 	 */
+	@Basic
 	public Unit getVictim() {
 		return this.victim;
 	}
@@ -1200,7 +1229,7 @@ public class Unit {
 	 * 
 	 *		| result == true
 	 */
-	public boolean isValidVictim(Unit victim) {
+	boolean isValidVictim(Unit victim) {
 		return true;
 	}
 	/**
@@ -1214,7 +1243,7 @@ public class Unit {
 	 * 			the given victim isn't a valid victim
 	 * 		| ! isValidVictim()
 	 */
-	public void setVictim(Unit victim) throws ModelException {
+	void setVictim(Unit victim) throws ModelException {
 		if (isValidVictim(victim))
 			this.victim = victim;
 		else
@@ -1242,7 +1271,7 @@ public class Unit {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidRemainingAttackTime(
+	static boolean isValidRemainingAttackTime(
 			double remainingAttackTime) {
 		return (remainingAttackTime >= 0 && remainingAttackTime <= attackTime);
 	}
@@ -1260,7 +1289,7 @@ public class Unit {
 	 *       | ! isValidRemainingAttackTime(getRemainingAttackTime())
 	 */
 	@Raw
-	public void setRemainingAttackTime(double remainingAttackTime)
+	void setRemainingAttackTime(double remainingAttackTime)
 			throws ModelException {
 		if (!isValidRemainingAttackTime(remainingAttackTime))
 			throw new ModelException();
@@ -1283,7 +1312,7 @@ public class Unit {
 	 *			| return true;
 	 * @throws ModelException
 	 */
-	public boolean defend(Unit attacker) {
+	boolean defend(Unit attacker) {
 		if (!this.dodge(attacker)) {
 			if (!this.block(attacker)) {
 				return false;
@@ -1307,7 +1336,7 @@ public class Unit {
 	 * 			|	return false
 	 * @throws ModelException
 	 */
-	public boolean dodge(Unit attacker) {
+	boolean dodge(Unit attacker) {
 		double chance = 0.20
 				* ((double) this.getAgility() / attacker.getAgility());
 		double random = Math.random();
@@ -1347,7 +1376,7 @@ public class Unit {
 	 * 			|	return false
 	 * @throws ModelException
 	 */
-	public boolean block(Unit attacker) {
+	boolean block(Unit attacker) {
 		double chance = 0.25
 				* ((double) (this.getStrength() + this.getAgility())
 						/ (attacker.getAgility() + attacker.getStrength()));
@@ -1363,7 +1392,7 @@ public class Unit {
 	 * @post The victim's hitpoints are lowered with the attacker's strength / 10 
 	 * 		| new.victim.getHitpoints = victim.getHitpoints - this.getStrength() / 10
 	 */
-	public void doesDamage(Unit victim) {
+	void doesDamage(Unit victim) {
 		victim.setHitpoints(victim.getHitpoints() - this.getStrength() / 10);
 	}
 
@@ -1373,7 +1402,7 @@ public class Unit {
 	 * 			The unit that this unit is attacking
 	 * @post the Units will face each other
 	 */
-	public void orientWith(Unit defender) {
+	void orientWith(Unit defender) {
 		this.setOrientation(
 				(float) Math.atan2(
 						defender.getPosition().getY() - this.getPosition()
@@ -1391,8 +1420,6 @@ public class Unit {
 	 */
 	public static double attackTime = 1.0;
 
-	// Resting (defensive) //
-	
 	// Resting (defensive) //
 
 	/**
@@ -1417,7 +1444,7 @@ public class Unit {
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
 	*/
-	public void resting(double DeltaT) throws ModelException {
+	void resting(double DeltaT) throws ModelException {
 		if ((this.getActivity() != Activity.RESTING))
 			throw new ModelException("Unit isn't in a resting state");
 		this.setTimeSinceLastRest(0.0);
@@ -1462,25 +1489,26 @@ public class Unit {
 	/**
 	 * Method that gets the time the Unit needs to rest in order to gain 1 Hit-point.
 	 */
-	public double timeToRecoverOneHP() {
+	double timeToRecoverOneHP() {
 		return 0.2 * (200.0 / this.getToughness());
 	}
 	/**
 	 * Method that gets the time the Unit needs to rest in order to gain 1 Stamina-point.
 	 */
-	public double timeToRecoverOneStamina() {
+	double timeToRecoverOneStamina() {
 		return 0.2 * (100.0 / this.getToughness());
 	}
 	/**
 	 * Method that gets the time the Unit needs to rest.
 	 */
+	@Basic
 	public double getTimeResting() {
 		return timeResting;
 	}
 	/**
 	 * Method that sets the time the Unit is resting.
 	 */
-	public void setTimeResting(double timeResting) {
+	void setTimeResting(double timeResting) {
 		this.timeResting = timeResting;
 	}
 	/**
@@ -1488,9 +1516,9 @@ public class Unit {
 	 */
 	private double timeResting = 0.0;
 	/**
-	 * Method that counts the time since the Unit last had a rest.
-	 * 
+	 * Return the time since the Unit last had a rest.
 	 */
+	@Basic
 	public double getTimeSinceLastRest() {
 		return timeSinceLastRest;
 	}
@@ -1498,7 +1526,7 @@ public class Unit {
 	 * Method that sets the time since the Unit last had a rest.
 	 * 
 	 */
-	public void setTimeSinceLastRest(double timeSinceLastRest) {
+	void setTimeSinceLastRest(double timeSinceLastRest) {
 		this.timeSinceLastRest = timeSinceLastRest;
 	}
 	/**
@@ -1507,8 +1535,6 @@ public class Unit {
 	private double timeSinceLastRest = 0;
 
 	// Default Behavior (defensive) //
-	
-	// Default behavior (defensive) //
 
 	/**
 	 * Method that initiates the unit's default behavior.
@@ -1530,7 +1556,7 @@ public class Unit {
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
 	*/
-	public void doDefaultBehavior() throws ModelException {
+	void doDefaultBehavior() throws ModelException {
 		if (!this.getDefaultBehavior())
 			throw new ModelException("Unit isn't executing default behavior");
 		if (this.getActivity() == Activity.IDLE) {
@@ -1566,6 +1592,11 @@ public class Unit {
 	public void setDefaultBehavior(boolean flag) {
 		this.defaultBehavior = flag;
 	}
+	/**
+	 * Return the flag indicating whether the unit is executing default
+	 * behavior
+	 */
+	@Basic
 	public boolean getDefaultBehavior() {
 		return this.defaultBehavior;
 	}

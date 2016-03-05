@@ -45,9 +45,9 @@ public class Facade implements IFacade {
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
 		int [] result = {0,0,0};
-		result[0] = (int) unit.getInWorldPosition().floor().getX();
-		result[1] = (int) unit.getInWorldPosition().floor().getY();
-		result[2] = (int) unit.getInWorldPosition().floor().getZ();
+		result[0] = (int) unit.getInWorldPosition().getX();
+		result[1] = (int) unit.getInWorldPosition().getY();
+		result[2] = (int) unit.getInWorldPosition().getZ();
 		return result;
 	}
 

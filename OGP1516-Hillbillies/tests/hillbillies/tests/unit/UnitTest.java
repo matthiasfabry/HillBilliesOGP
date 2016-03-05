@@ -30,7 +30,7 @@ public class UnitTest {
 	 */
 	@Before
 	public void setUp() throws ModelException {
-		legalUnit = new Unit("TestUnit", new int[]{1, 1, 1}, 50, 50, 50, 50,
+		legalUnit = new Unit("TestUnit", new int[]{2, 2, 2}, 50, 50, 50, 50,
 				false);
 	}
 
@@ -44,7 +44,7 @@ public class UnitTest {
 		assertEquals(50, legalUnit.getWeight());
 		assertDoublePositionEquals(legalUnit.getPosition().getX(),
 				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
-				new double[]{1.5, 1.5, 1.5});
+				new double[]{2.5, 2.5, 2.5});
 		assertEquals("TestUnit", legalUnit.getName());
 		assertEquals(Activity.IDLE, legalUnit.getActivity());
 		assertTrue(Util.fuzzyEquals((double) legalUnit.getOrientation(),
@@ -118,27 +118,7 @@ public class UnitTest {
 		legalUnit.setPosition(new Coordinate(-3, 3, 5));
 	}
 
-	@Test
-	public void isValidPostion_TrueCase() {
-		assertTrue(Unit.isValidPosition(new Coordinate(1, 1, 1)));
-	}
-
-	@Test
-	public void isValidPostion_FalseCase() {
-		assertFalse(Unit.isValidPosition(new Coordinate(-1, 1, 1)));
-	}
-
 	// Initial Primary Attributes //
-
-	@Test
-	public void isValidInitialAttribute_TrueCase() {
-		assertTrue(Unit.isValidInitialAttribute(37));
-	}
-
-	@Test
-	public void isValidInitialAttribute_FalseCase() {
-		assertFalse(Unit.isValidInitialAttribute(12));
-	}
 
 	@Test
 	public void nearestValidInitialAttribute_LowCase() {
@@ -148,16 +128,6 @@ public class UnitTest {
 	@Test
 	public void nearestValidInitialAttribute_HighCase() {
 		assertEquals(100, Unit.nearestValidInitialAttribute(152));
-	}
-
-	@Test
-	public void isValidInitialWeight_TrueCase() {
-		assertTrue(legalUnit.isValidInitialWeight(75));
-	}
-
-	@Test
-	public void isValidInitialWeight_FalseCase() {
-		assertFalse(legalUnit.isValidInitialWeight(30));
 	}
 
 	@Test
@@ -184,16 +154,6 @@ public class UnitTest {
 	}
 
 	@Test
-	public void isValidAttribute_TrueCase() {
-		assertTrue(Unit.isValidAttribute(37));
-	}
-
-	@Test
-	public void isValidAttribute_FalseCase() {
-		assertFalse(Unit.isValidAttribute(0));
-	}
-
-	@Test
 	public void nearestValidWeight_LowCase() {
 		assertEquals(legalUnit.lowestValidWeight(),
 				legalUnit.nearestValidWeight(20));
@@ -202,21 +162,6 @@ public class UnitTest {
 	@Test
 	public void nearestValidWeight_HighCase() {
 		assertEquals(200, legalUnit.nearestValidWeight(600));
-	}
-
-	@Test
-	public void testLowestValidWeight() {
-		assertEquals(50, legalUnit.lowestValidWeight());
-	}
-
-	@Test
-	public void isValidWeight_TrueCase() {
-		assertTrue(legalUnit.isValidWeight(150));
-	}
-
-	@Test
-	public void isValidWeight_FalseCase() {
-		assertFalse(legalUnit.isValidWeight(30));
 	}
 
 	@Test
@@ -276,16 +221,6 @@ public class UnitTest {
 	}
 
 	@Test
-	public void isValidSecAttribute_LegalCase() {
-		assertTrue(legalUnit.isValidSecAttribute(30));
-	}
-
-	@Test
-	public void isValidSecAttribute_IllegalCase() {
-		assertFalse(legalUnit.isValidSecAttribute(51));
-	}
-
-	@Test
 	public void setHitpoints_LegalCase() {
 		legalUnit.setHitpoints(15);
 		assertTrue(Util.fuzzyEquals(15, legalUnit.getHitpoints()));
@@ -329,27 +264,8 @@ public class UnitTest {
 		legalUnit.setName("");
 	}
 
-	@Test
-	public void isValidName_TrueCase() {
-		assertTrue(Unit.isValidName("John Smith"));
-	}
-
-	@Test
-	public void isValidName_FalseCase() {
-		assertFalse(Unit.isValidName("john Smith"));
-	}
 
 	// Orientation //
-
-	@Test
-	public void isValidOrientation_TrueCase() {
-		assertTrue(Unit.isValidOrientation((float) (Math.PI / 2 - 1.3)));
-	}
-
-	@Test
-	public void isValidOrientation_FalseCase() {
-		assertFalse(Unit.isValidOrientation((float) (Math.PI / 2 - 5)));
-	}
 
 	@Test
 	public void setOrientation_LegalCase() {
@@ -366,6 +282,45 @@ public class UnitTest {
 	}
 
 	// Moving //
+	
+	@Test
+	public void walkingSpeed_Uphill() throws ModelException{
+		legalUnit.moveToAdjacent(0,0,1);
+		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(),0.75));
+	}
+	
+	@Test
+	public void walkingSpeed_Downhill() throws ModelException{
+		legalUnit.moveToAdjacent(0, 0, -1);
+		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(),1.80));
+	}
+	
+	@Test
+	public void walkingSpeed_level() throws ModelException{
+		legalUnit.moveToAdjacent(0, 1, 0);
+		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(),1.50));
+	}
+	
+	@Test
+	public void getCurrentSpeed_Moving() throws ModelException{
+		legalUnit.moveToAdjacent(0,0,1);
+		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(), legalUnit.getCurrentSpeed()));
+	}
+	
+	@Test
+	public void getCurrentSpeed_Sprinting() throws ModelException{
+		legalUnit.moveToAdjacent(0,0,1);
+		legalUnit.startSprinting();
+		assertTrue(Util.fuzzyEquals(2* legalUnit.walkingSpeed(), legalUnit.getCurrentSpeed()));
+	}
+	
+	@Test
+	public void getCurrentSpeed_NotMoving() throws ModelException{
+		assertTrue(Util.fuzzyEquals(0, legalUnit.getCurrentSpeed()));
+	}
+	
+	
+	
 	
 	// Attacking //
 	
