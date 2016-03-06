@@ -121,6 +121,7 @@ public class Unit {
 	/**
 	 * Return the in-world position of this Unit.
 	 */
+	@Basic
 	public Coordinate getInWorldPosition() {
 		Coordinate inworldposition = new Coordinate(0, 0, 0);
 		inworldposition.setX(this.getPosition().floor().getX());
@@ -196,10 +197,10 @@ public class Unit {
 	/**
 	 * Checks whether the given attribute is a valid initial value for that attribute
 	 * 
-	 * @param attribute
+	 * @param 	attribute
 	 * 			the attribute to check.
-	 * @return Return true when the value lies between 25 and 100, both inclusive
-	 * 		| result == (attribute >= 25 && attribute <= 100);
+	 * @return 	Return true when the value lies between 25 and 100, both inclusive
+	 * 		| 	result == (attribute >= 25 && attribute <= 100);
 	 */
 	static boolean isValidInitialAttribute(int attribute) {
 		return (attribute >= 25 && attribute <= 100);
@@ -208,14 +209,14 @@ public class Unit {
 	 * Returns the nearest valid initial value of a primary attribute (toughness, strength, agility)
 	 * a unit can have
 	 * 
-	 * @param attribute
+	 * @param 	attribute
 	 * 			the value to determine the correct value from
-	 * @return Returns 25 if attribute was lower than 25, 100 otherwise
-	 * 		| if (attribute < 25)
-	 *		| 	then result == 25
-	 *		| else
-	 *		| 	result == 100
-	 */
+	 * @return 	Returns 25 if attribute was lower than 25, 100 otherwise
+	 * 		| 	if (attribute < 25)
+	 *		| 		then result == 25
+	 *		| 	else
+	 *		| 		result == 100
+	 */	
 	public static int nearestValidInitialAttribute(int attribute) {
 		if (attribute < 25)
 			return 25;
@@ -226,11 +227,11 @@ public class Unit {
 	 * Check whether the given attribute is a valid value of a primary attribute
 	 * (agility, strength, toughness) for any Unit.
 	 * 
-	 * @param attribute
-	 *            The value to check.
-	 * @return Returns true if and only if the agility is bigger than or equal to MIN_ATTRIBUTE
+	 * @param 	attribute
+	 *           The value to check.
+	 * @return 	Returns true if and only if the agility is bigger than or equal to MIN_ATTRIBUTE
 	 * 				and smaller than or equal to MAX_ATTRIBUTE
-	 * 			| result == attribute <= MAX_ATTRIBUTE && attribute >= MIN_ATTRIBUTE
+	 * 		| 	result == attribute <= MAX_ATTRIBUTE && attribute >= MIN_ATTRIBUTE
 	 */
 	static boolean isValidAttribute(int attribute) {
 		return (attribute <= MAX_ATTRIBUTE && attribute >= MIN_ATTRIBUTE);
@@ -239,8 +240,8 @@ public class Unit {
 	 * Return the nearest valid value for a primary attribute (agility, strength, toughness)
 	 * of a Unit.
 	 * 
-	 * @param attribute
-	 *            The value of which the nearest should be determined
+	 * @param 	attribute
+	 *          The value of which the nearest should be determined
 	 * @return If attribute is higher than the highest allowed value for primary attributes, the
 	 *         result is that highest allowed value, otherwise, the result is
 	 *         the lowest allowed value 
@@ -311,6 +312,8 @@ public class Unit {
 	 * 
 	 * @param weight
 	 *            The lowest possible weight for a Unit.
+	 * @return Returns the lowest allowed weight for a Unit.
+	 * 			|result = Math.ceil((this.getAgility() + this.getStrength()) / 2.0)
 	 */
 	public int lowestValidWeight() {
 		return (int) Math.ceil((this.getAgility() + this.getStrength()) / 2.0);
@@ -330,7 +333,7 @@ public class Unit {
 	 * @param weight
 	 *            The Weight to check.
 	 * @return | result == (this.getStrength()+this.getAgility())/2 > weight &&
-	 *         weight <= 200)
+	 *         | weight <= 200)
 	 */
 	boolean isValidWeight(int weight) {
 		return (weight >= this.lowestValidWeight() && weight <= MAX_ATTRIBUTE);
@@ -341,8 +344,9 @@ public class Unit {
 	 * @param weight
 	 *            The new Weight for this Unit.
 	 * @post If the given Weight is a valid Weight for any Unit, the Weight of
-	 *       this new Unit is equal to the given Weight. | if
-	 *       (isValidWeight(weight)) | then new.getWeight() == weight
+	 *       this new Unit is equal to the given Weight. 
+	 *       |if (isValidWeight(weight)) 
+	 *       | 	then new.getWeight() == weight
 	 */
 	@Raw
 	public void setWeight(int weight) {
@@ -629,7 +633,7 @@ public class Unit {
 	 * @param  orientation
 	 *         The Orientation to check.
 	 * @return 
-	 *       | result == 
+	 *       | result == (orientation > (float) - Math.PI && orientation <= (float) Math.PI)
 	*/
 	static boolean isValidOrientation(float orientation) {
 		return (orientation > (float) -Math.PI
@@ -663,14 +667,18 @@ public class Unit {
 	/**
 	 * Method that sets the current activity of the Unit.
 	 * @param 	activity
-	 * 			the acivity the Unit is about to execute
+	 * 			the activity the Unit is about to execute
+	 * @post	The Activity of this new Unit is equal to the given Activity. 
+	 * 			|this.activity == activity
 	 */
+	@Raw
 	void setActivity(Activity activity) {
 		this.activity = activity;
 	}
 	/**
 	 * Method returns the current activity of the Unit.
 	 */
+	@Basic 
 	public Activity getActivity() {
 		return this.activity;
 	}
@@ -794,6 +802,8 @@ public class Unit {
 	 * Method that seeks the right path for the Unit to move to its destination.
 	 *
 	 * @throws	ModelException
+	 * 				the unit has no destination
+	 * 		| this.getDestinationCube() == null) 
 	 */
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
@@ -845,6 +855,8 @@ public class Unit {
 	 * @param y
 	 * @param z
 	 * @throws ModelException
+	 * 			the the given coordinates are no valid inworld position.
+	 * 		| (! this.isValidPosition(target))
 	 */
 	void pathExtension(int x, int y, int z) throws ModelException {
 		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
@@ -867,6 +879,9 @@ public class Unit {
 	 * Method that initiates a unit to sprint.
 	 * 
 	 * @post | this.activity == SPRINTING
+	 * @throws ModelException
+	 * 		 	The Unit is not able to sprint
+	 * 		 |(! this.canSprint())
 	 */
 	public void startSprinting() throws ModelException {
 		if (this.canSprint())
@@ -877,7 +892,7 @@ public class Unit {
 	/**
 	 * Method that indicates whether a Unit is able to sprint
 	 * 
-	 * return true is and only if the Unit is moving and has stamina that is greater than 0
+	 * return true if and only if the Unit is moving and has stamina that is greater than 0
 	 * 	|if this.getActivity() == Activity.MOVING && this.getStamina() > 0
 	 * 	| 	return true
 	 *	|else
@@ -953,6 +968,8 @@ public class Unit {
 	 * @param DeltaT
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
+	 * 			the unit is not moving
+	 * 		|	(this.getActivity() != Activity.MOVING && this.activity != Activity.SPRINTING)
 	*/
 	void updatePosition(double deltaT) throws ModelException {
 		if (this.getActivity() == Activity.MOVING
@@ -1020,6 +1037,7 @@ public class Unit {
 	}
 	/**
 	 * Method that clears the Unit's path.
+	 * @post the Units path is empty
 	 */
 	void clearPath() {
 		this.getPath().clear();
@@ -1070,6 +1088,12 @@ public class Unit {
 	 * @post | this.getActivity() == WORKING
 	 * @post | this.getRemainingWorkTime == this.workTime()
 	 * @throws ModelException
+	 * 			Unit is executing another activity
+	 * 		|	(this.getActivity() == Activity.MOVING
+				|| this.getActivity() == Activity.SPRINTING
+				|| this.getActivity() == Activity.WORKING
+				|| this.getActivity() == Activity.ATTACKING
+				|| this.getActivity() == Activity.DEFENDING)
 	 */
 	public void work() throws ModelException {
 		if (this.getActivity() != Activity.MOVING
@@ -1088,6 +1112,7 @@ public class Unit {
 	 * 			The time to work for
 	 * @throws ModelException
 	 * 			When the unit isn't in the working state
+	 * 		|	(this.getActivity() == Activity.WORKING)
 	 * @post   The remaining work time is lowered by deltaT, 
 	 * 			if able, otherwise, it is set to 0
 	 * 		| new.getRemainingWorkTime == this.getRemainingWorkTime - deltaT
@@ -1126,8 +1151,8 @@ public class Unit {
 	 *  
 	 * @param  remaining work time
 	 *         The remaining work time to check.
-	 * @return 
-	 *       | result == remainingWorkTime < this.workTime()
+	 * @return true if the remaing work time is valid.
+	 *       | (remainingWorkTime <= this.workTime() && remainingWorkTime >= 0)
 	*/
 	boolean isValidRemainingWorkTime(double remainingWorkTime) {
 		return (remainingWorkTime <= this.workTime() && remainingWorkTime >= 0);
@@ -1157,7 +1182,7 @@ public class Unit {
 	 * @return 500.0 / this.getStrength()
 	 */
 	double workTime() {
-		return (500.0d / this.getStrength());
+		return (500.0 / this.getStrength());
 	}
 	/**
 	 * Variable registering the remaining work time of this Unit.
@@ -1171,9 +1196,17 @@ public class Unit {
 	 * @param victim
 	 * 			The Unit to attack
 	 * @throws ModelException
+	 * 			no other unit in range
+	 * 		|	(attackVector.length() > Math.sqrt(2))
+	 * @throws ModelException
+	 * 		 	the unit is executing another activity
+	 * 		|	(this.getActivity() == Activity.RESTING
+			|	|| this.getActivity() == Activity.MOVING
+			|	|| this.getActivity() == Activity.SPRINTING
+			|	|| this.getActivity() == Activity.DEFENDING)
 	 */
 	public void attack(Unit victim) throws ModelException {
-		if (this.getActivity() != Activity.ATTACKING
+		if (this.getActivity() != Activity.RESTING
 				&& this.getActivity() != Activity.MOVING
 				&& this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.DEFENDING) {
@@ -1196,6 +1229,8 @@ public class Unit {
 	 * 
 	 * @param DeltaT
 	 * @throws ModelException
+	 * 			the unit is not in ATTACKING-state
+	 * 		|	(this.getActivity() != Activity.ATTACKING)
 	 */
 	void attacking(double DeltaT) throws ModelException {
 		if (this.getActivity() == Activity.ATTACKING) {
@@ -1216,7 +1251,7 @@ public class Unit {
 	/**
 	 * Method that stops an attack of a Unit, inflicting damage 
 	 * when the victim doesn't successfully defend
-	 * @throws ModelException 
+	 * 			
 	 */
 	void stopAttack() {
 		if (!this.getVictim().defend(this))
@@ -1243,7 +1278,6 @@ public class Unit {
 	 * 			the victim to consider
 	 * @return returns true: in this iteration of the game, any unit (including null) 
 	 * 			is a valid victim.
-	 * 
 	 *		| result == true
 	 */
 	boolean isValidVictim(Unit victim) {
@@ -1285,8 +1319,8 @@ public class Unit {
 	 *  
 	 * @param  remaining attack time
 	 *         The remaining attack time to check.
-	 * @return 
-	 *       | result == 
+	 * @return returns true is the remain attack time is a valid time.
+	 *       | (remainingAttackTime >= 0 && remainingAttackTime <= attackTime)
 	*/
 	static boolean isValidRemainingAttackTime(double remainingAttackTime) {
 		return (remainingAttackTime >= 0 && remainingAttackTime <= attackTime);
@@ -1326,7 +1360,6 @@ public class Unit {
 	 *		    | 	then if (!this.block(attacker))
 	 *			|  		then return false;
 	 *			| return true;
-	 * @throws ModelException
 	 */
 	boolean defend(Unit attacker) {
 		if (!this.dodge(attacker)) {
@@ -1350,7 +1383,6 @@ public class Unit {
 	 * 			|  			&& return true
 	 * 			| else
 	 * 			|	return false
-	 * @throws ModelException
 	 */
 	boolean dodge(Unit attacker) {
 		double chance = 0.20
@@ -1390,7 +1422,6 @@ public class Unit {
 	 * 			|  	then return true
 	 * 			| else
 	 * 			|	return false
-	 * @throws ModelException
 	 */
 	boolean block(Unit attacker) {
 		double chance = 0.25
@@ -1440,9 +1471,15 @@ public class Unit {
 
 	/**
 	 * Method that initiates the unit is resting.
-	 * @throws ModelException 
 	 * 
 	 * @post | new.getActivity == Activity.RESTING
+	 * 
+	 * @throws ModelException 
+	 * 			the unit is executing another activity
+	 * 		|	(this.getActivity() == Activity.ATTACKING
+			|	|| this.getActivity() == Activity.MOVING
+			|	|| this.getActivity() == Activity.SPRINTING
+			|	|| this.getActivity() == Activity.DEFENDING)
 	 */
 	public void rest() throws ModelException {
 		if (this.getActivity() != Activity.DEFENDING
@@ -1459,6 +1496,8 @@ public class Unit {
 	 * @param DeltaT
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
+	 * 			the unit is not in RESTING-state
+	 * 		|	(this.getActivity() != Activity.RESTING)
 	*/
 	void resting(double DeltaT) throws ModelException {
 		if ((this.getActivity() != Activity.RESTING))
@@ -1578,6 +1617,8 @@ public class Unit {
 	 * @param deltaT
 	 * 			the time-interval used in advanceTime()
 	 * @throws ModelException
+	 * 			The Unit isn't executing default behavior
+	 * 		|	(! this.getDefaultBehavior())
 	*/
 	void doDefaultBehavior() throws ModelException {
 		if (!this.getDefaultBehavior())
@@ -1603,7 +1644,9 @@ public class Unit {
 	}
 	/**
 	 * Method that stops a Unit from executing default behaviour.
-	 * @throws ModelException 
+	 * @throws ModelException
+	 * 			The Unit isn't executing default behavior
+	 * 		|	(! this.getDefaultBehavior())
 	*/
 	void stopDefaultBehavior() throws ModelException {
 		this.setDefaultBehavior(false);
