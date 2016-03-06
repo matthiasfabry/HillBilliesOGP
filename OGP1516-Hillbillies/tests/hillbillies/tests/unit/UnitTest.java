@@ -401,7 +401,7 @@ public class UnitTest {
 	
 	@Test
 	public void attack_LegalCase() throws ModelException{
-		Unit victim = new Unit("Victim", new int[]{1, 1, 2}, 50, 24, 50, 50,
+		Unit victim = new Unit("Victim", new int[]{1, 1, 2}, 50, 25, 50, 50,
 				false);
 		legalUnit.attack(victim);
 		assertEquals(Activity.ATTACKING, legalUnit.getActivity());

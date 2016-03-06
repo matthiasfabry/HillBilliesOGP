@@ -43,6 +43,8 @@ import ogp.framework.util.ModelException;
  * @invar  The remaining attack time of each Unit must be a valid remaining attack time for any
  *         Unit.
  *       	| isValidRemainingAttackTime(getRemainingAttackTime())
+ * @invar  The destination cube of each Unit must be a valid destinatination cube for any Unit
+ * 			| isValidPosition(DestinationCube)
  *
  * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
@@ -666,10 +668,11 @@ public class Unit {
 
 	/**
 	 * Method that sets the current activity of the Unit.
+	 * 
 	 * @param 	activity
-	 * 			the activity the Unit is about to execute
+	 * 			the activity to set
 	 * @post	The Activity of this new Unit is equal to the given Activity. 
-	 * 			|this.activity == activity
+	 * 			| new.activity == activity
 	 */
 	@Raw
 	void setActivity(Activity activity) {
@@ -696,7 +699,9 @@ public class Unit {
 	 * @param deltaT
 	 * 			The time to advance the game time with
 	 * 
-	 * @post The unit will have carried through the activity it was doing
+	 * @post The unit will have carried through the activity it was doing, however
+	 * 			if the unit hasn't rested for the last three minutes, it tries to rest
+	 * 			instead.
 	 */
 	public void advanceTime(double deltaT) {
 		if (this.getTimeSinceLastRest() >= 180) {
@@ -799,10 +804,16 @@ public class Unit {
 			throw new ModelException("Already Moving");
 	}
 	/**
-	 * Method that seeks the right path for the Unit to move to its destination.
+	 * Method that seeks the path for the Unit to move to its destination.
 	 *
+	 * @effect The subsequent steps in the path to the destination will be
+	 * 			added to the unit's movement path
+	 * 		| pathExtension(step)
+	 * @post The unit's destination will be the last coordinate in the unit's
+	 * 			movement path
+	 * 		| new.getPath().getLast() == this.getDestination
 	 * @throws	ModelException
-	 * 				the unit has no destination
+	 * 			the unit has no destination
 	 * 		| this.getDestinationCube() == null) 
 	 */
 	void findPath() throws ModelException {
@@ -852,10 +863,18 @@ public class Unit {
 	 * movement path of the unit
 	 * 
 	 * @param x
+	 * 			the x component of the coordinate
 	 * @param y
+	 * 			the y component of the coordinate
 	 * @param z
+	 * 			the z component of the coordinate
+	 * @effect	The coordinate will be added to the unit's movement path
+	 * 		| addToPath(Coordinate(x,y,z))
+	 * @post The unit will have the given coordinate as the last coordinate
+	 * 			in its movement path
+	 * 		| new.getPath().getLast() == Coordinate(x,y,z)
 	 * @throws ModelException
-	 * 			the the given coordinates are no valid inworld position.
+	 * 			the the given coordinates are no valid in world position.
 	 * 		| (! this.isValidPosition(target))
 	 */
 	void pathExtension(int x, int y, int z) throws ModelException {
@@ -892,11 +911,11 @@ public class Unit {
 	/**
 	 * Method that indicates whether a Unit is able to sprint
 	 * 
-	 * return true if and only if the Unit is moving and has stamina that is greater than 0
-	 * 	|if this.getActivity() == Activity.MOVING && this.getStamina() > 0
-	 * 	| 	return true
-	 *	|else
-	 *	|	return false
+	 * @retunr return true if and only if the Unit is moving and has stamina that is greater than 0
+	 *	 	| if this.getActivity() == Activity.MOVING && this.getStamina() > 0
+	 *	 	| 	then result == true
+	 *		| else
+	 *		|	result == false
 	 */
 	boolean canSprint() {
 		return (this.getActivity() == Activity.MOVING && this.getStamina() > 0);
@@ -919,9 +938,9 @@ public class Unit {
 	 * 			(getAgility*getStrength/(2*getWeight))
 	 * 			modified by the target cube's relative position. Walking uphill
 	 * 			goes slower, walking downhill is faster.
-	 * 		| if (target.getZ - getPosition.getZ == -1)
+	 * 		| if (target.getZ - getPosition.getZ < 0)
 	 * 		| 	then result == 1.2*baseSpeed
-	 * 		| else if (target.getZ - getPosition.getZ == 1)
+	 * 		| else if (target.getZ - getPosition.getZ > 0)
 	 * 		| 	then result == 0.5*baseSpeed
 	 * 		| else
 	 * 		|	result == baseSpeed
@@ -965,10 +984,14 @@ public class Unit {
 
 	/**
 	 * Method that updates the current position of the Unit.
+	 * 
 	 * @param DeltaT
-	 * 			the time-interval used in advanceTime()
+	 * 			the time-interval to update the position with
+	 * @post The unit will have moved in the correct direction with the
+	 * 			appropriate distance
+	 * 		| new.getPosition == this.getPosition + this.getCurrentSpeed * DeltaT
 	 * @throws ModelException
-	 * 			the unit is not moving
+	 * 			the unit is not in a moving state
 	 * 		|	(this.getActivity() != Activity.MOVING && this.activity != Activity.SPRINTING)
 	*/
 	void updatePosition(double deltaT) throws ModelException {
@@ -1021,6 +1044,8 @@ public class Unit {
 	}
 	/**
 	 * Method that returns the remaining distance to reach the next target cube in the path.
+	 * 
+	 * @return this.getPath().get(1).difference(this.getPosition()).length()
 	 */
 	double remaininglegDistance() {
 		Coordinate vector = this.getPath().get(1)
@@ -1029,15 +1054,20 @@ public class Unit {
 	}
 	/**
 	 * Method that adds a next target to the movement path.
+	 * 
 	 * @param 	target
 	 * 			the coordinate that needs to be added to the path.
+	 * @post the unit will have the target as his last coordinate in his movement path
+	 * 		| new.getPath().getLast() == target
 	 */
 	void addToPath(Coordinate target) {
 		this.getPath().addLast(target);
 	}
 	/**
 	 * Method that clears the Unit's path.
+	 * 
 	 * @post the Units path is empty
+	 * 		| new.getPath().size() == 0;
 	 */
 	void clearPath() {
 		this.getPath().clear();
@@ -1045,12 +1075,16 @@ public class Unit {
 
 	/**
 	 * Method that sets the cube the Unit will move to.
+	 * 
 	 * @param	destinationCube
 	 * 			the cube the Unit will move to.
+	 * @post the unit will have the given cube as its destination cube
+	 * 		| new.getDestinationCube == destinationCube
 	 * @throws ModelException
 	 * 			The destination is not a valid Game position
 	 * 		| ! isValidPosition(destinationCube)
 	 */
+	@Raw
 	void setDestinationCube(Coordinate destinationCube) throws ModelException {
 		if (isValidPosition(destinationCube)) {
 			this.destinationCube = destinationCube;
@@ -1085,15 +1119,17 @@ public class Unit {
 	/**
 	 * Method that initiates a work task for a Unit.
 	 * 
-	 * @post | this.getActivity() == WORKING
-	 * @post | this.getRemainingWorkTime == this.workTime()
+	 * @post The unit will be in the working state 
+	 * 		| new.getActivity() == WORKING
+	 * @post The unit will have the worktime as its workting 
+	 *		| new.getRemainingWorkTime == this.workTime()
 	 * @throws ModelException
 	 * 			Unit is executing another activity
 	 * 		|	(this.getActivity() == Activity.MOVING
-				|| this.getActivity() == Activity.SPRINTING
-				|| this.getActivity() == Activity.WORKING
-				|| this.getActivity() == Activity.ATTACKING
-				|| this.getActivity() == Activity.DEFENDING)
+	 *		|	|| this.getActivity() == Activity.SPRINTING
+	 *		|	|| this.getActivity() == Activity.WORKING
+	 *		|	|| this.getActivity() == Activity.ATTACKING
+	 *		|	|| this.getActivity() == Activity.DEFENDING)
 	 */
 	public void work() throws ModelException {
 		if (this.getActivity() != Activity.MOVING
@@ -1131,7 +1167,8 @@ public class Unit {
 	/**
 	 * Method that stops a work task for a Unit
 	 * 
-	 * @post | this.setActivity(Activity.IDLE)
+	 * @post The unit will be idle 
+	 * 		| new.getActivity == IDLE
 	 */
 	void stopWork() {
 		this.setActivity(Activity.IDLE);
@@ -1151,7 +1188,7 @@ public class Unit {
 	 *  
 	 * @param  remaining work time
 	 *         The remaining work time to check.
-	 * @return true if the remaing work time is valid.
+	 * @return true if the remaining work time is between 0 and the maximum worktime
 	 *       | (remainingWorkTime <= this.workTime() && remainingWorkTime >= 0)
 	*/
 	boolean isValidRemainingWorkTime(double remainingWorkTime) {
@@ -1179,6 +1216,7 @@ public class Unit {
 
 	/**
 	 * Method that computes how long it takes for a unit to finish a work task.
+	 * 
 	 * @return 500.0 / this.getStrength()
 	 */
 	double workTime() {
@@ -1193,24 +1231,37 @@ public class Unit {
 
 	/**
 	 * Method that initiates an attack on another Unit
+	 * 
 	 * @param victim
 	 * 			The Unit to attack
+	 * @effect The attacking unit and to victim will face each other
+	 * 		| this.orientWith(victim)
+	 * @post The remaining attack time will be the time it takes to execute an attack
+	 * 		| new.getRemainingAttackTime == attackTime()
+	 * @post The attacking unit will be in the attacking state, while the defending unit
+	 * 			will be in the defending state
+	 * 		| new.getActivity == ATTACKING
+	 * 		| victim.getActivity == DEFENDING
 	 * @throws ModelException
-	 * 			no other unit in range
+	 * 			the target unit is too far
 	 * 		|	(attackVector.length() > Math.sqrt(2))
 	 * @throws ModelException
 	 * 		 	the unit is executing another activity
 	 * 		|	(this.getActivity() == Activity.RESTING
-			|	|| this.getActivity() == Activity.MOVING
-			|	|| this.getActivity() == Activity.SPRINTING
-			|	|| this.getActivity() == Activity.DEFENDING)
+	 *		|	|| this.getActivity() == Activity.MOVING
+	 *		|	|| this.getActivity() == Activity.SPRINTING
+	 *		|	|| this.getActivity() == Activity.DEFENDING)
 	 */
 	public void attack(Unit victim) throws ModelException {
 		if (this.getActivity() != Activity.RESTING
 				&& this.getActivity() != Activity.MOVING
 				&& this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.DEFENDING) {
-			this.setVictim(victim);
+			try {
+				this.setVictim(victim);
+			} catch (ModelException exc) {
+				// shouldn't happen
+			}
 			Coordinate attackVector = this.getVictim().getInWorldPosition()
 					.difference(this.getInWorldPosition());
 			if (attackVector.length() <= Math.sqrt(2)) {
@@ -1228,6 +1279,13 @@ public class Unit {
 	 * Method that simulates the attacking behavior of a unit
 	 * 
 	 * @param DeltaT
+	 *			The time to advance with
+	 * @effect The attack is stopped when the remaining attack time reaches 0
+	 * 		| if (this.getRemainingAttackTime - DeltaT < 0)
+	 * 		| 	then this.stopAttack()
+	 * @post The remaining attack time will be lowered by DeltaT, if able,
+	 * 			otherwise it will be set to 0, and the attack is stopped.
+	 * 		| new.getRemainingAttackTime == this.getRemainingAttackTime - DeltaT
 	 * @throws ModelException
 	 * 			the unit is not in ATTACKING-state
 	 * 		|	(this.getActivity() != Activity.ATTACKING)
@@ -1251,13 +1309,24 @@ public class Unit {
 	/**
 	 * Method that stops an attack of a Unit, inflicting damage 
 	 * when the victim doesn't successfully defend
-	 * 			
+	 * 
+	 * @effect The defending unit tries to defend against the attacking unit
+	 * 		| this.getVictim.defend(this)
+	 * @effect The attacking unit does damage if the defending unit doesn't
+	 * 			successfully defend
+	 * 		| if (!this.getVictim().defend(this))
+	 *		| 	then this.doesDamage();
+	 * @post Both the attacker and the defender will be in the Idle state
+	 * 		| this.getVictim.getActivity == IDLE
+	 * 		| new.getActivity == IDLE	
+	 * @post the attacking unit won't have a victim anymore
+	 * 		| new.getVictim == null	
 	 */
 	void stopAttack() {
 		if (!this.getVictim().defend(this))
-			this.doesDamage(this.getVictim());
+			this.doesDamage();
 		this.setActivity(Activity.IDLE);
-		victim.setActivity(Activity.IDLE);
+		this.getVictim().setActivity(Activity.IDLE);
 		try {
 			this.setVictim(null);
 		} catch (ModelException e) {
@@ -1266,7 +1335,7 @@ public class Unit {
 	}
 
 	/**
-	 * Method that gets the attacked Unit.
+	 * Method that returns the attacked Unit.
 	 */
 	@Basic
 	public Unit getVictim() {
@@ -1274,6 +1343,7 @@ public class Unit {
 	}
 	/**
 	 * Method that determines whether the victim is a valid victim for a unit
+	 * 
 	 * @param victim
 	 * 			the victim to consider
 	 * @return returns true: in this iteration of the game, any unit (including null) 
@@ -1356,10 +1426,10 @@ public class Unit {
 	 * @param attacker
 	 * 			The Unit that attacks this Unit
 	 * @return Returns true when the Unit defends successfully, false when otherwise
-	 * 			| if (! this.dodge(attacker))
-	 *		    | 	then if (!this.block(attacker))
-	 *			|  		then return false;
-	 *			| return true;
+	 * 		| if (! this.dodge(attacker))
+	 *	    | 	then if (!this.block(attacker))
+	 *		|  		then return false;
+	 *		| return true;
 	 */
 	boolean defend(Unit attacker) {
 		if (!this.dodge(attacker)) {
@@ -1439,15 +1509,17 @@ public class Unit {
 	 * @post The victim's hitpoints are lowered with the attacker's strength / 10 
 	 * 		| new.victim.getHitpoints = victim.getHitpoints - this.getStrength() / 10
 	 */
-	void doesDamage(Unit victim) {
-		victim.setHitpoints(victim.getHitpoints() - this.getStrength() / 10);
+	void doesDamage() {
+		this.getVictim().setHitpoints(this.getVictim().getHitpoints() - this.getStrength() / 10);
 	}
 
 	/**
 	 * Method that orients the attacking unit with the defending unit
+	 * 
 	 * @param defender
 	 * 			The unit that this unit is attacking
 	 * @post the Units will face each other
+	 * 		| new.getOrientation == new.defender.getOrientation + Math.PI
 	 */
 	void orientWith(Unit defender) {
 		this.setOrientation(
@@ -1472,8 +1544,10 @@ public class Unit {
 	/**
 	 * Method that initiates the unit is resting.
 	 * 
-	 * @post | new.getActivity == Activity.RESTING
-	 * 
+	 * @post The unit will be in the Resting state
+	 * 		| new.getActivity == Activity.RESTING
+	 * @post the time the unit is resting will be 0
+	 * 		| new.getTimeResting == 0
 	 * @throws ModelException 
 	 * 			the unit is executing another activity
 	 * 		|	(this.getActivity() == Activity.ATTACKING
@@ -1493,8 +1567,19 @@ public class Unit {
 	}
 	/**
 	 * Method that governs the resting process
+	 * 
 	 * @param DeltaT
 	 * 			the time-interval used in advanceTime()
+	 * @post The time since last rest will be set to 0
+	 * 		| new.getTimeSinceLastRest == 0
+	 * @post The unit will gain the appropriate amount of hitpoints, if he is resting
+	 * 			for at least the time it takes to gain one hit point, if able,
+	 * 			then it will gain the appropriate amount of stamina, if he is resting
+	 * 			for at least the time it takes to gain one hit point, if able
+	 * 		| new.getHitpoints == this.getHitpoints + (this.getToughness() / 40) * DeltaT
+	 * 		| OR new.getStamina == this.getStamina() + (this.getToughness() * DeltaT) / 20
+	 * @effect If the unit can't gain any hitpoints or stamina, the unit stops resting
+	 * 		| this.stop resting
 	 * @throws ModelException
 	 * 			the unit is not in RESTING-state
 	 * 		|	(this.getActivity() != Activity.RESTING)
@@ -1534,7 +1619,10 @@ public class Unit {
 	/**
 	 * Method that stops a unit from resting.
 	 * 
-	 * @post | this.setActivity(Activity.IDLE)
+	 * @post The unit will be in the Idle state 
+	 * 		| this.setActivity(Activity.IDLE)
+	 * @post The unit's time since last rest will be reset to 0
+	 * 		| new.getTimeSinceLastRest == 0
 	 */
 	public void stopResting() {
 		this.setTimeSinceLastRest(0);
@@ -1553,7 +1641,7 @@ public class Unit {
 		return (20.0 / this.getToughness());
 	}
 	/**
-	 * Method that gets the time the Unit needs to rest.
+	 * Method that returns the time the Unit needs to rest.
 	 */
 	@Basic
 	public double getTimeResting() {
@@ -1614,12 +1702,16 @@ public class Unit {
 	}
 	/**
 	 * Method that governs a Unit during default behavior
-	 * @param deltaT
-	 * 			the time-interval used in advanceTime()
+	 * 
+	 * @effect If the unit is Idle, this method will choose an activity at random
+	 * 			and executes that activity for that unit
+	 * 		| this.work
+	 * 		| || this.rest
+	 * 		| || this.moveTo(random,random,random)
 	 * @throws ModelException
 	 * 			The Unit isn't executing default behavior
 	 * 		|	(! this.getDefaultBehavior())
-	*/
+	 */
 	void doDefaultBehavior() throws ModelException {
 		if (!this.getDefaultBehavior())
 			throw new ModelException("Unit isn't executing default behavior");
@@ -1643,13 +1735,19 @@ public class Unit {
 		}
 	}
 	/**
-	 * Method that stops a Unit from executing default behaviour.
-	 * @throws ModelException
-	 * 			The Unit isn't executing default behavior
-	 * 		|	(! this.getDefaultBehavior())
-	*/
-	void stopDefaultBehavior() throws ModelException {
-		this.setDefaultBehavior(false);
+	 * Method that stops a Unit from executing default behavior.
+	 * 
+	 * @effect sets the unit's default behavior state to false
+	 * 		| this.setDefaultBehavior(false)
+	 * @post the unit's unit's default behavior state will be false
+	 * 		| new.getDefaultBehavior == false
+	 */
+	void stopDefaultBehavior() {
+		try {
+			this.setDefaultBehavior(false);
+		} catch (ModelException e) {
+			// shouldn't happen
+		}
 	}
 
 	/**
@@ -1661,7 +1759,7 @@ public class Unit {
 		return this.defaultBehavior;
 	}
 	/**
-	 * flag registering whether a Unit is executing defaultbehaviour.
+	 * flag registering whether a Unit is executing default behavior.
 	*/
 	private boolean defaultBehavior = false;
 

@@ -1,13 +1,9 @@
 package hillbillies.model;
 
 import be.kuleuven.cs.som.annotate.*;
-import ogp.framework.util.ModelException;
 
 /**
  * A class that handles coordinates, built out of three components.
- * 
- * @invar The components of any Coordinate must be valid for the gameworld configuration. 
- * 			| unit.isValidPosition()
  * 
  * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
@@ -53,6 +49,7 @@ public class Coordinate {
 	}
 	/**
 	 * Method that normalizes the vector pointing to the current coordinate.
+	 * 
 	 * @return | this.Coordinate() / this.length()
 	 */
 	public Coordinate normalize(){
@@ -64,6 +61,7 @@ public class Coordinate {
 	}
 	/**
 	 * Method that computes the difference between 2 coordinates.
+	 * 
 	 * @param	other
 	 * 			the coordinate that will be subtracted from the
 	 * 			current coordinate.
@@ -79,6 +77,7 @@ public class Coordinate {
 	/**
 	 * Method that returns the unit vector in the direction of a given
 	 * coordinate, when starting from the current.
+	 * 
 	 * @param	goal
 	 * 			the coordinate to which the unit vector will point.
 	 * @return | goal.difference(this).normalize()
@@ -92,6 +91,7 @@ public class Coordinate {
 	/**
 	 * Method that multiplies all coordinate components with 
 	 * a given number
+	 * 
 	 * @param	p
 	 * 			the number by which all components will be multiplied.
 	 * @return |(this.Coordinate*p)
@@ -125,6 +125,7 @@ public class Coordinate {
 	}
 	/**
 	 * sets the x-value of the Coordinate to a given value.
+	 * 
 	 * @param	x
 	 * 			the new x-position
 	 * 	 * @post the new x-component is the given value
@@ -132,7 +133,7 @@ public class Coordinate {
 	 */
 	@Raw
 	public void setX(double x){
-		this.x = x*CUBE_LENGTH;
+		this.x = x;
 	}
 	/**
 	 * Return the y-value of the coordinate.
@@ -143,6 +144,7 @@ public class Coordinate {
 	}
 	/**
 	 * sets the y-value of the Coordinate to a given value.
+	 * 
 	 * @param	y
 	 * 			the new y-position
 	 * 	 * @post the new y-component is the given value
@@ -150,7 +152,7 @@ public class Coordinate {
 	 */
 	@Raw
 	public void setY(double y){
-		this.y = y*CUBE_LENGTH;
+		this.y = y;
 	}
 	/**
 	 * Return the z-value of the coordinate.
@@ -168,15 +170,12 @@ public class Coordinate {
 	 */
 	@Raw
 	public void setZ(double z){
-		this.z = z*CUBE_LENGTH;
+		this.z = z;
 	}
 	/**
 	 * Variables registering the x-, y- and z-component of the coordinate.
 	 */
 	private double x,y,z;
-	/**
-	 * Variable registering the cube length used ingame.
-	 */
-	static final double CUBE_LENGTH = 1.0;
 }
+
 
