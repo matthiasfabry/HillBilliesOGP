@@ -10,6 +10,6 @@ package hillbillies.model;
  * @version 1.0
  *
  */
-public class Boulder {
+public class Boulder extends GameObject {
 
 }

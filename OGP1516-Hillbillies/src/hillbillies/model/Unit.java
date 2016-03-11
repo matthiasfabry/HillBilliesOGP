@@ -125,11 +125,7 @@ public class Unit {
 	 */
 	@Basic
 	public Coordinate getInWorldPosition() {
-		Coordinate inworldposition = new Coordinate(0, 0, 0);
-		inworldposition.setX(this.getPosition().floor().getX());
-		inworldposition.setY(this.getPosition().floor().getY());
-		inworldposition.setZ(this.getPosition().floor().getZ());;
-		return inworldposition;
+		return this.getPosition().floor();
 	}
 	/**
 	 * Set the position of this Unit to the given position.

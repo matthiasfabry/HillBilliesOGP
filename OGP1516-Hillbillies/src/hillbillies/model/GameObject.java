@@ -6,10 +6,10 @@ package hillbillies.model;
 /**
  *
  *
- * @author Matthias Fabry & Lukas Van Riel
+ * @author Matthias Fabry
  * @version 1.0
  *
  */
-public class Log extends GameObject {
+public abstract class GameObject {
 
 }
