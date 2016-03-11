@@ -11,5 +11,11 @@ package hillbillies.model;
  *
  */
 public class World {
-
+	
+	// Constructor //
+	
+	public World(int x, int y, int z){
+		
+	}
+	
 }

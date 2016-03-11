@@ -5,7 +5,6 @@ package hillbillies.part1.facade;
 
 import hillbillies.model.Activity;
 import hillbillies.model.Unit;
-import hillbillies.part1.facade.IFacade;
 import ogp.framework.util.ModelException;
 
 /**

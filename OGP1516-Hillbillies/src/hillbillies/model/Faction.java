@@ -10,6 +10,6 @@ package hillbillies.model;
  * @version 1.0
  *
  */
-public enum Faction {
-	WIZARD, BARBARIAN, DRUID, RANGER, ELF;
+public class Faction {
+	
 }
