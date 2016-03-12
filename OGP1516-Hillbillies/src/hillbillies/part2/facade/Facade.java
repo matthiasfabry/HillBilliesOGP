@@ -5,9 +5,11 @@ package hillbillies.part2.facade;
 
 import java.util.Set;
 
+import hillbillies.model.Activity;
 import hillbillies.model.Boulder;
 import hillbillies.model.Faction;
 import hillbillies.model.Log;
+import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.part2.listener.TerrainChangeListener;
@@ -21,388 +23,521 @@ import ogp.framework.util.ModelException;
  *
  */
 public class Facade implements IFacade {
-	public Facade(){
-		
+
+	/**
+	 * Default constructor
+	 */
+	public Facade() {
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#createUnit(java.lang.String, int[], int, int, int, int, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#createUnit(java.lang.String, int[],
+	 * int, int, int, int, boolean)
 	 */
 	@Override
 	public Unit createUnit(String name, int[] initialPosition, int weight,
 			int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Unit(name, initialPosition, weight, agility, strength,
+				toughness, enableDefaultBehavior);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#getPosition(hillbillies.model.Unit)
 	 */
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		double[] result = {0, 0, 0};
+		result[0] = unit.getPosition().getX();
+		result[1] = unit.getPosition().getY();
+		result[2] = unit.getPosition().getZ();
+		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getCubeCoordinate(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getCubeCoordinate(hillbillies.model.
+	 * Unit)
 	 */
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] result = {0, 0, 0};
+		result[0] = (int) unit.getInWorldPosition().getX();
+		result[1] = (int) unit.getInWorldPosition().getY();
+		result[2] = (int) unit.getInWorldPosition().getZ();
+		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#getName(hillbillies.model.Unit)
 	 */
 	@Override
 	public String getName(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.getName();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#setName(hillbillies.model.Unit, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#setName(hillbillies.model.Unit,
+	 * java.lang.String)
 	 */
 	@Override
 	public void setName(Unit unit, String newName) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.setName(newName);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#getWeight(hillbillies.model.Unit)
 	 */
 	@Override
 	public int getWeight(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getWeight();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#setWeight(hillbillies.model.Unit, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#setWeight(hillbillies.model.Unit,
+	 * int)
 	 */
 	@Override
 	public void setWeight(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.setWeight(newValue);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#getStrength(hillbillies.model.Unit)
 	 */
 	@Override
 	public int getStrength(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getStrength();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#setStrength(hillbillies.model.Unit, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#setStrength(hillbillies.model.Unit,
+	 * int)
 	 */
 	@Override
 	public void setStrength(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.setStrength(newValue);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#getAgility(hillbillies.model.Unit)
 	 */
 	@Override
 	public int getAgility(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getAgility();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#setAgility(hillbillies.model.Unit, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#setAgility(hillbillies.model.Unit,
+	 * int)
 	 */
 	@Override
 	public void setAgility(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.setAgility(newValue);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getToughness(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getToughness(hillbillies.model.Unit)
 	 */
 	@Override
 	public int getToughness(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getToughness();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#setToughness(hillbillies.model.Unit, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#setToughness(hillbillies.model.Unit,
+	 * int)
 	 */
 	@Override
 	public void setToughness(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.setToughness(newValue);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getMaxHitPoints(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getMaxHitPoints(hillbillies.model.Unit)
 	 */
 	@Override
 	public int getMaxHitPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) unit.maxSecondaryAttribute();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getCurrentHitPoints(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getCurrentHitPoints(hillbillies.model.
+	 * Unit)
 	 */
 	@Override
 	public int getCurrentHitPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) Math.floor(unit.getHitpoints());
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getMaxStaminaPoints(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getMaxStaminaPoints(hillbillies.model.
+	 * Unit)
 	 */
 	@Override
 	public int getMaxStaminaPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) unit.maxSecondaryAttribute();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getCurrentStaminaPoints(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getCurrentStaminaPoints(hillbillies.
+	 * model.Unit)
 	 */
 	@Override
 	public int getCurrentStaminaPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) Math.floor(unit.getStamina());
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#advanceTime(hillbillies.model.Unit, double)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#advanceTime(hillbillies.model.Unit,
+	 * double)
 	 */
 	@Override
 	public void advanceTime(Unit unit, double dt) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.advanceTime(dt);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#moveToAdjacent(hillbillies.model.Unit, int, int, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#moveToAdjacent(hillbillies.model.Unit,
+	 * int, int, int)
 	 */
 	@Override
 	public void moveToAdjacent(Unit unit, int dx, int dy, int dz)
 			throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.moveToAdjacent(dx, dy, dz);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getCurrentSpeed(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getCurrentSpeed(hillbillies.model.Unit)
 	 */
 	@Override
 	public double getCurrentSpeed(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getCurrentSpeed();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#isMoving(hillbillies.model.Unit)
 	 */
 	@Override
 	public boolean isMoving(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return (unit.getActivity() == Activity.MOVING);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#startSprinting(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#startSprinting(hillbillies.model.Unit)
 	 */
 	@Override
 	public void startSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.startSprinting();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#stopSprinting(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#stopSprinting(hillbillies.model.Unit)
 	 */
 	@Override
 	public void stopSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.stopSprinting();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#isSprinting(hillbillies.model.Unit)
 	 */
 	@Override
 	public boolean isSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return (unit.getActivity() == Activity.SPRINTING);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#getOrientation(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#getOrientation(hillbillies.model.Unit)
 	 */
 	@Override
 	public double getOrientation(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getOrientation();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#moveTo(hillbillies.model.Unit, int[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#moveTo(hillbillies.model.Unit,
+	 * int[])
 	 */
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.moveTo(cube[0], cube[1], cube[2]);;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#work(hillbillies.model.Unit)
 	 */
 	@Override
 	public void work(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.work();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#isWorking(hillbillies.model.Unit)
 	 */
 	@Override
 	public boolean isWorking(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return (unit.getActivity() == Activity.WORKING);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#fight(hillbillies.model.Unit, hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part1.facade.IFacade#fight(hillbillies.model.Unit,
+	 * hillbillies.model.Unit)
 	 */
 	@Override
 	public void fight(Unit attacker, Unit defender) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		attacker.attack(defender);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#isAttacking(hillbillies.model.Unit)
 	 */
 	@Override
 	public boolean isAttacking(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return (unit.getActivity() == Activity.ATTACKING);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#rest(hillbillies.model.Unit)
 	 */
 	@Override
 	public void rest(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.rest();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part1.facade.IFacade#isResting(hillbillies.model.Unit)
 	 */
 	@Override
 	public boolean isResting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return (unit.getActivity() == Activity.RESTING);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#setDefaultBehaviorEnabled(hillbillies.model.Unit, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#setDefaultBehaviorEnabled(hillbillies.
+	 * model.Unit, boolean)
 	 */
 	@Override
 	public void setDefaultBehaviorEnabled(Unit unit, boolean value)
 			throws ModelException {
-		// TODO Auto-generated method stub
-		
+		unit.setDefaultBehavior(value);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part1.facade.IFacade#isDefaultBehaviorEnabled(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part1.facade.IFacade#isDefaultBehaviorEnabled(hillbillies.
+	 * model.Unit)
 	 */
 	@Override
 	public boolean isDefaultBehaviorEnabled(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getDefaultBehavior();
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#createWorld(int[][][], hillbillies.part2.listener.TerrainChangeListener)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part2.facade.IFacade#createWorld(int[][][],
+	 * hillbillies.part2.listener.TerrainChangeListener)
 	 */
 	@Override
 	public World createWorld(int[][][] terrainTypes,
 			TerrainChangeListener modelListener) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		Terrain[][][] features = new Terrain[terrainTypes.length][terrainTypes[0].length][terrainTypes[0][0].length];
+		for (int indexX = 0; indexX < features.length; indexX++)
+			for (int indexY = 0; indexY < features[indexX].length; indexY++)
+				for (int indexZ = 0; indexZ < features[indexX][indexY].length; indexZ++){
+					if (terrainTypes[indexX][indexY][indexZ] == 0)
+						features[indexX][indexY][indexZ] = Terrain.AIR;
+					else if (terrainTypes[indexX][indexY][indexZ] == 1)
+						features[indexX][indexY][indexZ] = Terrain.ROCK;
+					else if (terrainTypes[indexX][indexY][indexZ] == 2)
+						features[indexX][indexY][indexZ] = Terrain.TREE;
+					else if (terrainTypes[indexX][indexY][indexZ] == 3)
+						features[indexX][indexY][indexZ] = Terrain.WORKSHOP;
+					else
+						throw new ModelException("Terrain type not existent");
+				}
+		return new World(features, modelListener);
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getNbCubesX(hillbillies.model.World)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getNbCubesX(hillbillies.model.World)
 	 */
 	@Override
 	public int getNbCubesX(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return world.getDimension()[0];
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getNbCubesY(hillbillies.model.World)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getNbCubesY(hillbillies.model.World)
 	 */
 	@Override
 	public int getNbCubesY(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return world.getDimension()[1];
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getNbCubesZ(hillbillies.model.World)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getNbCubesZ(hillbillies.model.World)
 	 */
 	@Override
 	public int getNbCubesZ(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return world.getDimension()[2];
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#advanceTime(hillbillies.model.World, double)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#advanceTime(hillbillies.model.World,
+	 * double)
 	 */
 	@Override
 	public void advanceTime(World world, double dt) throws ModelException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getCubeType(hillbillies.model.World, int, int, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getCubeType(hillbillies.model.World,
+	 * int, int, int)
 	 */
 	@Override
 	public int getCubeType(World world, int x, int y, int z)
 			throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		Terrain theTerrain = world.getMap()[x][y][z].getTerrain();
+		if (theTerrain == Terrain.AIR)
+			return 0;
+		else if (theTerrain == Terrain.WORKSHOP)
+			return 3;
+		else if (theTerrain == Terrain.ROCK)
+			return 1;
+		else if (theTerrain == Terrain.TREE)
+			return 2;
+		else
+			throw new ModelException("Terrain type not existent");
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#setCubeType(hillbillies.model.World, int, int, int, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#setCubeType(hillbillies.model.World,
+	 * int, int, int, int)
 	 */
 	@Override
 	public void setCubeType(World world, int x, int y, int z, int value)
 			throws ModelException {
-		// TODO Auto-generated method stub
-		
+		if (value == 0)
+			world.getMap()[x][y][z].setTerrain(Terrain.AIR);
+		else if (value == 1)
+			world.getMap()[x][y][z].setTerrain(Terrain.ROCK);
+		else if (value == 2)
+			world.getMap()[x][y][z].setTerrain(Terrain.TREE);
+		else if (value == 3)
+			world.getMap()[x][y][z].setTerrain(Terrain.WORKSHOP);
+		else
+			throw new ModelException("Terrain type not existent");
+
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#isSolidConnectedToBorder(hillbillies.model.World, int, int, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#isSolidConnectedToBorder(hillbillies.
+	 * model.World, int, int, int)
 	 */
 	@Override
 	public boolean isSolidConnectedToBorder(World world, int x, int y, int z)
@@ -411,8 +546,11 @@ public class Facade implements IFacade {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#spawnUnit(hillbillies.model.World, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part2.facade.IFacade#spawnUnit(hillbillies.model.World,
+	 * boolean)
 	 */
 	@Override
 	public Unit spawnUnit(World world, boolean enableDefaultBehavior)
@@ -421,16 +559,21 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#addUnit(hillbillies.model.Unit, hillbillies.model.World)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part2.facade.IFacade#addUnit(hillbillies.model.Unit,
+	 * hillbillies.model.World)
 	 */
 	@Override
 	public void addUnit(Unit unit, World world) throws ModelException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part2.facade.IFacade#getUnits(hillbillies.model.World)
 	 */
 	@Override
@@ -439,8 +582,11 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#isCarryingLog(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#isCarryingLog(hillbillies.model.Unit)
 	 */
 	@Override
 	public boolean isCarryingLog(Unit unit) throws ModelException {
@@ -448,8 +594,12 @@ public class Facade implements IFacade {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#isCarryingBoulder(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#isCarryingBoulder(hillbillies.model.
+	 * Unit)
 	 */
 	@Override
 	public boolean isCarryingBoulder(Unit unit) throws ModelException {
@@ -457,7 +607,9 @@ public class Facade implements IFacade {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part2.facade.IFacade#isAlive(hillbillies.model.Unit)
 	 */
 	@Override
@@ -466,8 +618,12 @@ public class Facade implements IFacade {
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getExperiencePoints(hillbillies.model.Unit)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getExperiencePoints(hillbillies.model.
+	 * Unit)
 	 */
 	@Override
 	public int getExperiencePoints(Unit unit) throws ModelException {
@@ -475,16 +631,21 @@ public class Facade implements IFacade {
 		return 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#workAt(hillbillies.model.Unit, int, int, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hillbillies.part2.facade.IFacade#workAt(hillbillies.model.Unit, int,
+	 * int, int)
 	 */
 	@Override
 	public void workAt(Unit unit, int x, int y, int z) throws ModelException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part2.facade.IFacade#getFaction(hillbillies.model.Unit)
 	 */
 	@Override
@@ -493,8 +654,12 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getUnitsOfFaction(hillbillies.model.Faction)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getUnitsOfFaction(hillbillies.model.
+	 * Faction)
 	 */
 	@Override
 	public Set<Unit> getUnitsOfFaction(Faction faction) throws ModelException {
@@ -502,8 +667,12 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getActiveFactions(hillbillies.model.World)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getActiveFactions(hillbillies.model.
+	 * World)
 	 */
 	@Override
 	public Set<Faction> getActiveFactions(World world) throws ModelException {
@@ -511,8 +680,11 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getPosition(hillbillies.model.Boulder)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getPosition(hillbillies.model.Boulder)
 	 */
 	@Override
 	public double[] getPosition(Boulder boulder) throws ModelException {
@@ -520,8 +692,11 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see hillbillies.part2.facade.IFacade#getBoulders(hillbillies.model.World)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hillbillies.part2.facade.IFacade#getBoulders(hillbillies.model.World)
 	 */
 	@Override
 	public Set<Boulder> getBoulders(World world) throws ModelException {
@@ -529,7 +704,9 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part2.facade.IFacade#getPosition(hillbillies.model.Log)
 	 */
 	@Override
@@ -538,7 +715,9 @@ public class Facade implements IFacade {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see hillbillies.part2.facade.IFacade#getLogs(hillbillies.model.World)
 	 */
 	@Override
