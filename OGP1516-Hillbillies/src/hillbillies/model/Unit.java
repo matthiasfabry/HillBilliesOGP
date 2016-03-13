@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
 import be.kuleuven.cs.som.annotate.*;
 import ogp.framework.util.ModelException;
 
-
 /**
  *	A class describing the Hillbillie Unit
  *
  *
- *
+ * @invar  Each Unit can have its Faction as Faction.
+*       	| canHaveAsFaction(this.getFaction())
  * @invar The Coordinate must be valid for the game world configuration. 
  * 			| isValidPosition(getPosition())
  * @invar The Weight of each Unit must be a valid Weight for any Unit. 
@@ -107,8 +107,42 @@ public class Unit {
 		this.setHitpoints(this.maxSecondaryAttribute());
 		this.setActivity(Activity.IDLE);
 		this.setDefaultBehavior(enableDefaultBehavior);
-
+		this.faction = this.getWorld().getFactiontoJoin();
 	}
+
+	// World //
+
+	/** TO BE ADDED TO CLASS HEADING
+	 * @invar  Each Unit can have its World as World.
+	 *       | canHaveAsWorld(this.getWorld())
+	 */
+
+	/**
+	 * Return the World of this Unit.
+	 */
+	@Basic
+	@Raw
+	@Immutable
+	public World getWorld() {
+		return this.world;
+	}
+	/**
+	 * Check whether this Unit can have the given World as its World.
+	 *  
+	 * @param  world
+	 *         The World to check.
+	 * @return 
+	 *       | result == (world != null)
+	*/
+	@Raw
+	public boolean canHaveAsWorld(World world) {
+		return (world != null);
+	}
+
+	/**
+	 * Variable registering the World of this Unit.
+	 */
+	private final World world;
 
 	// Position (Defensive) //
 
@@ -189,7 +223,52 @@ public class Unit {
 	 * Symbolic constant registering the length of a cube
 	 */
 	public static final double CUBE_LENGTH = 1.0;
-	
+
+	// Faction //
+
+	/**
+	 * Initialize this new Unit with given Faction.
+	 * 
+	 * @param  faction
+	 *         The Faction for this new Unit.
+	 * @post   The Faction of this new Unit is equal to the given
+	 *         Faction.
+	 *       | new.getFaction() == faction
+	 * @throws ModelException
+	 *         This new Unit cannot have the given Faction as its Faction.
+	 *       | ! canHaveAsFaction(this.getFaction())
+	 */
+	public Unit(Faction faction) throws ModelException {
+		if (!canHaveAsFaction(faction))
+			throw new ModelException();
+		this.faction = faction;
+	}
+	/**
+	 * Return the Faction of this Unit.
+	 */
+	@Basic
+	@Raw
+	@Immutable
+	public Faction getFaction() {
+		return this.faction;
+	}
+	/**
+	 * Check whether this Unit can have the given Faction as its Faction.
+	 *  
+	 * @param  faction
+	 *         The Faction to check.
+	 * @return 
+	 *       | result == 
+	*/
+	@Raw
+	public boolean canHaveAsFaction(Faction faction) {
+		return false;
+	}
+	/**
+	 * Variable registering the Faction of this Unit.
+	 */
+	private final Faction faction;
+
 	// Primary Attributes (Total) //
 
 	/**
@@ -214,7 +293,7 @@ public class Unit {
 	 *		| 		then result == 25
 	 *		| 	else
 	 *		| 		result == 100
-	 */	
+	 */
 	public static int nearestValidInitialAttribute(int attribute) {
 		if (attribute < 25)
 			return 25;
@@ -677,7 +756,7 @@ public class Unit {
 	/**
 	 * Method returns the current activity of the Unit.
 	 */
-	@Basic 
+	@Basic
 	public Activity getActivity() {
 		return this.activity;
 	}
@@ -1005,8 +1084,8 @@ public class Unit {
 				Coordinate start = this.getPath().get(0);
 				Coordinate target = this.getPath().get(1);
 				Coordinate direction = start.directionVector(target);
-				Coordinate displacement = direction
-						.scalarMult((this.getCurrentSpeed() * deltaT)/CUBE_LENGTH);
+				Coordinate displacement = direction.scalarMult(
+						(this.getCurrentSpeed() * deltaT) / CUBE_LENGTH);
 				if (displacement.length() >= this.remaininglegDistance()) {
 					try {
 						this.setPosition(target);
@@ -1109,7 +1188,7 @@ public class Unit {
 	 * Linked list that keeps the Path the Unit is about to walk.
 	 */
 	private LinkedList<Coordinate> path = new LinkedList<>();
-	
+
 	// Working (defensive) //
 
 	/**
@@ -1506,7 +1585,8 @@ public class Unit {
 	 * 		| new.victim.getHitpoints = victim.getHitpoints - this.getStrength() / 10
 	 */
 	void doesDamage() {
-		this.getVictim().setHitpoints(this.getVictim().getHitpoints() - this.getStrength() / 10);
+		this.getVictim().setHitpoints(
+				this.getVictim().getHitpoints() - this.getStrength() / 10);
 	}
 
 	/**
@@ -1681,10 +1761,10 @@ public class Unit {
 	 * 			The flag to set the unit's default behavior state to
 	 * @post | new.activeDefaultBehaviour == flag
 	 * 
-  	 * @throws ModelException
-     * 			the unit isn't Idle and wants to engage in
-     * 			default behavior
-     * 		 | this.getActivity != Idle
+	 * @throws ModelException
+	 * 			the unit isn't Idle and wants to engage in
+	 * 			default behavior
+	 * 		 | this.getActivity != Idle
 	 */
 	public void setDefaultBehavior(boolean flag) throws ModelException {
 		if (flag) {
@@ -1692,8 +1772,7 @@ public class Unit {
 				this.defaultBehavior = true;
 			} else
 				throw new ModelException("Unit isn't Idle!");
-		}
-		else
+		} else
 			this.defaultBehavior = false;
 	}
 	/**

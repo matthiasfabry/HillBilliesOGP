@@ -13,6 +13,7 @@ import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.part2.listener.TerrainChangeListener;
+import hillbillies.util.*;
 import ogp.framework.util.ModelException;
 
 /**
@@ -425,7 +426,7 @@ public class Facade implements IFacade {
 		Terrain[][][] features = new Terrain[terrainTypes.length][terrainTypes[0].length][terrainTypes[0][0].length];
 		for (int indexX = 0; indexX < features.length; indexX++)
 			for (int indexY = 0; indexY < features[indexX].length; indexY++)
-				for (int indexZ = 0; indexZ < features[indexX][indexY].length; indexZ++){
+				for (int indexZ = 0; indexZ < features[indexX][indexY].length; indexZ++) {
 					if (terrainTypes[indexX][indexY][indexZ] == 0)
 						features[indexX][indexY][indexZ] = Terrain.AIR;
 					else if (terrainTypes[indexX][indexY][indexZ] == 1)
@@ -542,8 +543,18 @@ public class Facade implements IFacade {
 	@Override
 	public boolean isSolidConnectedToBorder(World world, int x, int y, int z)
 			throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		ConnectedToBorder algorithm = new ConnectedToBorder(
+				world.getDimension()[0], world.getDimension()[1],
+				world.getDimension()[2]);
+		for (int indexX = 0; indexX < world.getMap().length; indexX++){
+			for (int indexY = 0; indexY < world.getMap()[indexX].length; indexY++){
+				for (int indexZ = 0; indexZ < world.getMap()[indexX][indexY].length; indexZ++){
+					if (world.getMap()[indexX][indexY][indexZ].getTerrain().isPassable())
+						algorithm.changeSolidToPassable(indexX, indexY, indexZ);
+				}
+			}
+		}		
+		return algorithm.isSolidConnectedToBorder(x, y, z);
 	}
 
 	/*
@@ -578,8 +589,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public Set<Unit> getUnits(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getUnitSet();
 	}
 
 	/*
@@ -614,8 +624,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public boolean isAlive(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getHitpoints() > 0;
 	}
 
 	/*
@@ -688,8 +697,11 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public double[] getPosition(Boulder boulder) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		double[] result = {0,0,0};
+		result[0] = boulder.getPosition().getX();
+		result[1] = boulder.getPosition().getY();
+		result[2] = boulder.getPosition().getZ();
+		return result;
 	}
 
 	/*
@@ -700,8 +712,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public Set<Boulder> getBoulders(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getBoulderSet();
 	}
 
 	/*
@@ -711,8 +722,11 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public double[] getPosition(Log log) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		double[] result = {0,0,0};
+		result[0] = log.getPosition().getX();
+		result[1] = log.getPosition().getY();
+		result[2] = log.getPosition().getZ();
+		return result;
 	}
 
 	/*
@@ -722,8 +736,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public Set<Log> getLogs(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getLogSet();
 	}
 
 }

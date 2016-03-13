@@ -13,11 +13,11 @@ package hillbillies.model;
 public enum Terrain {
 	TREE, ROCK, AIR, WORKSHOP;
 	
-	boolean isPassable(){
+	public boolean isPassable(){
 		return (this == AIR || this == WORKSHOP);
 	}
 	
-	boolean isImpassable(){
+	public boolean isImpassable(){
 		return (this == TREE || this == ROCK);
 	}
 }

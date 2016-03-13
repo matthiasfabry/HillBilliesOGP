@@ -3,6 +3,8 @@
  */
 package hillbillies.model;
 
+import ogp.framework.util.ModelException;
+
 /**
  *
  *
@@ -11,5 +13,8 @@ package hillbillies.model;
  *
  */
 public class Log extends GameObject {
-
+	
+	public Log(int x, int y, int z, World world) throws ModelException{
+		super(x, y, z, world);
+	}
 }

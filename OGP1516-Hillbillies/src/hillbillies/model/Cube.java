@@ -10,23 +10,67 @@ import be.kuleuven.cs.som.annotate.*;
 import ogp.framework.util.ModelException;
 
 /**
- *
+ * A class holding all information of a game world cube
+ * 
+ * @invar  The Terrain of each Cube must be a valid Terrain for any
+ *         Cube.
+ *       | isValidTerrain(getTerrain())
+ * @invar  The set of Logs of each Cube must be a valid set of Logs for any
+ *         Cube.
+ *       | isValidLogs(getLogs())
+ * @invar  The set of Boulders of each Cube must be a valid set of Boulders for any
+ *         Cube.
+ *       | isValidBoulders(getBoulders())
+ * @invar  The Position of each Cube must be a valid Position for any
+ *         Cube.
+ *       | isValidPosition(getPosition())
+ *       
  *
  * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
  *
  */
+
 public class Cube {
 
-	/** TO BE ADDED TO CLASS HEADING
-	 * @invar  The Terrain of each Cube must be a valid Terrain for any
-	 *         Cube.
-	 *       | isValidTerrain(getTerrain())
+	/**
+	 * Default Constructor
 	 */
-
-	public Cube(){
-		this.terrain = Terrain.AIR;
+	public Cube(int x, int y, int z){
+		this.position = new Coordinate(x, y, z);
 	}
+	
+	// Position //
+	
+	/**
+	 * Return the Position of this Cube.
+	 */
+	@Basic @Raw
+	public Coordinate getPosition() {
+		return this.position;
+	}
+	
+	/**
+	 * Check whether the given Position is a valid Position for
+	 * any Cube.
+	 *  
+	 * @param  Position
+	 *         The Position to check.
+	 * @return 
+	 *       | result == 
+	*/
+	public static boolean isValidPosition(Coordinate position) {
+		return false;
+	}
+	
+
+	/**
+	 * Variable registering the Position of this Cube.
+	 */
+	private final Coordinate position;
+	
+	// Terrain //
+	
 	/**
 	 * Return the Terrain of this Cube.
 	 */
@@ -74,12 +118,8 @@ public class Cube {
 	 */
 	private Terrain terrain = Terrain.AIR;
 	
-	/** TO BE ADDED TO CLASS HEADING
-	 * @invar  The set of Logs of each Cube must be a valid set of Logs for any
-	 *         Cube.
-	 *       | isValidLogs(getLogs())
-	 */
-	
+	// Logs //
+
 	/**
 	 * Return the set of Logs of this Cube.
 	 */
@@ -127,11 +167,7 @@ public class Cube {
 	 */
 	private Set<Log> logs = new HashSet<>();
 	
-	/** TO BE ADDED TO CLASS HEADING
-	 * @invar  The set of Boulders of each Cube must be a valid set of Boulders for any
-	 *         Cube.
-	 *       | isValidBoulders(getBoulders())
-	 */
+	// Boulders //
 	
 	/**
 	 * Return the set of Boulders of this Cube.
