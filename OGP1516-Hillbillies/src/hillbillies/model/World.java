@@ -60,8 +60,47 @@ public class World {
 
 	}
 
+	// Terrain //
+
+	Terrain[] terrainAtAdjacentCubes(Coordinate coordinate) {
+		Terrain[] result = new Terrain[6];
+		result[0] = this.getTerrainAt(coordinate.sum(new Coordinate(1, 0, 0)));
+		result[1] = this
+				.getTerrainAt(coordinate.difference(new Coordinate(1, 0, 0)));
+		result[2] = this.getTerrainAt(coordinate.sum(new Coordinate(0, 1, 0)));
+		result[3] = this
+				.getTerrainAt(coordinate.difference(new Coordinate(0, 1, 0)));
+		result[4] = this.getTerrainAt(coordinate.sum(new Coordinate(0, 0, 1)));
+		result[5] = this
+				.getTerrainAt(coordinate.difference(new Coordinate(0, 0, 1)));
+		return result;
+	}
+
+	Terrain getTerrainAt(Coordinate coordinate) {
+		return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
+				.floor().getY()][(int) coordinate.floor().getZ()].getTerrain();
+	}
+
+	void caveIn(Coordinate coordinate) throws ModelException {
+		Terrain oldTerrain = this.getMap()[(int) coordinate.getX()][(int) coordinate.getY()][(int) coordinate.getZ()].getTerrain();
+
+		this.getMap()[(int) coordinate.getX()][(int) coordinate.getY()][(int) coordinate.getZ()].setTerrain(Terrain.AIR);
+		double random = Math.random();
+		if (random < 0.25){
+			if (oldTerrain == Terrain.TREE)
+				try {
+					this.addGameObject(new Log(coordinate, this));
+				} catch (ModelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+		}
+			
+	}
+
 	// Map //
-	
+
 	/**
 	 * Check whether the given position is a valid position for
 	 * any world.
@@ -72,8 +111,8 @@ public class World {
 	 *       | else
 	 *       | 		return False
 	*/
-	 boolean isValidPosition(Coordinate coordinate) {
-		if (! (coordinate.getX() >= 0
+	boolean isValidPosition(Coordinate coordinate) {
+		if (!(coordinate.getX() >= 0
 				&& coordinate.getX() <= this.getDimension()[0]
 				&& coordinate.getY() >= 0
 				&& coordinate.getY() <= this.getDimension()[1]
@@ -85,29 +124,13 @@ public class World {
 		else {
 			if (coordinate.getZ() == 0)
 				return true;
-			for (Terrain cube : this.terrainAtAdjacentCubes(coordinate)){
+			for (Terrain cube : this.terrainAtAdjacentCubes(coordinate)) {
 				if (cube.isImpassable())
 					return true;
 			}
 			return false;
 		}
-		
-	}
-	
-	Terrain[] terrainAtAdjacentCubes(Coordinate coordinate){
-		Terrain[] result = new Terrain[6];
-		result[0] = this.getTerrainAt(coordinate.sum(new Coordinate(1,0,0)));
-		result[1] = this.getTerrainAt(coordinate.difference(new Coordinate(1,0,0)));
-		result[2] = this.getTerrainAt(coordinate.sum(new Coordinate(0,1,0)));
-		result[3] = this.getTerrainAt(coordinate.difference(new Coordinate(0,1,0)));
-		result[4] = this.getTerrainAt(coordinate.sum(new Coordinate(0,0,1)));	
-		result[5] = this.getTerrainAt(coordinate.difference(new Coordinate(0,0,1)));
-		return result;
-	}
 
-	Terrain getTerrainAt(Coordinate coordinate) {
-		return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
-				.floor().getY()][(int) coordinate.floor().getZ()].getTerrain();
 	}
 
 	/**
@@ -285,7 +308,7 @@ public class World {
 			box[1] = decider.nextInt(this.getDimension()[1]);
 			box[2] = decider.nextInt(this.getDimension()[2]);
 			target = new Coordinate(box[0], box[1], box[2]);
-		} while (! isValidPosition(target));
+		} while (!isValidPosition(target));
 		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
 				toughness, enableDefaultBehavior, this);
 		return theNewUnit;

@@ -32,15 +32,15 @@ import ogp.framework.util.ModelException;
  */
 
 public class Cube {
-
+	
+	// Constructor //
+	
 	/**
 	 * Default Constructor
 	 */
 	public Cube(){
 		
 	}
-	
-
 	
 	// Terrain //
 	

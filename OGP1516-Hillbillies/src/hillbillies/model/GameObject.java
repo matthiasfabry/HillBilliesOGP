@@ -36,11 +36,12 @@ public abstract class GameObject {
 	 *         the given World.
 	 *       | this.setWorld(world)
 	 */
-	public GameObject(int x, int y, int z, World world) throws ModelException {
-		this.setWorld(world);
+	public GameObject(Coordinate coordinate, World world) throws ModelException {
+		this.world = world;
 		Random decider = new Random();
 		int weight = decider.nextInt(41)+10;
 		this.weight = weight;
+		this.setPosition(coordinate);
 	}
 
 	/**
@@ -66,49 +67,11 @@ public abstract class GameObject {
 	}
 
 	/**
-	 * Set the World of this GameObject to the given World.
-	 * 
-	 * @param  world
-	 *         The new World for this GameObject.
-	 * @post   The World of this new GameObject is equal to
-	 *         the given World.
-	 *       | new.getWorld() == world
-	 * @throws ModelException
-	 *         The given World is not a valid World for any
-	 *         GameObject.
-	 *       | ! isValidWorld(getWorld())
-	 */
-	@Raw
-	public void setWorld(World world) throws ModelException {
-		if (!isValidWorld(world))
-			throw new ModelException();
-		this.world = world;
-	}
-
-	/**
 	 * Variable registering the World of this GameObject.
 	 */
-	private World world;
+	private final World world;
 	
 	// Weight //
-
-	/**
-	 * Initialize this new GameObject with given weight.
-	 * 
-	 * @param  weight
-	 *         The weight for this new GameObject.
-	 * @post   The weight of this new GameObject is equal to the given
-	 *         weight.
-	 *       | new.getWeight() == weight
-	 * @throws ModelException
-	 *         This new GameObject cannot have the given weight as its weight.
-	 *       | ! canHaveAsWeight(this.getWeight())
-	 */
-	public GameObject(int weight) throws ModelException {
-		if (! canHaveAsWeight(weight))
-			throw new ModelException();
-		this.weight = weight;
-	}
 	
 	/**
 	 * Return the weight of this GameObject.

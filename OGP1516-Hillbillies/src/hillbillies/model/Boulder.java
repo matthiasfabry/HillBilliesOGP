@@ -14,7 +14,7 @@ import ogp.framework.util.ModelException;
  */
 public class Boulder extends GameObject {
 	
-	public Boulder(int x, int y, int z, World world) throws ModelException{
-		super(x,y,z, world);
+	public Boulder(Coordinate coordinate, World world) throws ModelException{
+		super(coordinate, world);
 	}
 }
