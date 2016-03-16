@@ -4,6 +4,7 @@
 package hillbillies.model;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.*;
@@ -15,17 +16,17 @@ import ogp.framework.util.ModelException;
  *
  *	
  * @invar  Each World can have its Dimension as Dimension.
- *       | canHaveAsDimension(this.getDimension())
- * @invar  Each World can have its Dimension as Dimension.
- *       | canHaveAsDimension(this.getDimension())
- * @invar  The set of Logs of each World must be a valid set of Logs for any
- *         World.
- *       | isValidLogSet(getLogSet())
- * @invar  The set of Boulders of each World must be a valid set of Boulders for any
- *         World.
- *       | isValidBoulderSet(getBoulderSet())
+ *        | canHaveAsDimension(this.getDimension())
+ * @invar  The set of Logs of each World must be a valid set of Logs for any World.
+ *        | isValidLogSet(getLogSet())
+ * @invar  The set of Boulders of each World must be a valid set of Boulders for any World.
+ *        | isValidBoulderSet(getBoulderSet())
  * @invar   Each World must have proper GameObjects.
  *        | hasProperGameObjects()
+ * @invar   Each World must have proper Factions.
+ *        | hasProperFactions()
+ * @invar   Each World must have proper Units.
+ *        | hasProperUnits()
  *
  *
  * @author Matthias Fabry & Lukas Van Riel
@@ -42,19 +43,30 @@ public class World {
 		this.map = new Cube[features.length][features[0].length][features[0][0].length];
 		this.dimension = new int[]{features.length, features[0].length,
 				features[0][0].length};
-		for (int indexX = 0; indexX < map.length; indexX++){
-			for (int indexY = 0; indexY < map[indexX].length; indexY++){
-				for (int indexZ = 0; indexZ < map[indexX][indexY].length; indexZ++){
-					this.getMap()[indexX][indexY][indexZ] = new Cube(indexX, indexY, indexZ);
-					this.getMap()[indexX][indexY][indexZ].
-						setTerrain(features[indexX][indexY][indexZ]);
+		for (int indexX = 0; indexX < map.length; indexX++) {
+			for (int indexY = 0; indexY < map[indexX].length; indexY++) {
+				for (int indexZ = 0; indexZ < map[indexX][indexY].length; indexZ++) {
+					this.getMap()[indexX][indexY][indexZ] = new Cube(indexX,
+							indexY, indexZ);
+					this.getMap()[indexX][indexY][indexZ]
+							.setTerrain(features[indexX][indexY][indexZ]);
 				}
 			}
 		}
 	}
 
+	// Time Control //
+
+	public void advanceTime(double deltaT) {
+
+	}
+
 	// Map //
-	
+
+	boolean isValidPosition(Coordinate coordinate) {
+		return true;
+	}
+
 	/**
 	 * Return the Dimension of this World.
 	 */
@@ -90,23 +102,258 @@ public class World {
 	}
 
 	private final Cube[][][] map;
-	
+
 	// Faction //
-	
-	Faction getFactiontoJoin(){
+
+	public Set<Faction> getFactionSet() {
+		return this.factions;
+	}
+
+	Faction getFactiontoJoin() {
 		return null;
 	}
-	
+
+	/**
+	 * Check whether this World has the given Faction as one of its
+	 * Factions.
+	 * 
+	 * @param  faction
+	 *         The Faction to check.
+	 */
+	@Basic
+	@Raw
+	public boolean hasAsFaction(@Raw Faction faction) {
+		return factions.contains(faction);
+	}
+
+	/**
+	 * Check whether this World can have the given Faction
+	 * as one of its Factions.
+	 * 
+	 * @param  faction
+	 *         The Faction to check.
+	 * @return True if and only if the given Faction is effective
+	 *         and that Faction is a valid Faction for a World.
+	 *       | result ==
+	 *       |   (faction != null) &&
+	 *       |   Faction.isValidWorld(this)
+	 */
+	@Raw
+	public boolean canHaveAsFaction(Faction faction) {
+		return (faction != null) && (faction.canHaveAsWorld(this));
+	}
+
+	/**
+	 * Check whether this World has proper Factions attached to it.
+	 * 
+	 * @return True if and only if this World can have each of the
+	 *         Factions attached to it as one of its Factions,
+	 *         and if each of these Factions references this World as
+	 *         the World to which they are attached.
+	 *       | for each faction in Faction:
+	 *       |   if (hasAsFaction(faction))
+	 *       |     then canHaveAsFaction(faction) &&
+	 *       |          (faction.getWorld() == this)
+	 */
+	public boolean hasProperFactions() {
+		for (Faction faction : factions) {
+			if (!canHaveAsFaction(faction))
+				return false;
+			if (faction.getWorld() != this)
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Return the number of Factions associated with this World.
+	 *
+	 * @return  The total number of Factions collected in this World.
+	 *        | result ==
+	 *        |   card({faction:Faction | hasAsFaction({faction)})
+	 */
+	public int getNbFactions() {
+		return factions.size();
+	}
+
+	/**
+	 * Add the given Faction to the set of Factions of this World.
+	 * 
+	 * @param  faction
+	 *         The Faction to be added.
+	 * @pre    The given Faction is effective and already references
+	 *         this World.
+	 *       | (faction != null) && (faction.getWorld() == this)
+	 * @post   This World has the given Faction as one of its Factions.
+	 *       | new.hasAsFaction(faction)
+	 */
+	public void addFaction(@Raw Faction faction) {
+		assert (faction != null) && (faction.getWorld() == this);
+		factions.add(faction);
+	}
+
+	/**
+	 * Remove the given Faction from the set of Factions of this World.
+	 * 
+	 * @param  faction
+	 *         The Faction to be removed.
+	 * @pre    This World has the given Faction as one of
+	 *         its Factions, and the given Faction does not
+	 *         reference any World.
+	 *       | this.hasAsFaction(faction) &&
+	 *       | (faction.getWorld() == null)
+	 * @post   This World no longer has the given Faction as
+	 *         one of its Factions.
+	 *       | ! new.hasAsFaction(faction)
+	 */
+	@Raw
+	public void removeFaction(Faction faction) {
+		assert this.hasAsFaction(faction) && (faction.getWorld() == null);
+		factions.remove(faction);
+	}
+
+	/**
+	 * Variable referencing a set collecting all the Factions
+	 * of this World.
+	 * 
+	 * @invar  The referenced set is effective.
+	 *       | factions != null
+	 * @invar  Each Faction registered in the referenced list is
+	 *         effective and not yet terminated.
+	 *       | for each faction in factions:
+	 *       |   ( (faction != null) &&
+	 *       |     (! faction.isTerminated()) )
+	 */
+	private final Set<Faction> factions = new HashSet<Faction>();
+
 	// Units //
 
+	public void spawnUnit() throws ModelException {
+		Random decider = new Random();
+		int strength = decider.nextInt(76) + 25;
+		int agility = decider.nextInt(76) + 25;
+		int toughness = decider.nextInt(76) + 25;
+		int weight = decider.nextInt(101-((strength+agility)/2))+(strength+agility)/2;
+		int[] box = {0,0,0};
+		Coordinate target = new Coordinate(box[0], box[1], box[2]);
+		do {
+			box[0] = decider.nextInt(this.getDimension()[0]);
+			box[1] = decider.nextInt(this.getDimension()[1]);
+			box[2] = decider.nextInt(this.getDimension()[2]);
+			target = new Coordinate(box[0], box[1], box[2]);
+		} while (! isValidPosition(target));
+		Unit theNewUnit = new Unit("Billie",box,  weight, agility,
+				strength, toughness,  true, this);
+		this.addUnit(theNewUnit);
+	}
+
+	/**
+	 * Check whether this World has the given Unit as one of its
+	 * Units.
+	 * 
+	 * @param  unit
+	 *         The Unit to check.
+	 */
+	@Basic
+	@Raw
+	public boolean hasAsUnit(@Raw Unit unit) {
+		return unitSet.contains(unit);
+	}
+
+	/**
+	 * Check whether this World can have the given Unit
+	 * as one of its Units.
+	 * 
+	 * @param  unit
+	 *         The Unit to check.
+	 * @return True if and only if the given Unit is effective
+	 *         and that Unit is a valid Unit for a World.
+	 *       | result ==
+	 *       |   (unit != null) &&
+	 *       |   Unit.isValidWorld(this)
+	 */
+	@Raw
+	public boolean canHaveAsUnit(Unit unit) {
+		return (unit != null) && (unit.canHaveAsWorld(this));
+	}
+
+	/**
+	 * Check whether this World has proper Units attached to it.
+	 * 
+	 * @return True if and only if this World can have each of the
+	 *         Units attached to it as one of its Units,
+	 *         and if each of these Units references this World as
+	 *         the World to which they are attached.
+	 *       | for each unit in Unit:
+	 *       |   if (hasAsUnit(unit))
+	 *       |     then canHaveAsUnit(unit) &&
+	 *       |          (unit.getWorld() == this)
+	 */
+	public boolean hasProperUnits() {
+		for (Unit unit : unitSet) {
+			if (!canHaveAsUnit(unit))
+				return false;
+			if (unit.getWorld() != this)
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Return the number of Units associated with this World.
+	 *
+	 * @return  The total number of Units collected in this World.
+	 *        | result ==
+	 *        |   card({unit:Unit | hasAsUnit({unit)})
+	 */
+	public int getNbUnits() {
+		return unitSet.size();
+	}
+
+	/**
+	 * Add the given Unit to the set of Units of this World.
+	 * 
+	 * @param  unit
+	 *         The Unit to be added.
+	 * @pre    The given Unit is effective and already references
+	 *         this World.
+	 *       | (unit != null) && (unit.getWorld() == this)
+	 * @post   This World has the given Unit as one of its Units.
+	 *       | new.hasAsUnit(unit)
+	 */
+	public void addUnit(@Raw Unit unit) {
+		assert (unit != null) && (unit.getWorld() == this);
+		unitSet.add(unit);
+	}
+
+	/**
+	 * Remove the given Unit from the set of Units of this World.
+	 * 
+	 * @param  unit
+	 *         The Unit to be removed.
+	 * @pre    This World has the given Unit as one of
+	 *         its Units, and the given Unit does not
+	 *         reference any World.
+	 *       | this.hasAsUnit(unit) &&
+	 *       | (unit.getWorld() == null)
+	 * @post   This World no longer has the given Unit as
+	 *         one of its Units.
+	 *       | ! new.hasAsUnit(unit)
+	 */
+	@Raw
+	public void removeUnit(Unit unit) {
+		assert this.hasAsUnit(unit) && (unit.getWorld() == null);
+		unitSet.remove(unit);
+	}
 	/**
 	 * Return the set of Units of this World.
 	 */
-	@Basic @Raw
+	@Basic
+	@Raw
 	public Set<Unit> getUnitSet() {
 		return this.unitSet;
 	}
-	
+
 	/**
 	 * Check whether the given set of Units is a valid set of Units for
 	 * any World.
@@ -119,33 +366,13 @@ public class World {
 	public static boolean isValidUnitSet(Set<Unit> unitSet) {
 		return false;
 	}
-	
-	/**
-	 * Set the set of Units of this World to the given set of Units.
-	 * 
-	 * @param  unitSet
-	 *         The new set of Units for this World.
-	 * @post   The set of Units of this new World is equal to
-	 *         the given set of Units.
-	 *       | new.getUnitSet() == unitSet
-	 * @throws ModelException
-	 *         The given set of Units is not a valid set of Units for any
-	 *         World.
-	 *       | ! isValidUnitSet(getUnitSet())
-	 */
-	@Raw
-	public void setUnitSet(Set<Unit> unitSet) 
-			throws ModelException {
-		if (! isValidUnitSet(unitSet))
-			throw new ModelException();
-		this.unitSet = unitSet;
-	}
-	
+
+
 	/**
 	 * Variable registering the set of Units of this World.
 	 */
-	private Set<Unit> unitSet;
-	
+	private final Set<Unit> unitSet = new HashSet<>();
+
 	// GameObjects //
 
 	/**
@@ -157,8 +384,7 @@ public class World {
 	 */
 	@Basic
 	@Raw
-	public boolean hasAsGameObject(
-			@Raw GameObject gameObject) {
+	public boolean hasAsGameObject(@Raw GameObject gameObject) {
 		return gameObjects.contains(gameObject);
 	}
 
@@ -175,10 +401,8 @@ public class World {
 	 *       |   GameObject.isValidWorld(this)
 	 */
 	@Raw
-	public boolean canHaveAsGameObject(
-			GameObject gameObject) {
-		return (gameObject != null)
-				&& (GameObject.isValidWorld(this));
+	public boolean canHaveAsGameObject(GameObject gameObject) {
+		return (gameObject != null) && (GameObject.isValidWorld(this));
 	}
 
 	/**
@@ -225,10 +449,8 @@ public class World {
 	 * @post   This World has the given GameObject as one of its GameObjects.
 	 *       | new.hasAsGameObject(gameObject)
 	 */
-	public void addGameObject(
-			@Raw GameObject gameObject) {
-		assert (gameObject != null)
-				&& (gameObject.getWorld() == this);
+	public void addGameObject(@Raw GameObject gameObject) {
+		assert (gameObject != null) && (gameObject.getWorld() == this);
 		gameObjects.add(gameObject);
 	}
 
@@ -247,8 +469,7 @@ public class World {
 	 *       | ! new.hasAsGameObject(gameObject)
 	 */
 	@Raw
-	public void removeGameObject(
-			GameObject gameObject) {
+	public void removeGameObject(GameObject gameObject) {
 		assert this.hasAsGameObject(gameObject)
 				&& (gameObject.getWorld() == null);
 		gameObjects.remove(gameObject);
@@ -266,8 +487,8 @@ public class World {
 	 *       |   ( (gameObject != null) &&
 	 *       |     (! gameObject.isTerminated()) )
 	 */
-	private final Set<GameObject> gameObjects = new HashSet<GameObject>();
-	
+	private final Set<GameObject> gameObjects = new HashSet<>();
+
 	// Logs //
 
 	/**
@@ -282,8 +503,7 @@ public class World {
 				logSet.add((Log) gameObject);
 		return logSet;
 	}
-	
-	
+
 	// Boulders //
 
 	/**
@@ -299,5 +519,5 @@ public class World {
 				boulderSet.add((Boulder) gameObject);
 		return boulderSet;
 	}
-	
-	}
+
+}

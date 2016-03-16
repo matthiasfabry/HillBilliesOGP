@@ -13,6 +13,8 @@ import be.kuleuven.cs.som.annotate.*;
  * 
  * @invar  Each Faction can have its World as World.
  *       | canHaveAsWorld(this.getWorld())
+ * @invar   Each Fction must have proper Units.
+ *        | hasProperUnits()
  *
  * @author Matthias Fabry
  * @version 1.0
@@ -56,24 +58,12 @@ public class Faction {
 	
 	// Units //
 	
-	/** TO BE ADDED TO THE CLASS INVARIANTS
-	 * @invar   Each Fction must have proper Units.
-	 *        | hasProperUnits()
-	 */
-
-	/**
-	 * Initialize this new Fction as a non-terminated Fction with 
-	 * no Units yet.
-	 * 
-	 * @post   This new Fction has no Units yet.
-	 *       | new.getNbUnits() == 0
-	 */
-	@Raw
-	public Faction() {
+	public Set<Unit> getUnitSet(){
+		return this.Units;
 	}
 
 	/**
-	 * Check whether this Fction has the given Unit as one of its
+	 * Check whether this Faction has the given Unit as one of its
 	 * Units.
 	 * 
 	 * @param  Unit
@@ -87,50 +77,50 @@ public class Faction {
 	}
 
 	/**
-	 * Check whether this Fction can have the given Unit
+	 * Check whether this Faction can have the given Unit
 	 * as one of its Units.
 	 * 
-	 * @param  Unit
+	 * @param  unit
 	 *         The Unit to check.
 	 * @return True if and only if the given Unit is effective
-	 *         and that Unit is a valid Unit for a Fction.
+	 *         and that unit is a valid Unit for a Faction.
 	 *       | result ==
-	 *       |   (Unit != null) &&
-	 *       |   Unit.isValidFaction(this)
+	 *       |   (unit != null) &&
+	 *       |   unit.isValidFaction(this)
 	 */
 	@Raw
 	public boolean canHaveAsUnit(
-			Unit Unit) {
-		return (Unit != null)
-				&& (Unit.isValidFaction(this));
+			Unit unit) {
+		return (unit != null)
+				&& (unit.canHaveAsFaction(this));
 	}
 
 	/**
-	 * Check whether this Fction has proper Units attached to it.
+	 * Check whether this Faction has proper Units attached to it.
 	 * 
-	 * @return True if and only if this Fction can have each of the
+	 * @return True if and only if this Faction can have each of the
 	 *         Units attached to it as one of its Units,
-	 *         and if each of these Units references this Fction as
-	 *         the Fction to which they are attached.
+	 *         and if each of these Units references this Faction as
+	 *         the Faction to which they are attached.
 	 *       | for each Unit in Unit:
 	 *       |   if (hasAsUnit(Unit))
 	 *       |     then canHaveAsUnit(Unit) &&
 	 *       |          (Unit.getFaction() == this)
 	 */
 	public boolean hasProperUnits() {
-		for (Unit Unit : Units) {
-			if (!canHaveAsUnit(Unit))
+		for (Unit unit : Units) {
+			if (!canHaveAsUnit(unit))
 				return false;
-			if (Unit.getFaction() != this)
+			if (unit.getFaction() != this)
 				return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Return the number of Units associated with this Fction.
+	 * Return the number of Units associated with this Faction.
 	 *
-	 * @return  The total number of Units collected in this Fction.
+	 * @return  The total number of Units collected in this Faction.
 	 *        | result ==
 	 *        |   card({Unit:Unit | hasAsUnit({Unit)})
 	 */
@@ -139,14 +129,14 @@ public class Faction {
 	}
 
 	/**
-	 * Add the given Unit to the set of Units of this Fction.
+	 * Add the given Unit to the set of Units of this Faction.
 	 * 
 	 * @param  Unit
 	 *         The Unit to be added.
 	 * @pre    The given Unit is effective and already references
-	 *         this Fction.
+	 *         this Faction.
 	 *       | (Unit != null) && (Unit.getFaction() == this)
-	 * @post   This Fction has the given Unit as one of its Units.
+	 * @post   This Faction has the given Unit as one of its Units.
 	 *       | new.hasAsUnit(Unit)
 	 */
 	public void addUnit(
@@ -157,16 +147,16 @@ public class Faction {
 	}
 
 	/**
-	 * Remove the given Unit from the set of Units of this Fction.
+	 * Remove the given Unit from the set of Units of this Faction.
 	 * 
 	 * @param  Unit
 	 *         The Unit to be removed.
-	 * @pre    This Fction has the given Unit as one of
+	 * @pre    This Faction has the given Unit as one of
 	 *         its Units, and the given Unit does not
-	 *         reference any Fction.
+	 *         reference any Faction.
 	 *       | this.hasAsUnit(Unit) &&
 	 *       | (Unit.getFaction() == null)
-	 * @post   This Fction no longer has the given Unit as
+	 * @post   This Faction no longer has the given Unit as
 	 *         one of its Units.
 	 *       | ! new.hasAsUnit(Unit)
 	 */

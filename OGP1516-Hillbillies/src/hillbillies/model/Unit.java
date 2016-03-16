@@ -12,7 +12,7 @@ import ogp.framework.util.ModelException;
  *	A class describing the Hillbillie Unit
  *
  *
- * @invar  Each Unit can have its Faction as Faction.
+ * @invar Each Unit can have its Faction as Faction.
 *       	| canHaveAsFaction(this.getFaction())
  * @invar The Coordinate must be valid for the game world configuration. 
  * 			| isValidPosition(getPosition())
@@ -31,20 +31,19 @@ import ogp.framework.util.ModelException;
  * @invar The Name of each Unit must be a valid Name for any Unit. 
  * 			| isValidName(getName())
  * @invar  The Orientation of each Unit must be a valid Orientation for any Unit.
- * *      	| isValidOrientation(getOrientation())
+ * 		   	| isValidOrientation(getOrientation())
  * @invar The position of each Unit must be a valid position for any Unit.
  *        	| isValidPosition(getPosition())
- * @invar  The remaining attack time of each Unit must be a valid remaining attack time for any
- *         Unit.
+ * @invar  The remaining attack time of each Unit must be a valid remaining attack time for any Unit.
  *       	| isValidRemainingAttackTime(getRemainingAttackTime())
- * @invar  The remaining work time of each Unit must be a valid remaining work time for any
- *         Unit.
+ * @invar  The remaining work time of each Unit must be a valid remaining work time for any Unit.
  *       	| isValidRemainingWorkTime(getRemainingWorkTime())
- * @invar  The remaining attack time of each Unit must be a valid remaining attack time for any
- *         Unit.
+ * @invar  The remaining attack time of each Unit must be a valid remaining attack time for any Unit.
  *       	| isValidRemainingAttackTime(getRemainingAttackTime())
  * @invar  The destination cube of each Unit must be a valid destinatination cube for any Unit
  * 			| isValidPosition(DestinationCube)
+ * @invar  Each Unit can have its World as World.
+ *          | canHaveAsWorld(this.getWorld())
  *
  * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
@@ -108,14 +107,44 @@ public class Unit {
 		this.setActivity(Activity.IDLE);
 		this.setDefaultBehavior(enableDefaultBehavior);
 		this.faction = this.getWorld().getFactiontoJoin();
+		this.world = null;
 	}
-
-	// World //
-
-	/** TO BE ADDED TO CLASS HEADING
-	 * @invar  Each Unit can have its World as World.
-	 *       | canHaveAsWorld(this.getWorld())
-	 */
+	
+	public Unit(String name, int[] position, int weight, int agility,
+			int strength, int toughness, boolean enableDefaultBehavior, World world)
+					throws ModelException {
+		if (isValidInitialAttribute(agility)) {
+			this.setAgility(agility);
+		} else
+			this.setAgility(nearestValidInitialAttribute(agility));
+		if (isValidInitialAttribute(strength)) {
+			this.setStrength(strength);
+		} else
+			this.setStrength(nearestValidInitialAttribute(strength));
+		if (isValidInitialAttribute(toughness)) {
+			this.setToughness(toughness);
+		} else
+			this.setToughness(nearestValidInitialAttribute(toughness));
+		if (this.isValidInitialWeight(weight)) {
+			this.setWeight(weight);
+		} else
+			this.setWeight(this.nearestValidInitialWeight(weight));
+		Coordinate newPosition = new Coordinate(position[0], position[1],
+				position[2]).sum(centerCube());
+		try {
+			this.setPosition(newPosition);
+		} catch (ModelException exc) {
+			throw new ModelException("Can't create a unit here");
+		}
+		this.setName(name);
+		this.setOrientation((float) (Math.PI / 2));
+		this.setStamina(this.maxSecondaryAttribute());
+		this.setHitpoints(this.maxSecondaryAttribute());
+		this.setActivity(Activity.IDLE);
+		this.setDefaultBehavior(enableDefaultBehavior);
+		this.faction = this.getWorld().getFactiontoJoin();
+		this.world = world;
+	}
 
 	/**
 	 * Return the World of this Unit.
@@ -138,7 +167,6 @@ public class Unit {
 	public boolean canHaveAsWorld(World world) {
 		return (world != null);
 	}
-
 	/**
 	 * Variable registering the World of this Unit.
 	 */
@@ -191,27 +219,19 @@ public class Unit {
 	 *       | else
 	 *       | 		return False
 	*/
-	static boolean isValidPosition(Coordinate coordinate) {
-		return (coordinate.getX() >= MIN_POSITION
-				&& coordinate.getX() <= MAX_POSITION
-				&& coordinate.getY() >= MIN_POSITION
-				&& coordinate.getY() <= MAX_POSITION
-				&& coordinate.getZ() >= MIN_POSITION
-				&& coordinate.getZ() <= MAX_POSITION);
+	boolean isValidPosition(Coordinate coordinate) {
+		return (coordinate.getX() >= 0
+				&& coordinate.getX() <= this.getWorld().getDimension()[0]
+				&& coordinate.getY() >= 0
+				&& coordinate.getY() <= this.getWorld().getDimension()[1]
+				&& coordinate.getZ() >= 0
+				&& coordinate.getZ() <= this.getWorld().getDimension()[2]);
 	}
 	/**
 	 * Variable registering the position of this Unit.
 	 */
 	private Coordinate position;
 
-	/**
-	 * Symbolic constant indicating the maximum coordinate in the game world
-	 */
-	private static final double MAX_POSITION = 50.0;
-	/**
-	 * Symbolic constant indicating the minimum coordinate in the game world
-	 */
-	private static final double MIN_POSITION = 0.0;
 	/**
 	 * Returns a Coordinate object which spans from the lower corner to the center of the cube
 	 * @return Coordinate(0.5,0.5,0.5)
@@ -227,23 +247,6 @@ public class Unit {
 	// Faction //
 
 	/**
-	 * Initialize this new Unit with given Faction.
-	 * 
-	 * @param  faction
-	 *         The Faction for this new Unit.
-	 * @post   The Faction of this new Unit is equal to the given
-	 *         Faction.
-	 *       | new.getFaction() == faction
-	 * @throws ModelException
-	 *         This new Unit cannot have the given Faction as its Faction.
-	 *       | ! canHaveAsFaction(this.getFaction())
-	 */
-	public Unit(Faction faction) throws ModelException {
-		if (!canHaveAsFaction(faction))
-			throw new ModelException();
-		this.faction = faction;
-	}
-	/**
 	 * Return the Faction of this Unit.
 	 */
 	@Basic
@@ -258,11 +261,11 @@ public class Unit {
 	 * @param  faction
 	 *         The Faction to check.
 	 * @return 
-	 *       | result == 
+	 *       | result == (faction != null)
 	*/
 	@Raw
 	public boolean canHaveAsFaction(Faction faction) {
-		return false;
+		return faction != null;
 	}
 	/**
 	 * Variable registering the Faction of this Unit.
@@ -1838,4 +1841,49 @@ public class Unit {
 	*/
 	private boolean defaultBehavior = false;
 
+	// experience //
+		
+		/**
+		 * Method that checks whether a primary attribute should be improved.
+		 */
+		public boolean shouldImproveTrait(){
+			return (this.getExperience() == 10);
+		}
+		/**
+		 * Method that improves one of the Units primary attributes.
+		 */
+		public void improveTrait(){
+			if (shouldImproveTrait()){
+				Random random = new Random();
+				int decider = random.nextInt(3);
+				if (decider == 0) {
+					setAgility(this.getAgility() + 1);
+				} 
+				else if (decider == 1) {
+					setStrength(this.getStrength() + 1);
+				} 
+				else {
+					setToughness(this.getToughness() + 1);
+				}
+				this.setExperience(0);
+			}
+		}
+		/**
+		 * Return the current value of the Units experience.
+		 */
+		public int getExperience(){
+			return this.experience;
+		}
+		
+		/**
+		 * Set the value of the Units experience.
+		 */
+		private void setExperience(int value){
+			this.experience = value;
+		}
+		
+		/**
+		 * Variable registering the experience of the Unit.
+		 */
+		public int experience;
 }
