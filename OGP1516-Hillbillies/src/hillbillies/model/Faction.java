@@ -5,6 +5,8 @@ package hillbillies.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import be.kuleuven.cs.som.annotate.*;
 
@@ -15,6 +17,8 @@ import be.kuleuven.cs.som.annotate.*;
  *       | canHaveAsWorld(this.getWorld())
  * @invar   Each Fction must have proper Units.
  *        | hasProperUnits()
+ * @invar  Each Faction can have its Name as Name.
+ *       | canHaveAsName(this.getName())
  *
  * @author Matthias Fabry
  * @version 1.0
@@ -22,10 +26,59 @@ import be.kuleuven.cs.som.annotate.*;
  */
 public class Faction {
 
-	public Faction(World world) {
+	public Faction(String name, World world) {
 		this.world = world;
+		this.name = name;
 	}
 
+	// Name //
+	
+	/**
+	 * Return the Name of this Faction.
+	 */
+	@Basic @Raw @Immutable
+	public String getName() {
+		return this.name;
+	}
+	
+	/**
+	 * Check whether this Faction can have the given Name as its Name.
+	 *  
+	 * @param name
+	 *            The Name to check.
+	 * @return Returns true if and only if all the characters in name 
+	 * 			appear in the pattern validCharacters
+	 * 			| if (name matches validCharacters)
+	 * 			|	result == true
+	 * 			| else
+	 * 			|	result == false
+	 */
+	@Raw
+	public boolean canHaveAsName(String name) {
+		if (name == null || name.length() == 0)
+			return false;
+		Matcher fullName = validCharacters.matcher(name);
+		boolean fullNameCorrect = fullName.matches();
+		Matcher firstLetter = upperCase.matcher(name.substring(0, 1));
+		boolean firstLetterCorrect = firstLetter.matches();
+		return (fullNameCorrect && firstLetterCorrect && name.length() >= 2);
+	}
+	
+	/**
+	 * Variable registering the Name of this Faction.
+	 */
+	private final String name;
+	
+	/**
+	 * Pattern containing the set of valid characters for the first letter of Unit names.
+	 */
+	private static final Pattern upperCase = Pattern.compile("[A-Z]");
+	/**
+	 * Pattern containing the set of valid characters for Unit names.
+	 */
+	private static final Pattern validCharacters = Pattern
+			.compile("[[a-zA-Z][\"][\'][\\s]]*");
+	
 	// World //
 
 	/**

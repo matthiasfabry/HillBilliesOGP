@@ -3,6 +3,8 @@
  */
 package hillbillies.part2.facade;
 
+import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import hillbillies.model.Activity;
@@ -679,7 +681,10 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public Set<Faction> getActiveFactions(World world) throws ModelException {
-		return world.getFactionSet();
+		List<Faction> theList = world.getFactionList();
+		Set<Faction> theSet = new HashSet<>();
+		theSet.addAll(theList);
+		return theSet;
 	}
 
 	/*

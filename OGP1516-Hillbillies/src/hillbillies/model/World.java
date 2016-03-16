@@ -3,6 +3,7 @@
  */
 package hillbillies.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -77,8 +78,12 @@ public class World {
 	}
 
 	Terrain getTerrainAt(Coordinate coordinate) {
-		return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
-				.floor().getY()][(int) coordinate.floor().getZ()].getTerrain();
+		try {
+			return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
+					.floor().getY()][(int) coordinate.floor().getZ()].getTerrain();
+		} catch (Exception e) {
+			return Terrain.AIR;
+		}
 	}
 
 	void caveIn(Coordinate coordinate) throws ModelException {
@@ -171,12 +176,24 @@ public class World {
 
 	// Faction //
 
-	public Set<Faction> getFactionSet() {
+	public ArrayList<Faction> getFactionList() {
 		return this.factions;
-	}
+	} 
 
 	Faction getFactiontoJoin() {
-		return null;
+		if (this.getFactionList().size() < 5){
+			Faction theNew = new Faction("Dwarfs", this);
+			this.addFaction(theNew);
+			return theNew;
+		}
+		else {
+			Faction smallest = this.getFactionList().get(0);
+			for (Faction faction : this.getFactionList()){
+				if (faction.getNbUnits() < smallest.getNbUnits())
+					smallest = faction;
+			}
+			return smallest;
+		}	
 	}
 
 	/**
@@ -188,7 +205,7 @@ public class World {
 	 */
 	@Basic
 	@Raw
-	public boolean hasAsFaction(@Raw Faction faction) {
+	boolean hasAsFaction(@Raw Faction faction) {
 		return factions.contains(faction);
 	}
 
@@ -205,7 +222,7 @@ public class World {
 	 *       |   Faction.isValidWorld(this)
 	 */
 	@Raw
-	public boolean canHaveAsFaction(Faction faction) {
+	boolean canHaveAsFaction(Faction faction) {
 		return (faction != null) && (Faction.canHaveAsWorld(this));
 	}
 
@@ -221,7 +238,7 @@ public class World {
 	 *       |     then canHaveAsFaction(faction) &&
 	 *       |          (faction.getWorld() == this)
 	 */
-	public boolean hasProperFactions() {
+	boolean hasProperFactions() {
 		for (Faction faction : factions) {
 			if (!canHaveAsFaction(faction))
 				return false;
@@ -253,7 +270,7 @@ public class World {
 	 * @post   This World has the given Faction as one of its Factions.
 	 *       | new.hasAsFaction(faction)
 	 */
-	public void addFaction(@Raw Faction faction) {
+	void addFaction(@Raw Faction faction) {
 		assert (faction != null) && (faction.getWorld() == this);
 		factions.add(faction);
 	}
@@ -290,7 +307,7 @@ public class World {
 	 *       |   ( (faction != null) &&
 	 *       |     (! faction.isTerminated()) )
 	 */
-	private final Set<Faction> factions = new HashSet<Faction>();
+	private final ArrayList<Faction> factions = new ArrayList<Faction>();
 
 	// Units //
 
@@ -311,6 +328,7 @@ public class World {
 		} while (!isValidPosition(target));
 		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
 				toughness, enableDefaultBehavior, this);
+		this.addUnit(theNewUnit);
 		return theNewUnit;
 	}
 
@@ -323,7 +341,7 @@ public class World {
 	 */
 	@Basic
 	@Raw
-	public boolean hasAsUnit(@Raw Unit unit) {
+	boolean hasAsUnit(@Raw Unit unit) {
 		return unitSet.contains(unit);
 	}
 
@@ -340,7 +358,7 @@ public class World {
 	 *       |   Unit.isValidWorld(this)
 	 */
 	@Raw
-	public boolean canHaveAsUnit(Unit unit) {
+	boolean canHaveAsUnit(Unit unit) {
 		return (unit != null) && (unit.canHaveAsWorld(this));
 	}
 
@@ -356,7 +374,7 @@ public class World {
 	 *       |     then canHaveAsUnit(unit) &&
 	 *       |          (unit.getWorld() == this)
 	 */
-	public boolean hasProperUnits() {
+	boolean hasProperUnits() {
 		for (Unit unit : unitSet) {
 			if (!canHaveAsUnit(unit))
 				return false;
