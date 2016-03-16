@@ -47,7 +47,7 @@ public class Faction {
 	 *       | result == (world != null)
 	*/
 	@Raw
-	public boolean canHaveAsWorld(World world) {
+	public static boolean canHaveAsWorld(World world) {
 		return (world != null);
 	}
 
@@ -92,7 +92,7 @@ public class Faction {
 	public boolean canHaveAsUnit(
 			Unit unit) {
 		return (unit != null)
-				&& (unit.canHaveAsFaction(this));
+				&& (Unit.canHaveAsFaction(this));
 	}
 
 	/**

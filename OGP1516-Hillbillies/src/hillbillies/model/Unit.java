@@ -113,6 +113,7 @@ public class Unit {
 	public Unit(String name, int[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior, World world)
 					throws ModelException {
+		this.world = world;
 		if (isValidInitialAttribute(agility)) {
 			this.setAgility(agility);
 		} else
@@ -143,7 +144,7 @@ public class Unit {
 		this.setActivity(Activity.IDLE);
 		this.setDefaultBehavior(enableDefaultBehavior);
 		this.faction = this.getWorld().getFactiontoJoin();
-		this.world = world;
+		
 	}
 
 	/**
@@ -209,24 +210,12 @@ public class Unit {
 		this.position = new Coordinate(position.getX(), position.getY(),
 				position.getZ());
 	}
-	/**
-	 * Check whether the given position is a valid position for
-	 * any Unit.
-	 *  
-	 * @return True if the given position component is valid for this Unit
-	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
-	 *       | 		return True
-	 *       | else
-	 *       | 		return False
-	*/
-	boolean isValidPosition(Coordinate coordinate) {
-		return (coordinate.getX() >= 0
-				&& coordinate.getX() <= this.getWorld().getDimension()[0]
-				&& coordinate.getY() >= 0
-				&& coordinate.getY() <= this.getWorld().getDimension()[1]
-				&& coordinate.getZ() >= 0
-				&& coordinate.getZ() <= this.getWorld().getDimension()[2]);
+	
+	private boolean isValidPosition(Coordinate coordinate){
+		return this.getWorld().isValidPosition(coordinate);
 	}
+	
+	
 	/**
 	 * Variable registering the position of this Unit.
 	 */
@@ -264,7 +253,7 @@ public class Unit {
 	 *       | result == (faction != null)
 	*/
 	@Raw
-	public boolean canHaveAsFaction(Faction faction) {
+	public static boolean canHaveAsFaction(Faction faction) {
 		return faction != null;
 	}
 	/**
@@ -958,7 +947,7 @@ public class Unit {
 	void pathExtension(int x, int y, int z) throws ModelException {
 		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
 				.sum(this.getPath().getLast().floor());
-		if (isValidPosition(target)) {
+		if (this.isValidPosition(target)) {
 			this.addToPath(target);
 		} else
 			throw new ModelException("Cannot move here");
@@ -1164,7 +1153,7 @@ public class Unit {
 	 */
 	@Raw
 	void setDestinationCube(Coordinate destinationCube) throws ModelException {
-		if (isValidPosition(destinationCube)) {
+		if (this.isValidPosition(destinationCube)) {
 			this.destinationCube = destinationCube;
 		} else
 			throw new ModelException("Can't go there");
@@ -1541,7 +1530,7 @@ public class Unit {
 			int y = 0;
 			int z = 0;
 			Coordinate target = this.getInWorldPosition().sum(centerCube());
-			while ((x == 0 && y == 0 && z == 0) || !isValidPosition(target)) {
+			while ((x == 0 && y == 0 && z == 0) || ! this.isValidPosition(target)) {
 				Random posDecider = new Random();
 				x = (posDecider.nextInt(3)) - 1;
 				y = (posDecider.nextInt(3)) - 1;
@@ -1847,7 +1836,7 @@ public class Unit {
 	 * Method that checks whether a primary attribute should be improved.
 	 */
 	public boolean shouldImproveTrait(){
-		return (this.getExperience() == 10);
+		return (this.getExperience() % 10 == 0);
 	}
 	/**
 	 * Method that improves one of the Units primary attributes.
@@ -1865,7 +1854,6 @@ public class Unit {
 			else {
 				setToughness(this.getToughness() + 1);
 			}
-			this.setExperience(0);
 		}
 	}
 	/**

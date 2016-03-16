@@ -483,8 +483,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void advanceTime(World world, double dt) throws ModelException {
-		// TODO Auto-generated method stub
-
+		world.advanceTime(dt);
 	}
 
 	/*
@@ -566,8 +565,7 @@ public class Facade implements IFacade {
 	@Override
 	public Unit spawnUnit(World world, boolean enableDefaultBehavior)
 			throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.spawnUnit(enableDefaultBehavior);
 	}
 
 	/*
@@ -578,8 +576,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void addUnit(Unit unit, World world) throws ModelException {
-		// TODO Auto-generated method stub
-
+		world.addUnit(unit);
 	}
 
 	/*
@@ -636,8 +633,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getExperiencePoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getExperience();
 	}
 
 	/*
@@ -659,8 +655,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public Faction getFaction(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.getFaction();
 	}
 
 	/*

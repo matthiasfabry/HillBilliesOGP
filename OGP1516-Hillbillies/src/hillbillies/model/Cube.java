@@ -36,38 +36,11 @@ public class Cube {
 	/**
 	 * Default Constructor
 	 */
-	public Cube(int x, int y, int z){
-		this.position = new Coordinate(x, y, z);
-	}
-	
-	// Position //
-	
-	/**
-	 * Return the Position of this Cube.
-	 */
-	@Basic @Raw
-	public Coordinate getPosition() {
-		return this.position;
-	}
-	
-	/**
-	 * Check whether the given Position is a valid Position for
-	 * any Cube.
-	 *  
-	 * @param  Position
-	 *         The Position to check.
-	 * @return 
-	 *       | result == 
-	*/
-	public static boolean isValidPosition(Coordinate position) {
-		return false;
+	public Cube(){
+		
 	}
 	
 
-	/**
-	 * Variable registering the Position of this Cube.
-	 */
-	private final Coordinate position;
 	
 	// Terrain //
 	

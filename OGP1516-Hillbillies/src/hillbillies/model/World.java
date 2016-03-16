@@ -46,8 +46,7 @@ public class World {
 		for (int indexX = 0; indexX < map.length; indexX++) {
 			for (int indexY = 0; indexY < map[indexX].length; indexY++) {
 				for (int indexZ = 0; indexZ < map[indexX][indexY].length; indexZ++) {
-					this.getMap()[indexX][indexY][indexZ] = new Cube(indexX,
-							indexY, indexZ);
+					this.getMap()[indexX][indexY][indexZ] = new Cube();
 					this.getMap()[indexX][indexY][indexZ]
 							.setTerrain(features[indexX][indexY][indexZ]);
 				}
@@ -62,9 +61,53 @@ public class World {
 	}
 
 	// Map //
+	
+	/**
+	 * Check whether the given position is a valid position for
+	 * any world.
+	 *  
+	 * @return True if the given position component is valid for this world
+	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
+	 *       | 		return True
+	 *       | else
+	 *       | 		return False
+	*/
+	 boolean isValidPosition(Coordinate coordinate) {
+		if (! (coordinate.getX() >= 0
+				&& coordinate.getX() <= this.getDimension()[0]
+				&& coordinate.getY() >= 0
+				&& coordinate.getY() <= this.getDimension()[1]
+				&& coordinate.getZ() >= 0
+				&& coordinate.getZ() <= this.getDimension()[2]))
+			return false;
+		if (this.getTerrainAt(coordinate).isImpassable())
+			return false;
+		else {
+			if (coordinate.getZ() == 0)
+				return true;
+			for (Terrain cube : this.terrainAtAdjacentCubes(coordinate)){
+				if (cube.isImpassable())
+					return true;
+			}
+			return false;
+		}
+		
+	}
+	
+	Terrain[] terrainAtAdjacentCubes(Coordinate coordinate){
+		Terrain[] result = new Terrain[6];
+		result[0] = this.getTerrainAt(coordinate.sum(new Coordinate(1,0,0)));
+		result[1] = this.getTerrainAt(coordinate.difference(new Coordinate(1,0,0)));
+		result[2] = this.getTerrainAt(coordinate.sum(new Coordinate(0,1,0)));
+		result[3] = this.getTerrainAt(coordinate.difference(new Coordinate(0,1,0)));
+		result[4] = this.getTerrainAt(coordinate.sum(new Coordinate(0,0,1)));	
+		result[5] = this.getTerrainAt(coordinate.difference(new Coordinate(0,0,1)));
+		return result;
+	}
 
-	boolean isValidPosition(Coordinate coordinate) {
-		return true;
+	Terrain getTerrainAt(Coordinate coordinate) {
+		return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
+				.floor().getY()][(int) coordinate.floor().getZ()].getTerrain();
 	}
 
 	/**
@@ -140,7 +183,7 @@ public class World {
 	 */
 	@Raw
 	public boolean canHaveAsFaction(Faction faction) {
-		return (faction != null) && (faction.canHaveAsWorld(this));
+		return (faction != null) && (Faction.canHaveAsWorld(this));
 	}
 
 	/**
@@ -228,13 +271,14 @@ public class World {
 
 	// Units //
 
-	public void spawnUnit() throws ModelException {
+	public Unit spawnUnit(boolean enableDefaultBehavior) throws ModelException {
 		Random decider = new Random();
 		int strength = decider.nextInt(76) + 25;
 		int agility = decider.nextInt(76) + 25;
 		int toughness = decider.nextInt(76) + 25;
-		int weight = decider.nextInt(101-((strength+agility)/2))+(strength+agility)/2;
-		int[] box = {0,0,0};
+		int weight = decider.nextInt(101 - ((strength + agility) / 2))
+				+ (strength + agility) / 2;
+		int[] box = {0, 0, 0};
 		Coordinate target = new Coordinate(box[0], box[1], box[2]);
 		do {
 			box[0] = decider.nextInt(this.getDimension()[0]);
@@ -242,9 +286,9 @@ public class World {
 			box[2] = decider.nextInt(this.getDimension()[2]);
 			target = new Coordinate(box[0], box[1], box[2]);
 		} while (! isValidPosition(target));
-		Unit theNewUnit = new Unit("Billie",box,  weight, agility,
-				strength, toughness,  true, this);
-		this.addUnit(theNewUnit);
+		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
+				toughness, enableDefaultBehavior, this);
+		return theNewUnit;
 	}
 
 	/**
@@ -366,7 +410,6 @@ public class World {
 	public static boolean isValidUnitSet(Set<Unit> unitSet) {
 		return false;
 	}
-
 
 	/**
 	 * Variable registering the set of Units of this World.
