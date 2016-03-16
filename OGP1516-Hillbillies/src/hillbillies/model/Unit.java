@@ -1842,48 +1842,49 @@ public class Unit {
 	private boolean defaultBehavior = false;
 
 	// experience //
-		
-		/**
-		 * Method that checks whether a primary attribute should be improved.
-		 */
-		public boolean shouldImproveTrait(){
-			return (this.getExperience() == 10);
-		}
-		/**
-		 * Method that improves one of the Units primary attributes.
-		 */
-		public void improveTrait(){
-			if (shouldImproveTrait()){
-				Random random = new Random();
-				int decider = random.nextInt(3);
-				if (decider == 0) {
-					setAgility(this.getAgility() + 1);
-				} 
-				else if (decider == 1) {
-					setStrength(this.getStrength() + 1);
-				} 
-				else {
-					setToughness(this.getToughness() + 1);
-				}
-				this.setExperience(0);
+	
+	/**
+	 * Method that checks whether a primary attribute should be improved.
+	 */
+	public boolean shouldImproveTrait(){
+		return (this.getExperience() == 10);
+	}
+	/**
+	 * Method that improves one of the Units primary attributes.
+	 */
+	public void improveTrait(){
+		if (shouldImproveTrait()){
+			Random random = new Random();
+			int decider = random.nextInt(3);
+			if (decider == 0) {
+				setAgility(this.getAgility() + 1);
+			} 
+			else if (decider == 1) {
+				setStrength(this.getStrength() + 1);
+			} 
+			else {
+				setToughness(this.getToughness() + 1);
 			}
+			this.setExperience(0);
 		}
-		/**
-		 * Return the current value of the Units experience.
-		 */
-		public int getExperience(){
-			return this.experience;
-		}
-		
-		/**
-		 * Set the value of the Units experience.
-		 */
-		private void setExperience(int value){
-			this.experience = value;
-		}
-		
-		/**
-		 * Variable registering the experience of the Unit.
-		 */
-		public int experience;
+	}
+	/**
+	 * Return the current value of the Units experience.
+	 */
+	public int getExperience(){
+		return this.experience;
+	}
+	
+	/**
+	 * Set the value of the Units experience.
+	 */
+	private void setExperience(int value){
+		this.experience = value;
+	}
+	
+	/**
+	 * Variable registering the experience of the Unit.
+	 */
+	public int experience;
 }
+
