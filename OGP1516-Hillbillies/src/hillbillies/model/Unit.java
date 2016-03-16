@@ -1875,8 +1875,5 @@ public class Unit {
 	 */
 	public int experience;
 	
-	public void test(){
-		
-	}
 }
 
