@@ -44,6 +44,8 @@ public abstract class GameObject {
 		this.setPosition(coordinate);
 	}
 
+	// World //
+	
 	/**
 	 * Return the World of this GameObject.
 	 */

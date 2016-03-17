@@ -863,7 +863,10 @@ public class Unit {
 				&& (this.getActivity() != Activity.SPRINTING)) {
 			this.clearPath();
 			Coordinate destination = new Coordinate(x, y, z);
+			
 			this.setDestinationCube(destination);
+			
+			
 			this.addToPath(this.getPosition());
 			this.findPath();
 			this.setActivity(Activity.MOVING);
@@ -883,7 +886,7 @@ public class Unit {
 	 * 			the unit has no destination
 	 * 		| this.getDestinationCube() == null) 
 	 */
-	void findPath() throws ModelException {
+	void findPathEmptyWorld() throws ModelException {
 		if (this.getDestinationCube() != null) {
 			int x = 0;
 			int y = 0;
@@ -925,6 +928,19 @@ public class Unit {
 			throw new ModelException("No destination!");
 	}
 
+	void findPath() throws ModelException {
+		
+	}
+	
+	void pathExtension(int x, int y, int z) throws ModelException {
+		Coordinate target = new Coordinate(x, y, z).sum(centerCube());
+		if(this.isValidPosition(target)){
+			this.addToPath(target);
+		}
+		else
+			throw new ModelException("Cannot go here");
+	}
+	
 	/**
 	 * Method that adds a given set of coordinates to the
 	 * movement path of the unit
@@ -944,7 +960,7 @@ public class Unit {
 	 * 			the the given coordinates are no valid in world position.
 	 * 		| (! this.isValidPosition(target))
 	 */
-	void pathExtension(int x, int y, int z) throws ModelException {
+	void pathExtensionEmptyWorld(int x, int y, int z) throws ModelException {
 		Coordinate target = new Coordinate(x, y, z).sum(centerCube())
 				.sum(this.getPath().getLast().floor());
 		if (this.isValidPosition(target)) {
@@ -1080,6 +1096,7 @@ public class Unit {
 						(this.getCurrentSpeed() * deltaT) / CUBE_LENGTH);
 				if (displacement.length() >= this.remaininglegDistance()) {
 					try {
+						this.AwardExperience(1);
 						this.setPosition(target);
 					} catch (ModelException e) {
 						// shouldn't happen
@@ -1238,6 +1255,7 @@ public class Unit {
 	 * 		| new.getActivity == IDLE
 	 */
 	void stopWork() {
+		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
 	}
 
@@ -1390,8 +1408,10 @@ public class Unit {
 	 * 		| new.getVictim == null	
 	 */
 	void stopAttack() {
-		if (!this.getVictim().defend(this))
+		if (!this.getVictim().defend(this)){
+			this.AwardExperience(20);
 			this.doesDamage();
+		}
 		this.setActivity(Activity.IDLE);
 		this.getVictim().setActivity(Activity.IDLE);
 		try {
@@ -1503,8 +1523,10 @@ public class Unit {
 			if (!this.block(attacker)) {
 				return false;
 			}
+			this.AwardExperience(20);
 			return true;
 		}
+		this.AwardExperience(20);
 		return true;
 	}
 	/**
@@ -1832,17 +1854,22 @@ public class Unit {
 
 	// experience //
 	
+	void AwardExperience(int experience){
+		this.setTotalExperience(this.getTotalExperience() + experience);
+		this.setCountExp(this.getCountExp() + experience);
+	}
+	
 	/**
 	 * Method that checks whether a primary attribute should be improved.
 	 */
 	public boolean shouldImproveTrait(){
-		return (this.getExperience() % 10 == 0);
+		return (this.getCountExp() > 10);
 	}
 	/**
 	 * Method that improves one of the Units primary attributes.
 	 */
 	public void improveTrait(){
-		if (shouldImproveTrait()){
+		while(shouldImproveTrait()){
 			Random random = new Random();
 			int decider = random.nextInt(3);
 			if (decider == 0) {
@@ -1854,26 +1881,38 @@ public class Unit {
 			else {
 				setToughness(this.getToughness() + 1);
 			}
-		}
+			this.setCountExp(getCountExp() - 10);
+		}	
 	}
+	
+	
+	public int getCountExp() {
+		return countExp;
+	}
+
+	public void setCountExp(int countExp) {
+		this.countExp = countExp;
+	}
+	private int countExp = 0;
+	
 	/**
 	 * Return the current value of the Units experience.
 	 */
-	public int getExperience(){
-		return this.experience;
+	public int getTotalExperience(){
+		return this.totalExperience;
 	}
 	
 	/**
 	 * Set the value of the Units experience.
 	 */
-	private void setExperience(int value){
-		this.experience = value;
+	void setTotalExperience(int value){
+		this.totalExperience = value;
 	}
 	
 	/**
 	 * Variable registering the experience of the Unit.
 	 */
-	public int experience;
+	public int totalExperience;
 	
 }
 

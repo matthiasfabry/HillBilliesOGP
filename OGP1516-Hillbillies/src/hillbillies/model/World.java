@@ -58,7 +58,9 @@ public class World {
 	// Time Control //
 
 	public void advanceTime(double deltaT) {
-
+		for (Unit unit : this.getUnitSet())
+			unit.advanceTime(deltaT);
+		
 	}
 
 	// Terrain //
@@ -105,6 +107,25 @@ public class World {
 	}
 
 	// Map //
+	
+	boolean isValidSpawnPosition(Coordinate coordinate){
+		if (!(coordinate.getX() >= 0
+				&& coordinate.getX() <= this.getDimension()[0]
+				&& coordinate.getY() >= 0
+				&& coordinate.getY() <= this.getDimension()[1]
+				&& coordinate.getZ() >= 0
+				&& coordinate.getZ() <= this.getDimension()[2]))
+			return false;
+		if (this.getTerrainAt(coordinate).isImpassable())
+			return false;
+		else {
+			if (coordinate.getZ() == 0)
+				return true;
+			if (this.getTerrainAt(coordinate.difference(new Coordinate(0,0,1))).isImpassable())
+				return true;
+			return false;
+		}
+	}
 
 	/**
 	 * Check whether the given position is a valid position for
@@ -325,7 +346,7 @@ public class World {
 			box[1] = decider.nextInt(this.getDimension()[1]);
 			box[2] = decider.nextInt(this.getDimension()[2]);
 			target = new Coordinate(box[0], box[1], box[2]);
-		} while (!isValidPosition(target));
+		} while (!isValidSpawnPosition(target));
 		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
 				toughness, enableDefaultBehavior, this);
 		this.addUnit(theNewUnit);
