@@ -49,11 +49,17 @@ public class World {
 	}
 
 	// Time Control //
-
+	
+	/**
+	 * Method that advances gametime.
+	 * @post	all units in this World have positive amount of 
+	 * 			hitpoints.
+	 */
 	public void advanceTime(double deltaT) {
 		for (Unit unit : this.getUnitSet())
 			unit.advanceTime(deltaT);
-		
+		for (Unit unit : this.getUnitSet())
+			shouldDie(unit);
 	}
 
 	// Terrain //
@@ -347,7 +353,19 @@ public class World {
 		this.addUnit(theNewUnit);
 		return theNewUnit;
 	}
-
+	/**
+	 * Check whether the given Unit should die.
+	 * @param	the Unit that needs to be checked. 
+	 */
+	void shouldDie(Unit unit){
+		if (unit.getHitpoints() <= 0)
+			if (unit.isCarryingBoulder)
+				//plaats van unit komt boulder
+			if (unit.isCarryingLog)
+				// plaats van unit komt log	
+			unitSet.remove(unit);
+	}
+	
 	/**
 	 * Check whether this World has the given Unit as one of its
 	 * Units.

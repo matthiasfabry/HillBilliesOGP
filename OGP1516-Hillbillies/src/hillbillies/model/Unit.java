@@ -1327,6 +1327,15 @@ public class Unit {
 	 * Variable registering the remaining work time of this Unit.
 	 */
 	private double remainingWorkTime;
+	
+	/**
+	 * flag that registers whether a Unit is carrying a log.
+	 */
+	public boolean isCarryingLog;
+	/**
+	 * flag that registers whether a Unit is carrying a log.
+	 */
+	public boolean isCarryingBoulder;
 
 	// Attacking & Defending (defensive) //
 
@@ -1926,6 +1935,6 @@ public class Unit {
 	/**
 	 * Variable registering the experience of the Unit.
 	 */
-	public int totalExperience;
+	public int totalExperience;	
 
 }
