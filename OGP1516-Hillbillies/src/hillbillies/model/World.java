@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import org.hamcrest.core.IsInstanceOf;
+
 import be.kuleuven.cs.som.annotate.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 import hillbillies.util.ConnectedToBorder;
@@ -359,11 +361,14 @@ public class World {
 	 */
 	void shouldDie(Unit unit){
 		if (unit.getHitpoints() <= 0)
-			if (unit.isCarryingBoulder)
-				//plaats van unit komt boulder
-			if (unit.isCarryingLog)
-				// plaats van unit komt log	
-			unitSet.remove(unit);
+			if (unit.isCarrying)
+				if (unit.ObjectCarried instanceof Log){
+					//plaats van unit komt log
+				}
+				else{
+					//plaats van unit komt boulder
+				}	
+		unitSet.remove(unit);
 	}
 	
 	/**

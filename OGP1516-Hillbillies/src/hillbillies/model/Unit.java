@@ -1327,15 +1327,29 @@ public class Unit {
 	 * Variable registering the remaining work time of this Unit.
 	 */
 	private double remainingWorkTime;
+	/**
+	 * Set the units carried object to the given object
+	 * 
+	 * @param object
+	 * 			the new object the unit is carrying
+	 * @post	the carried object is the given object
+	 * 		| 	this.getGameobject() == object
+	 */
+	void setObjectCarried(GameObject object){
+		this.ObjectCarried = object;
+	}
+	/**
+	 * Return the object the unit is carrying
+	 */
+	GameObject getObjectCarried(){
+		return ObjectCarried;
+	}
 	
+	GameObject ObjectCarried;
 	/**
-	 * flag that registers whether a Unit is carrying a log.
+	 * flag that registers whether a Unit is carrying a gameobject.
 	 */
-	public boolean isCarryingLog;
-	/**
-	 * flag that registers whether a Unit is carrying a log.
-	 */
-	public boolean isCarryingBoulder;
+	public boolean isCarrying;
 
 	// Attacking & Defending (defensive) //
 
@@ -1935,6 +1949,6 @@ public class Unit {
 	/**
 	 * Variable registering the experience of the Unit.
 	 */
-	public int totalExperience;	
+	public int totalExperience;
 
 }
