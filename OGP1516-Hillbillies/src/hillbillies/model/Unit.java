@@ -1,8 +1,11 @@
 
 package hillbillies.model;
 
+import java.awt.List;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import be.kuleuven.cs.som.annotate.*;
@@ -109,10 +112,10 @@ public class Unit {
 		this.faction = this.getWorld().getFactiontoJoin();
 		this.world = null;
 	}
-	
+
 	public Unit(String name, int[] position, int weight, int agility,
-			int strength, int toughness, boolean enableDefaultBehavior, World world)
-					throws ModelException {
+			int strength, int toughness, boolean enableDefaultBehavior,
+			World world) throws ModelException {
 		this.world = world;
 		if (isValidInitialAttribute(agility)) {
 			this.setAgility(agility);
@@ -144,7 +147,7 @@ public class Unit {
 		this.setActivity(Activity.IDLE);
 		this.setDefaultBehavior(enableDefaultBehavior);
 		this.faction = this.getWorld().getFactiontoJoin();
-		
+
 	}
 
 	/**
@@ -210,12 +213,11 @@ public class Unit {
 		this.position = new Coordinate(position.getX(), position.getY(),
 				position.getZ());
 	}
-	
-	private boolean isValidPosition(Coordinate coordinate){
+
+	private boolean isValidPosition(Coordinate coordinate) {
 		return this.getWorld().isValidPosition(coordinate);
 	}
-	
-	
+
 	/**
 	 * Variable registering the position of this Unit.
 	 */
@@ -833,7 +835,9 @@ public class Unit {
 				&& (this.getActivity() != Activity.MOVING)) {
 			this.clearPath();
 			this.addToPath(this.getPosition());
-			this.pathExtension(x, y, z);
+			this.pathExtension((int) this.getInWorldPosition().getX() + x,
+					(int) this.getInWorldPosition().getY() + y,
+					(int) this.getInWorldPosition().getZ() + z);
 			this.setActivity(Activity.MOVING);
 		} else
 			throw new ModelException("Already Moving");
@@ -863,10 +867,9 @@ public class Unit {
 				&& (this.getActivity() != Activity.SPRINTING)) {
 			this.clearPath();
 			Coordinate destination = new Coordinate(x, y, z);
-			
+
 			this.setDestinationCube(destination);
-			
-			
+
 			this.addToPath(this.getPosition());
 			this.findPath();
 			this.setActivity(Activity.MOVING);
@@ -922,25 +925,38 @@ public class Unit {
 				else
 					z = 0;
 
-				this.pathExtension(x, y, z);
+				this.pathExtensionEmptyWorld(x, y, z);
 			}
 		} else
 			throw new ModelException("No destination!");
 	}
 
 	void findPath() throws ModelException {
+		LinkedList<Coordinate> openSet = new LinkedList<>();
+		LinkedList<Coordinate> closedSet = new LinkedList<>();
+		openSet.add(this.getPosition());
 		
+		while (true){
+			Coordinate current = openSet.poll();
+			closedSet.add(current);
+			
+			if (current == this.getDestinationCube())
+				return;
+			
+			for (Cube cube : this.getWorld().getGrid().adjacentCubes(current))
+				return;
+		}
+			
 	}
-	
+
 	void pathExtension(int x, int y, int z) throws ModelException {
 		Coordinate target = new Coordinate(x, y, z).sum(centerCube());
-		if(this.isValidPosition(target)){
+		if (this.isValidPosition(target))
 			this.addToPath(target);
-		}
 		else
 			throw new ModelException("Cannot go here");
 	}
-	
+
 	/**
 	 * Method that adds a given set of coordinates to the
 	 * movement path of the unit
@@ -1408,7 +1424,7 @@ public class Unit {
 	 * 		| new.getVictim == null	
 	 */
 	void stopAttack() {
-		if (!this.getVictim().defend(this)){
+		if (!this.getVictim().defend(this)) {
 			this.AwardExperience(20);
 			this.doesDamage();
 		}
@@ -1552,7 +1568,8 @@ public class Unit {
 			int y = 0;
 			int z = 0;
 			Coordinate target = this.getInWorldPosition().sum(centerCube());
-			while ((x == 0 && y == 0 && z == 0) || ! this.isValidPosition(target)) {
+			while ((x == 0 && y == 0 && z == 0)
+					|| !this.isValidPosition(target)) {
 				Random posDecider = new Random();
 				x = (posDecider.nextInt(3)) - 1;
 				y = (posDecider.nextInt(3)) - 1;
@@ -1853,39 +1870,36 @@ public class Unit {
 	private boolean defaultBehavior = false;
 
 	// experience //
-	
-	void AwardExperience(int experience){
+
+	void AwardExperience(int experience) {
 		this.setTotalExperience(this.getTotalExperience() + experience);
 		this.setCountExp(this.getCountExp() + experience);
 	}
-	
+
 	/**
 	 * Method that checks whether a primary attribute should be improved.
 	 */
-	public boolean shouldImproveTrait(){
+	public boolean shouldImproveTrait() {
 		return (this.getCountExp() > 10);
 	}
 	/**
 	 * Method that improves one of the Units primary attributes.
 	 */
-	public void improveTrait(){
-		while(shouldImproveTrait()){
+	public void improveTrait() {
+		while (shouldImproveTrait()) {
 			Random random = new Random();
 			int decider = random.nextInt(3);
 			if (decider == 0) {
 				setAgility(this.getAgility() + 1);
-			} 
-			else if (decider == 1) {
+			} else if (decider == 1) {
 				setStrength(this.getStrength() + 1);
-			} 
-			else {
+			} else {
 				setToughness(this.getToughness() + 1);
 			}
 			this.setCountExp(getCountExp() - 10);
-		}	
+		}
 	}
-	
-	
+
 	public int getCountExp() {
 		return countExp;
 	}
@@ -1894,25 +1908,24 @@ public class Unit {
 		this.countExp = countExp;
 	}
 	private int countExp = 0;
-	
+
 	/**
 	 * Return the current value of the Units experience.
 	 */
-	public int getTotalExperience(){
+	public int getTotalExperience() {
 		return this.totalExperience;
 	}
-	
+
 	/**
 	 * Set the value of the Units experience.
 	 */
-	void setTotalExperience(int value){
+	void setTotalExperience(int value) {
 		this.totalExperience = value;
 	}
-	
+
 	/**
 	 * Variable registering the experience of the Unit.
 	 */
 	public int totalExperience;
-	
-}
 
+}

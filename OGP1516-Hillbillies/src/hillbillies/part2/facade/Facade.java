@@ -15,7 +15,6 @@ import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.part2.listener.TerrainChangeListener;
-import hillbillies.util.*;
 import ogp.framework.util.ModelException;
 
 /**
@@ -451,7 +450,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getNbCubesX(World world) throws ModelException {
-		return world.getDimension()[0];
+		return world.getGrid().getDimension()[0];
 	}
 
 	/*
@@ -462,7 +461,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getNbCubesY(World world) throws ModelException {
-		return world.getDimension()[1];
+		return world.getGrid().getDimension()[1];
 	}
 
 	/*
@@ -473,7 +472,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getNbCubesZ(World world) throws ModelException {
-		return world.getDimension()[2];
+		return world.getGrid().getDimension()[2];
 	}
 
 	/*
@@ -498,7 +497,7 @@ public class Facade implements IFacade {
 	@Override
 	public int getCubeType(World world, int x, int y, int z)
 			throws ModelException {
-		Terrain theTerrain = world.getMap()[x][y][z].getTerrain();
+		Terrain theTerrain = world.getGrid().getMap()[x][y][z].getTerrain();
 		if (theTerrain == Terrain.AIR)
 			return 0;
 		else if (theTerrain == Terrain.WORKSHOP)
@@ -522,13 +521,13 @@ public class Facade implements IFacade {
 	public void setCubeType(World world, int x, int y, int z, int value)
 			throws ModelException {
 		if (value == 0)
-			world.getMap()[x][y][z].setTerrain(Terrain.AIR);
+			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.AIR);
 		else if (value == 1)
-			world.getMap()[x][y][z].setTerrain(Terrain.ROCK);
+			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.ROCK);
 		else if (value == 2)
-			world.getMap()[x][y][z].setTerrain(Terrain.TREE);
+			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.TREE);
 		else if (value == 3)
-			world.getMap()[x][y][z].setTerrain(Terrain.WORKSHOP);
+			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.WORKSHOP);
 		else
 			throw new ModelException("Terrain type not existent");
 
@@ -544,18 +543,8 @@ public class Facade implements IFacade {
 	@Override
 	public boolean isSolidConnectedToBorder(World world, int x, int y, int z)
 			throws ModelException {
-		ConnectedToBorder algorithm = new ConnectedToBorder(
-				world.getDimension()[0], world.getDimension()[1],
-				world.getDimension()[2]);
-		for (int indexX = 0; indexX < world.getMap().length; indexX++){
-			for (int indexY = 0; indexY < world.getMap()[indexX].length; indexY++){
-				for (int indexZ = 0; indexZ < world.getMap()[indexX][indexY].length; indexZ++){
-					if (world.getMap()[indexX][indexY][indexZ].getTerrain().isPassable())
-						algorithm.changeSolidToPassable(indexX, indexY, indexZ);
-				}
-			}
-		}		
-		return algorithm.isSolidConnectedToBorder(x, y, z);
+		world.updateAlgorithm();
+		return world.getAlgorithm().isSolidConnectedToBorder(x, y, z);
 	}
 
 	/*

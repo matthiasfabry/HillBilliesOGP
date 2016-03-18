@@ -10,6 +10,7 @@ import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.*;
 import hillbillies.part2.listener.TerrainChangeListener;
+import hillbillies.util.ConnectedToBorder;
 import ogp.framework.util.ModelException;
 
 /**
@@ -41,18 +42,10 @@ public class World {
 
 	public World(Terrain[][][] features, TerrainChangeListener listener)
 			throws ModelException {
-		this.map = new Cube[features.length][features[0].length][features[0][0].length];
-		this.dimension = new int[]{features.length, features[0].length,
-				features[0][0].length};
-		for (int indexX = 0; indexX < map.length; indexX++) {
-			for (int indexY = 0; indexY < map[indexX].length; indexY++) {
-				for (int indexZ = 0; indexZ < map[indexX][indexY].length; indexZ++) {
-					this.getMap()[indexX][indexY][indexZ] = new Cube();
-					this.getMap()[indexX][indexY][indexZ]
-							.setTerrain(features[indexX][indexY][indexZ]);
-				}
-			}
-		}
+		this.grid = new Grid(features, this);
+		this.algorithm = new ConnectedToBorder(
+				this.getGrid().getDimension()[0], this.getGrid().getDimension()[1],
+				this.getGrid().getDimension()[2]);
 	}
 
 	// Time Control //
@@ -81,47 +74,73 @@ public class World {
 
 	Terrain getTerrainAt(Coordinate coordinate) {
 		try {
-			return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
-					.floor().getY()][(int) coordinate.floor().getZ()].getTerrain();
+			return this.getMapAt(coordinate).getTerrain();
 		} catch (Exception e) {
 			return Terrain.AIR;
 		}
 	}
 
 	void caveIn(Coordinate coordinate) throws ModelException {
-		Terrain oldTerrain = this.getMap()[(int) coordinate.getX()][(int) coordinate.getY()][(int) coordinate.getZ()].getTerrain();
+		Terrain oldTerrain = this.getMapAt(coordinate).getTerrain();
 
-		this.getMap()[(int) coordinate.getX()][(int) coordinate.getY()][(int) coordinate.getZ()].setTerrain(Terrain.AIR);
+		this.getMapAt(coordinate).setTerrain(Terrain.AIR);
 		double random = Math.random();
 		if (random < 0.25){
 			if (oldTerrain == Terrain.TREE)
 				try {
 					this.addGameObject(new Log(coordinate, this));
 				} catch (ModelException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// shouldn't happen
 				}
-				
+			else if (oldTerrain == Terrain.ROCK)
+				try {
+					this.addGameObject(new Boulder(coordinate, this));
+				} catch (ModelException e1) {
+					// shouldn't happen
+				}
+			else
+				throw new ModelException("This terrain can't cave in!");
 		}
 			
 	}
 
+	
+	// Border connection //
+	
+	public ConnectedToBorder getAlgorithm(){
+		return this.algorithm;
+	}
+	
+	ConnectedToBorder algorithm ;
+	public void updateAlgorithm(){
+		for (int indexX = 0; indexX < this.getGrid().getMap().length; indexX++){
+			for (int indexY = 0; indexY < this.getGrid().getMap()[indexX].length; indexY++){
+				for (int indexZ = 0; indexZ < this.getGrid().getMap()[indexX][indexY].length; indexZ++){
+					if (this.getGrid().getMap()[indexX][indexY][indexZ].getTerrain().isPassable())
+						algorithm.changeSolidToPassable(indexX, indexY, indexZ);
+				}
+			}
+		}
+	}
+	
+	
 	// Map //
 	
-	boolean isValidSpawnPosition(Coordinate coordinate){
+	boolean isValidSpawnPosition(Coordinate coordinate) {
 		if (!(coordinate.getX() >= 0
-				&& coordinate.getX() <= this.getDimension()[0]
+				&& coordinate.getX() <= this.getGrid().getDimension()[0]
 				&& coordinate.getY() >= 0
-				&& coordinate.getY() <= this.getDimension()[1]
+				&& coordinate.getY() <= this.getGrid().getDimension()[1]
 				&& coordinate.getZ() >= 0
-				&& coordinate.getZ() <= this.getDimension()[2]))
+				&& coordinate.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getTerrainAt(coordinate).isImpassable())
+		if (this.getMapAt(coordinate).getTerrain().isImpassable())
 			return false;
 		else {
 			if (coordinate.getZ() == 0)
 				return true;
-			if (this.getTerrainAt(coordinate.difference(new Coordinate(0,0,1))).isImpassable())
+			if (this.getMapAt(coordinate.difference(new Coordinate(0, 0, 1))).getTerrain()
+					.isImpassable())
 				return true;
 			return false;
 		}
@@ -139,13 +158,13 @@ public class World {
 	*/
 	boolean isValidPosition(Coordinate coordinate) {
 		if (!(coordinate.getX() >= 0
-				&& coordinate.getX() <= this.getDimension()[0]
+				&& coordinate.getX() <= this.getGrid().getDimension()[0]
 				&& coordinate.getY() >= 0
-				&& coordinate.getY() <= this.getDimension()[1]
+				&& coordinate.getY() <= this.getGrid().getDimension()[1]
 				&& coordinate.getZ() >= 0
-				&& coordinate.getZ() <= this.getDimension()[2]))
+				&& coordinate.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getTerrainAt(coordinate).isImpassable())
+		if (this.getMapAt(coordinate).getTerrain().isImpassable())
 			return false;
 		else {
 			if (coordinate.getZ() == 0)
@@ -156,44 +175,20 @@ public class World {
 			}
 			return false;
 		}
-
 	}
-
-	/**
-	 * Return the Dimension of this World.
-	 */
-	@Basic
-	@Raw
-	@Immutable
-	public int[] getDimension() {
-		return this.dimension;
+	
+	Cube getMapAt(Coordinate coordinate) {
+		return this.getGrid().getMap()[(int) coordinate.floor().getX()][(int) coordinate
+				.floor().getY()][(int) coordinate.floor().getZ()];
 	}
-
-	/**
-	 * Check whether this World can have the given Dimension as its Dimension.
-	 *  
-	 * @param  dimension
-	 *         The Dimension to check.
-	 * @return 
-	 *       | result == 
-	*/
-	@Raw
-	public boolean canHaveAsDimension(int[] dimension) {
-		return false;
-	}
-
-	/**
-	 * Variable registering the Dimension of this World.
-	 */
-	private int[] dimension;
 
 	@Basic
 	@Raw
-	public Cube[][][] getMap() {
-		return this.map;
+	public Grid getGrid() {
+		return this.grid;
 	}
 
-	private final Cube[][][] map;
+	private final Grid grid;
 
 	// Faction //
 
@@ -342,11 +337,11 @@ public class World {
 		int[] box = {0, 0, 0};
 		Coordinate target = new Coordinate(box[0], box[1], box[2]);
 		do {
-			box[0] = decider.nextInt(this.getDimension()[0]);
-			box[1] = decider.nextInt(this.getDimension()[1]);
-			box[2] = decider.nextInt(this.getDimension()[2]);
+			box[0] = decider.nextInt(this.getGrid().getDimension()[0]);
+			box[1] = decider.nextInt(this.getGrid().getDimension()[1]);
+			box[2] = decider.nextInt(this.getGrid().getDimension()[2]);
 			target = new Coordinate(box[0], box[1], box[2]);
-		} while (!isValidSpawnPosition(target));
+		} while (!this.isValidSpawnPosition(target));
 		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
 				toughness, enableDefaultBehavior, this);
 		this.addUnit(theNewUnit);
