@@ -1,7 +1,7 @@
 
 package hillbillies.model;
 
-import java.awt.List;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
@@ -116,7 +116,7 @@ public class Unit {
 	public Unit(String name, int[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior,
 			World world) throws ModelException {
-		this.world = world;
+		this.setWorld(world);
 		if (isValidInitialAttribute(agility)) {
 			this.setAgility(agility);
 		} else
@@ -150,6 +150,12 @@ public class Unit {
 
 	}
 
+	// World //
+
+	void setWorld(World world) {
+		this.world = world;
+	}
+	
 	/**
 	 * Return the World of this Unit.
 	 */
@@ -174,7 +180,7 @@ public class Unit {
 	/**
 	 * Variable registering the World of this Unit.
 	 */
-	private final World world;
+	private World world;
 
 	// Position (Defensive) //
 
@@ -1345,7 +1351,8 @@ public class Unit {
 		return ObjectCarried;
 	}
 	
-	GameObject ObjectCarried;
+	GameObject ObjectCarried; 
+	
 	/**
 	 * flag that registers whether a Unit is carrying a gameobject.
 	 */

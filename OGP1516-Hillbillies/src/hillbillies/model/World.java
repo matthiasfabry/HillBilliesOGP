@@ -355,20 +355,23 @@ public class World {
 		this.addUnit(theNewUnit);
 		return theNewUnit;
 	}
+	
 	/**
 	 * Check whether the given Unit should die.
 	 * @param	the Unit that needs to be checked. 
 	 */
 	void shouldDie(Unit unit){
-		if (unit.getHitpoints() <= 0)
+		if (unit.getHitpoints() <= 0){
 			if (unit.isCarrying)
 				if (unit.ObjectCarried instanceof Log){
 					//plaats van unit komt log
 				}
 				else{
 					//plaats van unit komt boulder
-				}	
-		unitSet.remove(unit);
+				}
+			unit.setWorld(null);
+			this.getUnitSet().remove(unit);
+		}
 	}
 	
 	/**
