@@ -869,18 +869,15 @@ public class Unit {
 	 * 		| this.getActivity == MOVING || this.getActivity == STPRINTING
 	 */
 	public void moveTo(int x, int y, int z) throws ModelException {
-		if ((this.getActivity() != Activity.MOVING)
-				&& (this.getActivity() != Activity.SPRINTING)) {
-			this.clearPath();
-			Coordinate destination = new Coordinate(x, y, z);
+		this.clearPath();
+		Coordinate destination = new Coordinate(x, y, z);
 
-			this.setDestinationCube(destination);
+		this.setDestinationCube(destination);
 
-			this.addToPath(this.getPosition());
-			this.findPath();
-			this.setActivity(Activity.MOVING);
-		} else
-			throw new ModelException("Already Moving");
+		this.addToPath(this.getPosition());
+		this.findPath();
+		this.setActivity(Activity.MOVING);
+
 	}
 	/**
 	 * Method that seeks the path for the Unit to move to its destination.
@@ -1221,6 +1218,11 @@ public class Unit {
 	private LinkedList<Coordinate> path = new LinkedList<>();
 
 	// Working (defensive) //
+	
+	public void workAt(int x, int y, int z) throws ModelException{
+		Coordinate targetCube = new Coordinate(x, y, z);
+		
+	}
 
 	/**
 	 * Method that initiates a work task for a Unit.
@@ -1347,16 +1349,18 @@ public class Unit {
 	/**
 	 * Return the object the unit is carrying
 	 */
-	GameObject getObjectCarried(){
+	public GameObject getObjectCarried(){
 		return ObjectCarried;
 	}
 	
-	GameObject ObjectCarried; 
+	private GameObject ObjectCarried; 
 	
 	/**
 	 * flag that registers whether a Unit is carrying a gameobject.
 	 */
-	public boolean isCarrying;
+	public boolean isCarrying(){
+		return (this.getObjectCarried() != null);
+	}
 
 	// Attacking & Defending (defensive) //
 

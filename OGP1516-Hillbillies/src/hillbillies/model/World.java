@@ -362,15 +362,14 @@ public class World {
 	 */
 	void shouldDie(Unit unit){
 		if (unit.getHitpoints() <= 0){
-			if (unit.isCarrying)
-				if (unit.ObjectCarried instanceof Log){
-					//plaats van unit komt log
-				}
-				else{
-					//plaats van unit komt boulder
-				}
+			if (unit.getObjectCarried() instanceof Log){
+				//plaats van unit komt log
+			}
+			else{
+				//plaats van unit komt boulder
 			unit.setWorld(null);
 			this.getUnitSet().remove(unit);
+			}
 		}
 	}
 	
