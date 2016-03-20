@@ -1335,6 +1335,18 @@ public class Unit {
 	 * Variable registering the remaining work time of this Unit.
 	 */
 	private double remainingWorkTime;
+	
+	// Carrying //
+	
+	void drop(){
+		if (this.getObjectCarried() instanceof Log){
+			//plaats van unit komt log
+		}
+		else{
+			//plaats van unit komt boulder
+		}
+	}
+	
 	/**
 	 * Set the units carried object to the given object
 	 * 

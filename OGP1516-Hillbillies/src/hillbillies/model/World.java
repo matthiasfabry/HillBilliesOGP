@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
-import org.hamcrest.core.IsInstanceOf;
-
 import be.kuleuven.cs.som.annotate.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 import hillbillies.util.ConnectedToBorder;
@@ -18,7 +15,6 @@ import ogp.framework.util.ModelException;
 /**
  * A Class describing a Hillbillies game world.
  *
- *	
  * @invar  Each World can have its Dimension as Dimension.
  *        | canHaveAsDimension(this.getDimension())
  * @invar  The set of Logs of each World must be a valid set of Logs for any World.
@@ -45,13 +41,14 @@ public class World {
 	public World(Terrain[][][] features, TerrainChangeListener listener)
 			throws ModelException {
 		this.grid = new Grid(features, this);
-		this.algorithm = new ConnectedToBorder(
-				this.getGrid().getDimension()[0], this.getGrid().getDimension()[1],
+		this.algorithm = new ConnectedToBorder(this.getGrid().getDimension()[0],
+				this.getGrid().getDimension()[1],
 				this.getGrid().getDimension()[2]);
+		this.listener = listener;
 	}
 
 	// Time Control //
-	
+
 	/**
 	 * Method that advances gametime.
 	 * @post	all units in this World have positive amount of 
@@ -93,7 +90,7 @@ public class World {
 
 		this.getMapAt(coordinate).setTerrain(Terrain.AIR);
 		double random = Math.random();
-		if (random < 0.25){
+		if (random < 0.25) {
 			if (oldTerrain == Terrain.TREE)
 				try {
 					this.addGameObject(new Log(coordinate, this));
@@ -108,32 +105,52 @@ public class World {
 				}
 			else
 				throw new ModelException("This terrain can't cave in!");
+			this.getListener().notify();
 		}
-			
+
 	}
 
-	
+	// Terrain listener //
+
+	/**
+	 * Return the Listener of this World.
+	 */
+	@Basic
+	@Raw
+	@Immutable
+	public TerrainChangeListener getListener() {
+		return this.listener;
+	}
+
+	/**
+	 * Variable registering the Listener of this World.
+	 */
+	private final TerrainChangeListener listener;
+
 	// Border connection //
-	
-	public ConnectedToBorder getAlgorithm(){
+
+	public ConnectedToBorder getAlgorithm() {
 		return this.algorithm;
 	}
-	
-	ConnectedToBorder algorithm ;
-	public void updateAlgorithm(){
-		for (int indexX = 0; indexX < this.getGrid().getMap().length; indexX++){
-			for (int indexY = 0; indexY < this.getGrid().getMap()[indexX].length; indexY++){
-				for (int indexZ = 0; indexZ < this.getGrid().getMap()[indexX][indexY].length; indexZ++){
-					if (this.getGrid().getMap()[indexX][indexY][indexZ].getTerrain().isPassable())
+
+	ConnectedToBorder algorithm;
+	public void updateAlgorithm() {
+		for (int indexX = 0; indexX < this.getGrid()
+				.getMap().length; indexX++) {
+			for (int indexY = 0; indexY < this.getGrid()
+					.getMap()[indexX].length; indexY++) {
+				for (int indexZ = 0; indexZ < this.getGrid()
+						.getMap()[indexX][indexY].length; indexZ++) {
+					if (this.getGrid().getMap()[indexX][indexY][indexZ]
+							.getTerrain().isPassable())
 						algorithm.changeSolidToPassable(indexX, indexY, indexZ);
 				}
 			}
 		}
 	}
-	
-	
+
 	// Map //
-	
+
 	boolean isValidSpawnPosition(Coordinate coordinate) {
 		if (!(coordinate.getX() >= 0
 				&& coordinate.getX() <= this.getGrid().getDimension()[0]
@@ -147,8 +164,8 @@ public class World {
 		else {
 			if (coordinate.getZ() == 0)
 				return true;
-			if (this.getMapAt(coordinate.difference(new Coordinate(0, 0, 1))).getTerrain()
-					.isImpassable())
+			if (this.getMapAt(coordinate.difference(new Coordinate(0, 0, 1)))
+					.getTerrain().isImpassable())
 				return true;
 			return false;
 		}
@@ -184,10 +201,10 @@ public class World {
 			return false;
 		}
 	}
-	
+
 	Cube getMapAt(Coordinate coordinate) {
-		return this.getGrid().getMap()[(int) coordinate.floor().getX()][(int) coordinate
-				.floor().getY()][(int) coordinate.floor().getZ()];
+		return this.getGrid()
+				.getGridAt(coordinate);
 	}
 
 	@Basic
@@ -202,22 +219,21 @@ public class World {
 
 	public ArrayList<Faction> getFactionList() {
 		return this.factions;
-	} 
+	}
 
 	Faction getFactiontoJoin() {
-		if (this.getFactionList().size() < 5){
+		if (this.getFactionList().size() < 5) {
 			Faction theNew = new Faction("Dwarfs", this);
 			this.addFaction(theNew);
 			return theNew;
-		}
-		else {
+		} else {
 			Faction smallest = this.getFactionList().get(0);
-			for (Faction faction : this.getFactionList()){
+			for (Faction faction : this.getFactionList()) {
 				if (faction.getNbUnits() < smallest.getNbUnits())
 					smallest = faction;
 			}
 			return smallest;
-		}	
+		}
 	}
 
 	/**
@@ -355,24 +371,19 @@ public class World {
 		this.addUnit(theNewUnit);
 		return theNewUnit;
 	}
-	
+
 	/**
 	 * Check whether the given Unit should die.
 	 * @param	the Unit that needs to be checked. 
 	 */
-	void shouldDie(Unit unit){
-		if (unit.getHitpoints() <= 0){
-			if (unit.getObjectCarried() instanceof Log){
-				//plaats van unit komt log
-			}
-			else{
-				//plaats van unit komt boulder
+	void shouldDie(Unit unit) {
+		if (unit.getHitpoints() <= 0) {
+			unit.drop();
 			unit.setWorld(null);
 			this.getUnitSet().remove(unit);
-			}
 		}
 	}
-	
+
 	/**
 	 * Check whether this World has the given Unit as one of its
 	 * Units.
