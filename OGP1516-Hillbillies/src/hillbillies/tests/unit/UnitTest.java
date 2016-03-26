@@ -8,11 +8,12 @@ import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
 import static org.junit.Assert.*;
 import ogp.framework.util.Util;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
 import hillbillies.model.*;
-
+import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.ModelException;
 
 /**
@@ -23,16 +24,30 @@ import ogp.framework.util.ModelException;
  *
  */
 public class UnitTest {
-
+	
+	private static TerrainChangeListener thelistener;
 	private Unit legalUnit;
+	private static World theWorld;
+	private static Terrain[][][] testTerrain = new Terrain[50][50][50];
+	
+	@BeforeClass
+	public static void setUpWorld() throws ModelException{
+		for (int i=0;i<50;i++)
+			for(int j=0;j<50;j++)
+				for(int k=0;k<50;k++)
+				testTerrain[i][j][k] = Terrain.AIR;
+		theWorld = new World(testTerrain, thelistener);
+	}
+	
+	
 	/**
 	 * @throws ModelException 
 	 * 			Should never happen, it is a legal unit
 	 */
 	@Before
 	public void setUp() throws ModelException {
-		legalUnit = new Unit("TestUnit", new int[]{2, 2, 2}, 50, 50, 50, 50,
-				false);
+		legalUnit = new Unit("TestUnit", new int[]{1, 1, 0}, 50, 50, 50, 50,
+				false, theWorld);
 	}
 
 	// Constructor //
@@ -45,7 +60,7 @@ public class UnitTest {
 		assertEquals(50, legalUnit.getWeight());
 		assertDoublePositionEquals(legalUnit.getPosition().getX(),
 				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
-				new double[]{2.5, 2.5, 2.5});
+				new double[]{1.5, 1.5, 0.5});
 		assertEquals("TestUnit", legalUnit.getName());
 		assertEquals(Activity.IDLE, legalUnit.getActivity());
 		assertTrue(Util.fuzzyEquals((double) legalUnit.getOrientation(),
@@ -60,15 +75,15 @@ public class UnitTest {
 
 	@Test
 	public void constructorIllegalAttribute() throws ModelException {
-		Unit theUnit = new Unit("TestUnit", new int[]{1, 1, 1}, 50, 24, 50, 50,
-				false);
+		Unit theUnit = new Unit("TestUnit", new int[]{2, 1, 0}, 50, 24, 50, 50,
+				false, theWorld);
 		assertEquals(25, theUnit.getAgility());
 		assertEquals(50, theUnit.getStrength());
 		assertEquals(50, theUnit.getToughness());
 		assertEquals(50, theUnit.getWeight());
 		assertDoublePositionEquals(theUnit.getPosition().getX(),
 				theUnit.getPosition().getY(), theUnit.getPosition().getZ(),
-				new double[]{1.5, 1.5, 1.5});
+				new double[]{2.5, 1.5, 0.5});
 		assertEquals("TestUnit", theUnit.getName());
 		assertEquals(Activity.IDLE, theUnit.getActivity());
 		assertTrue(Util.fuzzyEquals((double) theUnit.getOrientation(),
@@ -83,15 +98,15 @@ public class UnitTest {
 
 	@Test
 	public void constructorIllegalWeight() throws ModelException {
-		Unit theUnit = new Unit("TestUnit", new int[]{1, 1, 1}, 2, 26, 50, 50,
-				false);
+		Unit theUnit = new Unit("TestUnit", new int[]{2, 1, 0}, 2, 26, 50, 50,
+				false, theWorld);
 		assertEquals(26, theUnit.getAgility());
 		assertEquals(50, theUnit.getStrength());
 		assertEquals(50, theUnit.getToughness());
 		assertEquals(theUnit.lowestValidWeight(), theUnit.getWeight());
 		assertDoublePositionEquals(theUnit.getPosition().getX(),
 				theUnit.getPosition().getY(), theUnit.getPosition().getZ(),
-				new double[]{1.5, 1.5, 1.5});
+				new double[]{2.5, 1.5, 0.5});
 		assertEquals("TestUnit", theUnit.getName());
 		assertEquals(Activity.IDLE, theUnit.getActivity());
 		assertTrue(Util.fuzzyEquals((double) theUnit.getOrientation(),
@@ -104,20 +119,20 @@ public class UnitTest {
 		assertEquals(false, theUnit.getDefaultBehavior());
 	}
 
-	// Position //
-
-	@Test
-	public void setPosition_LegalCase() throws ModelException {
-		legalUnit.setPosition(new Coordinate(2, 3, 5));
-		assertDoublePositionEquals(legalUnit.getPosition().getX(),
-				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
-				new double[]{2, 3, 5});
-	}
-
-	@Test(expected = ModelException.class)
-	public void setPosition_IllegalCase() throws ModelException {
-		legalUnit.setPosition(new Coordinate(-3, 3, 5));
-	}
+//	// Position //
+//
+//	@Test
+//	public void setPosition_LegalCase() throws ModelException {
+//		legalUnit.setPosition(new Coordinate(2, 3, 5));
+//		assertDoublePositionEquals(legalUnit.getPosition().getX(),
+//				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
+//				new double[]{2, 3, 5});
+//	}
+//
+//	@Test(expected = ModelException.class)
+//	public void setPosition_IllegalCase() throws ModelException {
+//		legalUnit.setPosition(new Coordinate(-3, 3, 5));
+//	}
 
 	// Initial Primary Attributes //
 
@@ -285,34 +300,16 @@ public class UnitTest {
 	// Moving //
 	
 	@Test
-	public void walkingSpeed_Uphill() throws ModelException{
-		legalUnit.moveToAdjacent(0,0,1);
-		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(),0.75));
-	}
-	
-	@Test
-	public void walkingSpeed_Downhill() throws ModelException{
-		legalUnit.moveToAdjacent(0, 0, -1);
-		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(),1.80));
-	}
-	
-	@Test
-	public void walkingSpeed_level() throws ModelException{
-		legalUnit.moveToAdjacent(0, 1, 0);
-		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(),1.50));
-	}
-	
-	@Test
 	public void getCurrentSpeed_Moving() throws ModelException{
-		legalUnit.moveToAdjacent(0,0,1);
-		assertTrue(Util.fuzzyEquals(legalUnit.walkingSpeed(), legalUnit.getCurrentSpeed()));
+		legalUnit.moveToAdjacent(0,1,0);
+		assertTrue(Util.fuzzyEquals(1.5, legalUnit.getCurrentSpeed()));
 	}
 	
 	@Test
 	public void getCurrentSpeed_Sprinting() throws ModelException{
-		legalUnit.moveToAdjacent(0,0,1);
+		legalUnit.moveToAdjacent(0,1,0);
 		legalUnit.startSprinting();
-		assertTrue(Util.fuzzyEquals(2* legalUnit.walkingSpeed(), legalUnit.getCurrentSpeed()));
+		assertTrue(Util.fuzzyEquals(2* 1.5, legalUnit.getCurrentSpeed()));
 	}
 	
 	@Test
@@ -326,38 +323,38 @@ public class UnitTest {
 		advanceTimeFor(legalUnit, 3, 0.1);
 		assertDoublePositionEquals(legalUnit.getPosition().getX(),
 				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
-				new double[]{3.5, 3.5, 2.5});
+				new double[]{2.5, 2.5, 0.5});
 	}
 	
 	@Test (expected = ModelException.class)
 	public void moveToAjacent_IllegalDestination() throws ModelException{
-		legalUnit.setPosition(new Coordinate(49,49,20));
-		legalUnit.moveToAdjacent(1, 1, 0);
+		legalUnit.moveToAdjacent(-1, -1, 0);
+		legalUnit.moveToAdjacent(-1, -1, 0);
 	}
 	
 	@Test
 	public void moveTo_LegalDestination() throws ModelException{
-		legalUnit.moveTo(30, 15, 20);
+		legalUnit.moveTo(30, 15, 0);
 		advanceTimeFor(legalUnit, 100, 0.1);
 		assertDoublePositionEquals(legalUnit.getPosition().getX(),
 				legalUnit.getPosition().getY(), legalUnit.getPosition().getZ(),
-				new double[]{30.5, 15.5, 20.5});
+				new double[]{30.5, 15.5, 0.5});
 	}
 	
 	@Test (expected = ModelException.class)
 	public void moveTo_IllegalDestination() throws ModelException{
-		legalUnit.moveTo(-2, 15, 20);
+		legalUnit.moveTo(-2, 15, 0);
 	}
 	
 	@Test (expected = ModelException.class)
 	public void moveTo_AlreadyMoving() throws ModelException{
-		legalUnit.moveTo(2, 15, 20);
+		legalUnit.moveTo(2, 15, 0);
 		legalUnit.moveTo(3, 1, 2);
 	}
 
 	@Test
 	public void startSprinting_LegalCase() throws ModelException{
-		legalUnit.moveTo(2, 15, 20);
+		legalUnit.moveTo(2, 15, 0);
 		legalUnit.startSprinting();
 		assertEquals(Activity.SPRINTING, legalUnit.getActivity());
 	}
@@ -375,7 +372,7 @@ public class UnitTest {
 
 	@Test
 	public void sprinting_DepletesStamina() throws ModelException{
-		legalUnit.moveTo(49, 49, 49);
+		legalUnit.moveTo(49, 49, 0);
 		legalUnit.startSprinting();
 		advanceTimeFor(legalUnit, 10, 0.2);
 		assertEquals(Activity.MOVING, legalUnit.getActivity());
@@ -401,8 +398,8 @@ public class UnitTest {
 	
 	@Test
 	public void attack_LegalCase() throws ModelException{
-		Unit victim = new Unit("Victim", new int[]{1, 1, 2}, 50, 25, 50, 50,
-				false);
+		Unit victim = new Unit("Victim", new int[]{2, 1, 0}, 50, 25, 50, 50,
+				false, theWorld);
 		legalUnit.attack(victim);
 		assertEquals(Activity.ATTACKING, legalUnit.getActivity());
 		assertEquals(Activity.DEFENDING, victim.getActivity());
@@ -417,16 +414,16 @@ public class UnitTest {
 	
 	@Test(expected = ModelException.class)
 	public void attack_IllegalCase_VictimTooFar() throws ModelException{
-		Unit victim = new Unit("Victim", new int[]{10, 1, 1}, 50, 24, 50, 50,
-				false);
+		Unit victim = new Unit("Victim", new int[]{10, 1, 0}, 50, 24, 50, 50,
+				false, theWorld);
 		legalUnit.attack(victim);
 	}
 	
 	@Test(expected = ModelException.class)
 	public void attack_IllegalCase_NotReady() throws ModelException{
-		Unit victim = new Unit("Victim", new int[]{1, 1, 1}, 50, 24, 50, 50,
-				false);
-		legalUnit.moveTo(10, 2, 3);
+		Unit victim = new Unit("Victim", new int[]{1, 1, 0}, 50, 24, 50, 50,
+				false, theWorld);
+		legalUnit.moveTo(10, 2, 0);
 		legalUnit.attack(victim);
 	}
 	
@@ -482,7 +479,7 @@ public class UnitTest {
 	@Test(expected = ModelException.class)
 	public void rest_IllegalCase_WhileAttacked() throws ModelException{
 		Unit victim = new Unit("Victim", new int[]{1, 1, 1}, 50, 24, 50, 50,
-				false);
+				false, theWorld);
 		victim.setStamina(12);
 		legalUnit.attack(victim);
 		victim.rest();

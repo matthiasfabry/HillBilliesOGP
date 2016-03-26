@@ -145,7 +145,7 @@ public class Faction {
 	public boolean canHaveAsUnit(
 			Unit unit) {
 		return (unit != null)
-				&& (Unit.canHaveAsFaction(this));
+				&& (unit.canHaveAsFaction(this));
 	}
 
 	/**

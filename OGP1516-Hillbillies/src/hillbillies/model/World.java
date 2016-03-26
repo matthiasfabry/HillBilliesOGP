@@ -152,19 +152,20 @@ public class World {
 	// Map //
 
 	boolean isValidSpawnPosition(Coordinate coordinate) {
-		if (!(coordinate.getX() >= 0
-				&& coordinate.getX() <= this.getGrid().getDimension()[0]
-				&& coordinate.getY() >= 0
-				&& coordinate.getY() <= this.getGrid().getDimension()[1]
-				&& coordinate.getZ() >= 0
-				&& coordinate.getZ() <= this.getGrid().getDimension()[2]))
+		Coordinate flooredCoordinate = coordinate.floor();
+		if (!(flooredCoordinate.getX() >= 0
+				&& flooredCoordinate.getX() <= this.getGrid().getDimension()[0]
+				&& flooredCoordinate.getY() >= 0
+				&& flooredCoordinate.getY() <= this.getGrid().getDimension()[1]
+				&& flooredCoordinate.getZ() >= 0
+				&& flooredCoordinate.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getMapAt(coordinate).getTerrain().isImpassable())
+		if (this.getMapAt(flooredCoordinate).getTerrain().isImpassable())
 			return false;
 		else {
-			if (coordinate.getZ() == 0)
+			if (flooredCoordinate.getZ() == 0)
 				return true;
-			if (this.getMapAt(coordinate.difference(new Coordinate(0, 0, 1)))
+			if (this.getMapAt(flooredCoordinate.difference(new Coordinate(0, 0, 1)))
 					.getTerrain().isImpassable())
 				return true;
 			return false;
@@ -182,19 +183,21 @@ public class World {
 	 *       | 		return False
 	*/
 	boolean isValidPosition(Coordinate coordinate) {
-		if (!(coordinate.getX() >= 0
-				&& coordinate.getX() <= this.getGrid().getDimension()[0]
-				&& coordinate.getY() >= 0
-				&& coordinate.getY() <= this.getGrid().getDimension()[1]
-				&& coordinate.getZ() >= 0
-				&& coordinate.getZ() <= this.getGrid().getDimension()[2]))
+		Coordinate flooredCoordinate = coordinate.floor();
+		if (!(flooredCoordinate.getX() >= 0
+				&& flooredCoordinate.getX() <= this.getGrid().getDimension()[0]
+				&& flooredCoordinate.getY() >= 0
+				&& flooredCoordinate.getY() <= this.getGrid().getDimension()[1]
+				&& flooredCoordinate.getZ() >= 0
+				&& flooredCoordinate.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getMapAt(coordinate).getTerrain().isImpassable())
-			return false;
+		if (this.getMapAt(flooredCoordinate).getTerrain().isImpassable())
+			return false;		
+		if (flooredCoordinate.getZ() == 0)
+			return true;
 		else {
-			if (coordinate.getZ() == 0)
-				return true;
-			for (Terrain cube : this.terrainAtAdjacentCubes(coordinate)) {
+
+			for (Terrain cube : this.terrainAtAdjacentCubes(flooredCoordinate)) {
 				if (cube.isImpassable())
 					return true;
 			}

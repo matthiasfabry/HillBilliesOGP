@@ -213,7 +213,7 @@ public class Unit {
 	 *       | ! isValidPosition(getPosition())
 	 */
 	@Raw
-	public void setPosition(Coordinate position) throws ModelException {
+	void setPosition(Coordinate position) throws ModelException {
 		if (!isValidPosition(position))
 			throw new ModelException("Invalid Position");
 		this.position = new Coordinate(position.getX(), position.getY(),
@@ -261,13 +261,16 @@ public class Unit {
 	 *       | result == (faction != null)
 	*/
 	@Raw
-	public static boolean canHaveAsFaction(Faction faction) {
-		return faction != null;
+	boolean canHaveAsFaction(Faction faction) {
+		if (this.getWorld() == null)
+			return true;
+		else
+			return (faction != null);
 	}
 	/**
 	 * Variable registering the Faction of this Unit.
 	 */
-	private final Faction faction;
+	private Faction faction;
 
 	// Primary Attributes (Total) //
 
@@ -935,21 +938,7 @@ public class Unit {
 	}
 
 	void findPath() throws ModelException {
-		LinkedList<Coordinate> openSet = new LinkedList<>();
-		LinkedList<Coordinate> closedSet = new LinkedList<>();
-		openSet.add(this.getPosition());
 		
-		while (true){
-			Coordinate current = openSet.poll();
-			closedSet.add(current);
-			
-			if (current == this.getDestinationCube())
-				return;
-			
-			for (Cube cube : this.getWorld().getGrid().adjacentCubes(current))
-				return;
-		}
-			
 	}
 
 	void pathExtension(int x, int y, int z) throws ModelException {
@@ -1048,7 +1037,7 @@ public class Unit {
 	 * 		|	result == baseSpeed
 	 * 		
 	 */
-	public double walkingSpeed() {
+	double walkingSpeed() {
 		double walkingSpeed = 0;
 		double baseSpeed = 1.5 * (this.getAgility() + this.getStrength())
 				/ (2 * this.getWeight());
