@@ -1980,45 +1980,45 @@ public class Unit {
 	 * Method that checks whether a primary attribute should be improved.
 	 */
 	public boolean shouldImproveTrait() {
-		return (this.getCountExp() > 10);
+		return (this.getCountExp() >= 10);
 	}
 	/**
 	 * Method that improves one of the Units primary attributes if this is still possible.
 	 */
 	public void improveTrait() {
-		if(isValidAttribute(this.getStrength() + 1) || isValidAttribute(this.getAgility() + 1) 
-				|| isValidAttribute(this.getToughness() + 1)){
-			while (shouldImproveTrait()) {
+		while (shouldImproveTrait()) {
+			if(isValidAttribute(this.getStrength() + 1) || isValidAttribute(this.getAgility() + 1) 
+					|| isValidAttribute(this.getToughness() + 1)){
 				Random random = new Random();
 				int decider = random.nextInt(3);
 				if (decider == 0) {
 					if (isValidAttribute(this.getAgility() + 1)){
-						setAgility(this.getAgility() + 1);
+						this.setAgility(this.getAgility() + 1);
 						this.setCountExp(getCountExp() - 10);
 					}
 				} else if (decider == 1) {
 					if (isValidAttribute(this.getStrength() + 1))
-						setStrength(this.getStrength() + 1);
+						this.setStrength(this.getStrength() + 1);
 						this.setCountExp(getCountExp() - 10);
 				} else {
 					if (isValidAttribute(this.getToughness() + 1))
-						setToughness(this.getToughness() + 1);
+						this.setToughness(this.getToughness() + 1);
 						this.setCountExp(getCountExp() - 10);
 				}
 			}
+			else
+				return;
 		}
-		else
-			return;
 	}
 
 	public int getCountExp() {
-		return countExp;
+		return this.countExp;
 	}
 
 	public void setCountExp(int countExp) {
 		this.countExp = countExp;
 	}
-	private int countExp = 0;
+	private int countExp;
 
 	/**
 	 * Return the current value of the Units experience.
