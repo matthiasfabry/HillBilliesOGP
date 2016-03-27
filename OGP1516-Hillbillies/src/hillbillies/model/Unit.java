@@ -844,9 +844,9 @@ public class Unit {
 				&& (this.getActivity() != Activity.MOVING)) {
 			this.clearPath();
 			this.addToPath(this.getPosition());
-			this.pathExtension((int) this.getInWorldPosition().getX() + x,
+			this.pathExtension(new Coordinate(this.getInWorldPosition().getX() + x,
 					(int) this.getInWorldPosition().getY() + y,
-					(int) this.getInWorldPosition().getZ() + z);
+					(int) this.getInWorldPosition().getZ() + z));
 			this.setActivity(Activity.MOVING);
 		} else
 			throw new ModelException("Already Moving");
@@ -941,8 +941,8 @@ public class Unit {
 		
 	}
 
-	void pathExtension(int x, int y, int z) throws ModelException {
-		Coordinate target = new Coordinate(x, y, z).sum(centerCube());
+	void pathExtension(Coordinate coordinate) throws ModelException {
+		Coordinate target = coordinate.sum(centerCube());
 		if (this.isValidPosition(target))
 			this.addToPath(target);
 		else
@@ -1086,20 +1086,20 @@ public class Unit {
 	 * 		|	(this.getActivity() != Activity.MOVING && this.activity != Activity.SPRINTING)
 	*/
 	void updatePosition(double deltaT) throws ModelException {
+		Coordinate start = this.getPath().get(0);
+		Coordinate target = this.getPath().get(1);
+		Coordinate direction = start.directionVector(target);
+		
 		if (this.getActivity() == Activity.MOVING
 				|| this.activity == Activity.SPRINTING) {
 			if (this.getPath().size() >= 2) {
 				if (this.getDefaultBehavior()
 						&& this.getActivity() != Activity.SPRINTING
 						&& this.canSprint()) {
-					Random rand = new Random();
-					int decider = rand.nextInt(2);
-					if (decider == 1)
-						this.setActivity(Activity.SPRINTING);
+					double decider = Math.random();
+					if (decider < 0.2)
+						this.startSprinting();;
 				}
-				Coordinate start = this.getPath().get(0);
-				Coordinate target = this.getPath().get(1);
-				Coordinate direction = start.directionVector(target);
 				Coordinate displacement = direction.scalarMult(
 						(this.getCurrentSpeed() * deltaT) / CUBE_LENGTH);
 				if (displacement.length() >= this.remaininglegDistance()) {
@@ -1131,7 +1131,22 @@ public class Unit {
 				}
 			} else
 				this.stopMoving();
-		} else
+		} 
+		else if (this.getActivity() == Activity.FALLING) {
+			Coordinate fallDistance = direction.scalarMult(
+					(3.0 * deltaT) / CUBE_LENGTH);
+			if (fallDistance.length() >= this.remaininglegDistance()) {
+				try {
+					this.setPosition(target);
+				} catch (ModelException e) {
+					// shouldn't happen
+				}
+				this.getPath().remove(0);
+				if (this.getPath().size() < 2)
+					this.stopFalling();
+			}
+		} 
+		else
 			throw new ModelException("Unit is not in a moving state");
 	}
 	/**
@@ -1206,8 +1221,39 @@ public class Unit {
 	 */
 	private LinkedList<Coordinate> path = new LinkedList<>();
 
-	// Working (defensive) //
+	// Falling //
 	
+	void fall() throws ModelException {
+		this.setActivity(Activity.FALLING);
+		while (this.getWorld().getTerrainAt(this.getInWorldPosition().difference(new Coordinate(0,0,1))).isPassable())
+			this.pathExtension(this.getInWorldPosition().difference(new Coordinate(0,0,1)));
+		this.setzLevels(this.getPath().size());
+	}
+	
+	void stopFalling(){
+		this.setHitpoints(this.getHitpoints()-10*this.getzLevels());
+		this.setzLevels(0);
+		this.setActivity(Activity.IDLE);
+	}
+	
+	/**
+	 * @return the zLevels
+	 */
+	int getzLevels() {
+		return zLevels;
+	}
+
+	/**
+	 * @param zLevels the zLevels to set
+	 */
+	void setzLevels(int zLevels) {
+		this.zLevels = zLevels;
+	}
+	
+	private int zLevels = 0;
+	
+	
+	// Working (defensive) //
 	public void workAt(int x, int y, int z) throws ModelException{
 		Coordinate targetCube = new Coordinate(x, y, z);
 		
