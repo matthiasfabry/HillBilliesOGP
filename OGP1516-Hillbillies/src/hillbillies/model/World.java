@@ -372,7 +372,7 @@ public class World {
 		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
 				toughness, enableDefaultBehavior, this);
 		this.addUnit(theNewUnit);
-		return theNewUnit;
+		return theNewUnit; 
 	}
 
 	/**

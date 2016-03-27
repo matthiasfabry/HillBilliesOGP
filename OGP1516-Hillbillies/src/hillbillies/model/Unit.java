@@ -1223,11 +1223,27 @@ public class Unit {
 
 	// Falling //
 	
+	/**
+	 * method that checks whether the Unit should fall
+	 * @return
+	 */
+	boolean shouldStartFalling(){
+		return (this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[0].isPassable() &&
+				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[1].isPassable() &&
+				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[2].isPassable() &&
+				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[3].isPassable() &&
+				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[4].isPassable() &&
+				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[5].isPassable());
+	}
+	
 	void fall() throws ModelException {
-		this.setActivity(Activity.FALLING);
-		while (this.getWorld().getTerrainAt(this.getInWorldPosition().difference(new Coordinate(0,0,1))).isPassable())
-			this.pathExtension(this.getInWorldPosition().difference(new Coordinate(0,0,1)));
-		this.setzLevels(this.getPath().size());
+		if (shouldStartFalling()){
+			this.setActivity(Activity.FALLING);
+			while (this.getWorld().getTerrainAt(this.getInWorldPosition().difference(new Coordinate(0,0,1))).isPassable() 
+					&& this.getInWorldPosition().getZ() != 0)
+				this.pathExtension(this.getInWorldPosition().difference(new Coordinate(0,0,1)));
+			this.setzLevels(this.getPath().size());
+		}
 	}
 	
 	void stopFalling(){
@@ -1251,7 +1267,6 @@ public class Unit {
 	}
 	
 	private int zLevels = 0;
-	
 	
 	// Working (defensive) //
 	public void workAt(int x, int y, int z) throws ModelException{
