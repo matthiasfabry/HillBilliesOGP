@@ -1086,9 +1086,7 @@ public class Unit {
 	 * 		|	(this.getActivity() != Activity.MOVING && this.activity != Activity.SPRINTING)
 	*/
 	void updatePosition(double deltaT) throws ModelException {
-		Coordinate start = this.getPath().get(0);
-		Coordinate target = this.getPath().get(1);
-		Coordinate direction = start.directionVector(target);
+
 		
 		if (this.getActivity() == Activity.MOVING
 				|| this.activity == Activity.SPRINTING) {
@@ -1100,6 +1098,9 @@ public class Unit {
 					if (decider < 0.2)
 						this.startSprinting();;
 				}
+				Coordinate start = this.getPath().get(0);
+				Coordinate target = this.getPath().get(1);
+				Coordinate direction = start.directionVector(target);
 				Coordinate displacement = direction.scalarMult(
 						(this.getCurrentSpeed() * deltaT) / CUBE_LENGTH);
 				if (displacement.length() >= this.remaininglegDistance()) {
@@ -1133,6 +1134,9 @@ public class Unit {
 				this.stopMoving();
 		} 
 		else if (this.getActivity() == Activity.FALLING) {
+			Coordinate start = this.getPath().get(0);
+			Coordinate target = this.getPath().get(1);
+			Coordinate direction = start.directionVector(target);
 			Coordinate fallDistance = direction.scalarMult(
 					(3.0 * deltaT) / CUBE_LENGTH);
 			if (fallDistance.length() >= this.remaininglegDistance()) {
