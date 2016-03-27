@@ -1964,21 +1964,32 @@ public class Unit {
 		return (this.getCountExp() > 10);
 	}
 	/**
-	 * Method that improves one of the Units primary attributes.
+	 * Method that improves one of the Units primary attributes if this is still possible.
 	 */
 	public void improveTrait() {
-		while (shouldImproveTrait()) {
-			Random random = new Random();
-			int decider = random.nextInt(3);
-			if (decider == 0) {
-				setAgility(this.getAgility() + 1);
-			} else if (decider == 1) {
-				setStrength(this.getStrength() + 1);
-			} else {
-				setToughness(this.getToughness() + 1);
+		if(isValidAttribute(this.getStrength() + 1) || isValidAttribute(this.getAgility() + 1) 
+				|| isValidAttribute(this.getToughness() + 1)){
+			while (shouldImproveTrait()) {
+				Random random = new Random();
+				int decider = random.nextInt(3);
+				if (decider == 0) {
+					if (isValidAttribute(this.getAgility() + 1)){
+						setAgility(this.getAgility() + 1);
+						this.setCountExp(getCountExp() - 10);
+					}
+				} else if (decider == 1) {
+					if (isValidAttribute(this.getStrength() + 1))
+						setStrength(this.getStrength() + 1);
+						this.setCountExp(getCountExp() - 10);
+				} else {
+					if (isValidAttribute(this.getToughness() + 1))
+						setToughness(this.getToughness() + 1);
+						this.setCountExp(getCountExp() - 10);
+				}
 			}
-			this.setCountExp(getCountExp() - 10);
 		}
+		else
+			return;
 	}
 
 	public int getCountExp() {
