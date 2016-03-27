@@ -1442,7 +1442,7 @@ public class Unit {
 			try {
 				this.setVictim(victim);
 			} catch (ModelException exc) {
-				// shouldn't happen
+				this.setActivity(Activity.IDLE);
 			}
 			Coordinate attackVector = this.getVictim().getInWorldPosition()
 					.difference(this.getInWorldPosition());
@@ -1535,7 +1535,7 @@ public class Unit {
 	 *		| result == true
 	 */
 	boolean isValidVictim(Unit victim) {
-		return true;
+		return (this.getFaction() != victim.getFaction());
 	}
 	/**
 	 * Set the unit's victim to the given victim
@@ -1552,7 +1552,7 @@ public class Unit {
 		if (isValidVictim(victim))
 			this.victim = victim;
 		else
-			throw new ModelException("Not a valid victim");
+			throw new ModelException("Target belongs to the same Faction");
 	}
 	/**
 	 * Variable registering the Unit that is being attacked.
