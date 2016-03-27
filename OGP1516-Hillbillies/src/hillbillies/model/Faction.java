@@ -194,8 +194,7 @@ public class Faction {
 	 */
 	public void addUnit(
 			@Raw Unit Unit) {
-		assert (Unit != null)
-				&& (Unit.getFaction() == this);
+		assert (Unit != null) && (Unit.getFaction() == this);
 		Units.add(Unit);
 	}
 

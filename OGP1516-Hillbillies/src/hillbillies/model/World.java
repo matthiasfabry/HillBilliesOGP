@@ -314,8 +314,9 @@ public class World {
 	 *       | new.hasAsFaction(faction)
 	 */
 	void addFaction(@Raw Faction faction) {
-		assert (faction != null) && (faction.getWorld() == this);
-		factions.add(faction);
+		if (getNbFactions() < 5)
+			assert (faction != null) && (faction.getWorld() == this);
+			factions.add(faction);
 	}
 
 	/**
@@ -369,9 +370,12 @@ public class World {
 			box[2] = decider.nextInt(this.getGrid().getDimension()[2]);
 			target = new Coordinate(box[0], box[1], box[2]);
 		} while (!this.isValidSpawnPosition(target));
-		Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
-				toughness, enableDefaultBehavior, this);
-		this.addUnit(theNewUnit);
+		if (getNbUnits() < 100){
+				Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
+						toughness, enableDefaultBehavior, this);
+				this.addUnit(theNewUnit);
+		}
+		Unit theNewUnit = null;
 		return theNewUnit; 
 	}
 
@@ -414,7 +418,7 @@ public class World {
 	 */
 	@Raw
 	boolean canHaveAsUnit(Unit unit) {
-		return (unit != null) && (unit.canHaveAsWorld(this));
+		return (unit != null) && (unit.canHaveAsWorld(this) && this.getUnitSet().size() < 100);
 	}
 
 	/**
