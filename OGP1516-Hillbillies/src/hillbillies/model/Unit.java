@@ -1,9 +1,11 @@
 
 package hillbillies.model;
 
-
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -155,7 +157,7 @@ public class Unit {
 	void setWorld(World world) {
 		this.world = world;
 	}
-	
+
 	/**
 	 * Return the World of this Unit.
 	 */
@@ -844,9 +846,10 @@ public class Unit {
 				&& (this.getActivity() != Activity.MOVING)) {
 			this.clearPath();
 			this.addToPath(this.getPosition());
-			this.pathExtension(new Coordinate(this.getInWorldPosition().getX() + x,
-					(int) this.getInWorldPosition().getY() + y,
-					(int) this.getInWorldPosition().getZ() + z));
+			this.pathExtension(
+					new Coordinate(this.getInWorldPosition().getX() + x,
+							(int) this.getInWorldPosition().getY() + y,
+							(int) this.getInWorldPosition().getZ() + z));
 			this.setActivity(Activity.MOVING);
 		} else
 			throw new ModelException("Already Moving");
@@ -873,6 +876,7 @@ public class Unit {
 	 */
 	public void moveTo(int x, int y, int z) throws ModelException {
 		this.clearPath();
+		this.clearQueue();
 		Coordinate destination = new Coordinate(x, y, z);
 
 		this.setDestinationCube(destination);
@@ -938,8 +942,20 @@ public class Unit {
 	}
 
 	void findPath() throws ModelException {
-		
+
 	}
+
+	private void search(Coordinate coordinate, int n) {
+		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(coordinate);
+		for (Cube cube : neighbours)
+			if (cube.getTerrain().isPassable())
+	}
+
+	void clearQueue() {
+		q.clear();
+	}
+
+	private Queue<Map<Coordinate, Integer>> q = new PriorityQueue<>();
 
 	void pathExtension(Coordinate coordinate) throws ModelException {
 		Coordinate target = coordinate.sum(centerCube());
@@ -1087,7 +1103,6 @@ public class Unit {
 	*/
 	void updatePosition(double deltaT) throws ModelException {
 
-		
 		if (this.getActivity() == Activity.MOVING
 				|| this.activity == Activity.SPRINTING) {
 			if (this.getPath().size() >= 2) {
@@ -1132,13 +1147,12 @@ public class Unit {
 				}
 			} else
 				this.stopMoving();
-		} 
-		else if (this.getActivity() == Activity.FALLING) {
+		} else if (this.getActivity() == Activity.FALLING) {
 			Coordinate start = this.getPath().get(0);
 			Coordinate target = this.getPath().get(1);
 			Coordinate direction = start.directionVector(target);
-			Coordinate fallDistance = direction.scalarMult(
-					(3.0 * deltaT) / CUBE_LENGTH);
+			Coordinate fallDistance = direction
+					.scalarMult((3.0 * deltaT) / CUBE_LENGTH);
 			if (fallDistance.length() >= this.remaininglegDistance()) {
 				try {
 					this.setPosition(target);
@@ -1149,8 +1163,7 @@ public class Unit {
 				if (this.getPath().size() < 2)
 					this.stopFalling();
 			}
-		} 
-		else
+		} else
 			throw new ModelException("Unit is not in a moving state");
 	}
 	/**
@@ -1226,36 +1239,52 @@ public class Unit {
 	private LinkedList<Coordinate> path = new LinkedList<>();
 
 	// Falling //
-	
+
 	/**
 	 * method that checks whether the Unit should fall
 	 * @return
 	 */
-	boolean shouldStartFalling(){
-		return (this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[0].isPassable() &&
-				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[1].isPassable() &&
-				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[2].isPassable() &&
-				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[3].isPassable() &&
-				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[4].isPassable() &&
-				this.getWorld().terrainAtAdjacentCubes(this.getInWorldPosition())[5].isPassable());
+	boolean shouldStartFalling() {
+		return (this.getWorld()
+				.terrainAtAdjacentCubes(this.getInWorldPosition())[0]
+						.isPassable()
+				&& this.getWorld()
+						.terrainAtAdjacentCubes(this.getInWorldPosition())[1]
+								.isPassable()
+				&& this.getWorld()
+						.terrainAtAdjacentCubes(this.getInWorldPosition())[2]
+								.isPassable()
+				&& this.getWorld()
+						.terrainAtAdjacentCubes(this.getInWorldPosition())[3]
+								.isPassable()
+				&& this.getWorld()
+						.terrainAtAdjacentCubes(this.getInWorldPosition())[4]
+								.isPassable()
+				&& this.getWorld()
+						.terrainAtAdjacentCubes(this.getInWorldPosition())[5]
+								.isPassable());
 	}
-	
+
 	void fall() throws ModelException {
-		if (shouldStartFalling()){
+		this.addToPath(this.getPosition());
+		if (shouldStartFalling()) {
 			this.setActivity(Activity.FALLING);
-			while (this.getWorld().getTerrainAt(this.getInWorldPosition().difference(new Coordinate(0,0,1))).isPassable() 
-					&& this.getInWorldPosition().getZ() != 0)
-				this.pathExtension(this.getInWorldPosition().difference(new Coordinate(0,0,1)));
+			while (this.getWorld()
+					.getTerrainAt(this.getInWorldPosition()
+							.difference(new Coordinate(0, 0, 1)))
+					.isPassable() && this.getInWorldPosition().getZ() != 0)
+				this.pathExtension(this.getInWorldPosition()
+						.difference(new Coordinate(0, 0, 1)));
 			this.setzLevels(this.getPath().size());
 		}
 	}
-	
-	void stopFalling(){
-		this.setHitpoints(this.getHitpoints()-10*this.getzLevels());
+
+	void stopFalling() {
+		this.setHitpoints(this.getHitpoints() - 10 * this.getzLevels());
 		this.setzLevels(0);
 		this.setActivity(Activity.IDLE);
 	}
-	
+
 	/**
 	 * @return the zLevels
 	 */
@@ -1269,13 +1298,13 @@ public class Unit {
 	void setzLevels(int zLevels) {
 		this.zLevels = zLevels;
 	}
-	
+
 	private int zLevels = 0;
-	
+
 	// Working (defensive) //
-	public void workAt(int x, int y, int z) throws ModelException{
+	public void workAt(int x, int y, int z) throws ModelException {
 		Coordinate targetCube = new Coordinate(x, y, z);
-		
+
 	}
 
 	/**
@@ -1389,18 +1418,17 @@ public class Unit {
 	 * Variable registering the remaining work time of this Unit.
 	 */
 	private double remainingWorkTime;
-	
+
 	// Carrying //
-	
-	void drop(){
-		if (this.getObjectCarried() instanceof Log){
-			//plaats van unit komt log
-		}
-		else{
-			//plaats van unit komt boulder
+
+	void drop() {
+		if (this.getObjectCarried() instanceof Log) {
+			// plaats van unit komt log
+		} else {
+			// plaats van unit komt boulder
 		}
 	}
-	
+
 	/**
 	 * Set the units carried object to the given object
 	 * 
@@ -1409,22 +1437,22 @@ public class Unit {
 	 * @post	the carried object is the given object
 	 * 		| 	this.getGameobject() == object
 	 */
-	void setObjectCarried(GameObject object){
+	void setObjectCarried(GameObject object) {
 		this.ObjectCarried = object;
 	}
 	/**
 	 * Return the object the unit is carrying
 	 */
-	public GameObject getObjectCarried(){
+	public GameObject getObjectCarried() {
 		return ObjectCarried;
 	}
-	
-	private GameObject ObjectCarried; 
-	
+
+	private GameObject ObjectCarried;
+
 	/**
 	 * flag that registers whether a Unit is carrying a gameobject.
 	 */
-	public boolean isCarrying(){
+	public boolean isCarrying() {
 		return (this.getObjectCarried() != null);
 	}
 
@@ -1987,26 +2015,26 @@ public class Unit {
 	 */
 	public void improveTrait() {
 		while (shouldImproveTrait()) {
-			if(isValidAttribute(this.getStrength() + 1) || isValidAttribute(this.getAgility() + 1) 
-					|| isValidAttribute(this.getToughness() + 1)){
+			if (isValidAttribute(this.getStrength() + 1)
+					|| isValidAttribute(this.getAgility() + 1)
+					|| isValidAttribute(this.getToughness() + 1)) {
 				Random random = new Random();
 				int decider = random.nextInt(3);
 				if (decider == 0) {
-					if (isValidAttribute(this.getAgility() + 1)){
+					if (isValidAttribute(this.getAgility() + 1)) {
 						this.setAgility(this.getAgility() + 1);
 						this.setCountExp(getCountExp() - 10);
 					}
 				} else if (decider == 1) {
 					if (isValidAttribute(this.getStrength() + 1))
 						this.setStrength(this.getStrength() + 1);
-						this.setCountExp(getCountExp() - 10);
+					this.setCountExp(getCountExp() - 10);
 				} else {
 					if (isValidAttribute(this.getToughness() + 1))
 						this.setToughness(this.getToughness() + 1);
-						this.setCountExp(getCountExp() - 10);
+					this.setCountExp(getCountExp() - 10);
 				}
-			}
-			else
+			} else
 				return;
 		}
 	}

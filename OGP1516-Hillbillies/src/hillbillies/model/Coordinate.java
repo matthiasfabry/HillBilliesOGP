@@ -10,6 +10,8 @@ import be.kuleuven.cs.som.annotate.*;
  */
 @Value
 public class Coordinate {
+	
+	// Constructor //
 
 	/**
 	 * Initialize a Coordinate with given x-, y-, and z-component.
@@ -26,6 +28,9 @@ public class Coordinate {
 		this.y = y;
 		this.z = z;
 	}
+	
+	// Utility Methods //
+	
 	/**
 	 * Method that computes the sum of 2 coordinates.
 	 * @param	other
@@ -103,7 +108,7 @@ public class Coordinate {
 				Math.floor(this.getZ()));
 	}
 
-	// delete all setters since immutable
+	// Getters //
 
 	/**
 	 * Return the x-value of the coordinate.
@@ -132,8 +137,23 @@ public class Coordinate {
 		return this.z;
 	}
 
+	// Fields //
+	
 	/**
 	 * Variables registering the x-, y- and z-component of the coordinate.
 	 */
 	private double x, y, z;
+	
+	// Overrides from Object //
+	
+	@Override
+	public boolean equals(Object object){
+		if (object.getClass() != Coordinate.class)
+			return false;
+		Coordinate casted = (Coordinate) object;
+		return (this.getX() == casted.getX() &&
+				this.getY() == casted.getY() && 
+				this.getZ() == casted.getZ());
+		
+	}
 }

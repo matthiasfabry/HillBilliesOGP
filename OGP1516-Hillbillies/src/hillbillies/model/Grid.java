@@ -27,7 +27,8 @@ public class Grid {
 		for (int indexX = 0; indexX < features.length; indexX++) {
 			for (int indexY = 0; indexY < features[indexX].length; indexY++) {
 				for (int indexZ = 0; indexZ < features[indexX][indexY].length; indexZ++) {
-					this.getMap()[indexX][indexY][indexZ] = new Cube();
+					this.getMap()[indexX][indexY][indexZ] = new Cube(
+							new Coordinate(indexX, indexY, indexZ));
 					this.getMap()[indexX][indexY][indexZ]
 							.setTerrain(features[indexX][indexY][indexZ]);
 				}
@@ -76,9 +77,8 @@ public class Grid {
 	 */
 	private final int[] dimension;
 
-	
 	// Additional methods //
-	
+
 	Cube[] directAdjCube(Coordinate coordinate) {
 		Cube[] result = new Cube[6];
 		result[0] = this.getGridAt(coordinate.sum(new Coordinate(1, 0, 0)));
@@ -92,7 +92,6 @@ public class Grid {
 				.getGridAt(coordinate.difference(new Coordinate(0, 0, 1)));
 		return result;
 	}
-	
 
 	Cube[] adjacentCubes(Coordinate coordinate) {
 		Cube[] result = new Cube[26];
@@ -123,7 +122,7 @@ public class Grid {
 		result[24] = this.getGridAt(coordinate.sum(new Coordinate(-1, 1, 1)));
 		result[25] = this.getGridAt(coordinate.sum(new Coordinate(1, -1, -1)));
 		return result;
-		
+
 	}
 
 }

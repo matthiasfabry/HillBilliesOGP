@@ -38,8 +38,8 @@ public class Cube {
 	/**
 	 * Default Constructor
 	 */
-	public Cube(){
-		
+	public Cube(Coordinate coordinate){
+		this.position = coordinate;
 	}
 	
 	// Terrain //
@@ -49,7 +49,7 @@ public class Cube {
 	 */
 	@Basic
 	@Raw
-	public Terrain getTerrain() {
+	Terrain getTerrain() {
 		return this.terrain;
 	}
 
@@ -80,7 +80,7 @@ public class Cube {
 	 *       | ! isValidTerrain(getTerrain())
 	 */
 	@Raw
-	public void setTerrain(Terrain terrain) throws ModelException {
+	void setTerrain(Terrain terrain) throws ModelException {
 		if (!isValidTerrain(terrain))
 			throw new ModelException();
 		this.terrain = terrain;
@@ -97,7 +97,7 @@ public class Cube {
 	 * Return the set of Logs of this Cube.
 	 */
 	@Basic @Raw
-	public Set<Log> getLogs() {
+	Set<Log> getLogs() {
 		return this.logs;
 	}
 	
@@ -110,7 +110,7 @@ public class Cube {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidLogs(Set<Log> logs) {
+	static boolean isValidLogs(Set<Log> logs) {
 		return false;
 	}
 	
@@ -128,7 +128,7 @@ public class Cube {
 	 *       | ! isValidLogs(getLogs())
 	 */
 	@Raw
-	public void setLogs(Set<Log> logs) 
+	void setLogs(Set<Log> logs) 
 			throws ModelException {
 		if (! isValidLogs(logs))
 			throw new ModelException();
@@ -146,7 +146,7 @@ public class Cube {
 	 * Return the set of Boulders of this Cube.
 	 */
 	@Basic @Raw
-	public Set<Boulder> getBoulders() {
+	Set<Boulder> getBoulders() {
 		return this.boulders;
 	}
 	
@@ -159,7 +159,7 @@ public class Cube {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidBoulders(Set<Boulder> boulders) {
+	static boolean isValidBoulders(Set<Boulder> boulders) {
 		return false;
 	}
 	
@@ -177,7 +177,7 @@ public class Cube {
 	 *       | ! isValidBoulders(getBoulders())
 	 */
 	@Raw
-	public void setBoulders(Set<Boulder> boulders) 
+	void setBoulders(Set<Boulder> boulders) 
 			throws ModelException {
 		if (! isValidBoulders(boulders))
 			throw new ModelException();
@@ -188,4 +188,12 @@ public class Cube {
 	 * Variable registering the set of Boulders of this Cube.
 	 */
 	private Set<Boulder> boulders = new HashSet<>();
+	
+	// Position //
+	
+	Coordinate getPlaceInGrid(){
+		return this.position;
+	}
+	
+	private final Coordinate position;
 }
