@@ -49,6 +49,7 @@ public class Cube {
 	 */
 	@Basic
 	@Raw
+	public
 	Terrain getTerrain() {
 		return this.terrain;
 	}

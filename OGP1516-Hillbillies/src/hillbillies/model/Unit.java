@@ -1,6 +1,8 @@
 
 package hillbillies.model;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -946,11 +948,37 @@ public class Unit {
 	}
 
 	private void search(Coordinate coordinate, int n) {
+		ArrayList<Cube> list = new ArrayList();
 		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(coordinate);
 		for (Cube cube : neighbours)
-			if (cube.getTerrain().isPassable())
+			if (cube.getTerrain().isPassable() && neighbourssolid(cube) && !alreadyinQueue(cube, n))
+				list.add((cube));
+		//add elements of list to q
+	}
+	
+	public boolean alreadyinQueue(Cube cube, int n) {
+		boolean alreadyinQ = false;
+		int i = 0;
+		do{if (q.contains(cube.getPlaceInGrid()))
+			alreadyinQ = true;
+		else
+			i++;
+		} while (i < n && !alreadyinQ);	
+		return alreadyinQ;
 	}
 
+	public boolean neighbourssolid(Cube cube){
+		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(cube.getPlaceInGrid());
+		boolean neighbourssolid = false;
+		int i = 0;
+		do{if (neighbours[i].getTerrain().isPassable())
+				neighbourssolid = true;
+			else
+				i++;
+		} while (i < neighbours.length && !neighbourssolid);
+		return neighbourssolid;	
+	}
+	
 	void clearQueue() {
 		q.clear();
 	}
