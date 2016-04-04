@@ -889,7 +889,7 @@ public class Unit {
 
 	}
 	/**
-	 * Method that seeks the path for the Unit to move to its destination.
+	 * Method that seeks the path for the Unit to move to its destination when in an empty world.
 	 *
 	 * @effect The subsequent steps in the path to the destination will be
 	 * 			added to the unit's movement path
@@ -946,7 +946,15 @@ public class Unit {
 	void findPath() throws ModelException {
 
 	}
-
+	/**
+	 * Method that adds all accessible cubes together with a cost starting from 
+	 * the given cube. 
+	 * @param coordinate
+	 * 			the coordinate from which the Unit wants to move to another coordinate.
+	 * @param n
+	 * 			the cost of the given coordinate.
+	 * * @post	the queue will contain the accessible cubes with their costs.
+	 */
 	private void search(Coordinate coordinate, int n) {
 		ArrayList<Cube> list = new ArrayList();
 		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(coordinate);
@@ -956,6 +964,21 @@ public class Unit {
 		//add elements of list to q
 	}
 	
+	/**
+	 * Method that checks if the given cube is already in the queue
+	 * @param cube
+	 * 			the cube that needs to be checked.
+	 * @param n
+	 * 			the current cost to reach the cube
+	 * @return
+	 * 			true if the cube contains the same cube but with lower cost
+	 * 			otherwise false
+	 * 		|	if (q.contains(cube.getPlaceInGrid())
+	 * 		|		return true
+	 * 		|	else
+	 * 		|		return false
+	 * 			
+	 */
 	public boolean alreadyinQueue(Cube cube, int n) {
 		boolean alreadyinQ = false;
 		int i = 0;
@@ -966,7 +989,16 @@ public class Unit {
 		} while (i < n && !alreadyinQ);	
 		return alreadyinQ;
 	}
-
+	/**
+	 * Checks if the given cube neighbours any solid cube.
+	 * @param cube
+	 * 			the cube that needs to be checked on solid neighbours
+	 * @return true if the cube has a solid neighbour
+	 * 		|	if neighbour.getTerrain().isSolid()
+	 * 		|		return true
+	 * 		|	else
+	 * 		|		return false
+	 */
 	public boolean neighbourssolid(Cube cube){
 		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(cube.getPlaceInGrid());
 		boolean neighbourssolid = false;
@@ -978,7 +1010,11 @@ public class Unit {
 		} while (i < neighbours.length && !neighbourssolid);
 		return neighbourssolid;	
 	}
-	
+	/**
+	 * method that clears the current queue.
+	 * @post the new queue will be empty
+	 * 	|	 length(queue) = 0
+	 */
 	void clearQueue() {
 		q.clear();
 	}
