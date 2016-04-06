@@ -3,10 +3,8 @@
  */
 package hillbillies.model;
 
-import javafx.util.Pair;
-
 /**
- *
+ * Simple class representing a tuple of 2 objects.
  *
  * @author Matthias Fabry
  * @version 1.0

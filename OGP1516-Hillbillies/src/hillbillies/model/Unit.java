@@ -1,15 +1,11 @@
 
 package hillbillies.model;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import be.kuleuven.cs.som.annotate.*;
@@ -955,15 +951,16 @@ public class Unit {
 	 * 			the cost of the given coordinate.
 	 * * @post	the queue will contain the accessible cubes with their costs.
 	 */
-	private void search(Coordinate coordinate, int n) {
-		ArrayList<Cube> list = new ArrayList();
+	void search(Coordinate coordinate, int n) {
 		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(coordinate);
 		for (Cube cube : neighbours)
-			if (cube.getTerrain().isPassable() && neighbourssolid(cube) && !alreadyinQueue(cube, n))
-				list.add((cube));
-		//add elements of list to q
+			if (cube.getTerrain().isPassable() && neighbourssolid(cube)
+					&& !alreadyinQueue(new Tuple<Coordinate, Integer>(
+							cube.getPlaceInGrid(), n)))
+				q.add(new Tuple<Coordinate, Integer>(cube.getPlaceInGrid(),
+						n + 1));
 	}
-	
+
 	/**
 	 * Method that checks if the given cube is already in the queue
 	 * @param cube
@@ -979,14 +976,15 @@ public class Unit {
 	 * 		|		return false
 	 * 			
 	 */
-	public boolean alreadyinQueue(Cube cube, int n) {
+	public boolean alreadyinQueue(Tuple<Coordinate, Integer> tuple) {
 		boolean alreadyinQ = false;
-		int i = 0;
-		do{if (q.contains(cube.getPlaceInGrid()))
-			alreadyinQ = true;
-		else
-			i++;
-		} while (i < n && !alreadyinQ);	
+		Tuple<Coordinate, Integer> decending = tuple;
+		do {
+			if (q.contains(decending))
+				alreadyinQ = true;
+			decending = new Tuple<Coordinate, Integer>(decending.getC(),
+					decending.getV() - 1);
+		} while (decending.getV() >= 0 && !alreadyinQ);
 		return alreadyinQ;
 	}
 	/**
@@ -999,16 +997,18 @@ public class Unit {
 	 * 		|	else
 	 * 		|		return false
 	 */
-	public boolean neighbourssolid(Cube cube){
-		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(cube.getPlaceInGrid());
-		boolean neighbourssolid = false;
+	public boolean neighbourssolid(Cube cube) {
+		Cube[] neighbours = this.getWorld().getGrid()
+				.adjacentCubes(cube.getPlaceInGrid());
+		boolean neighboursSolid = false;
 		int i = 0;
-		do{if (neighbours[i].getTerrain().isPassable())
-				neighbourssolid = true;
+		do {
+			if (neighbours[i].getTerrain().isPassable())
+				neighboursSolid = true;
 			else
 				i++;
-		} while (i < neighbours.length && !neighbourssolid);
-		return neighbourssolid;	
+		} while (i < neighbours.length && !neighboursSolid);
+		return neighboursSolid;
 	}
 	/**
 	 * method that clears the current queue.
@@ -1019,7 +1019,7 @@ public class Unit {
 		q.clear();
 	}
 
-	private Queue<Map<Coordinate, Integer>> q = new PriorityQueue<>();
+	private Queue<Tuple<Coordinate, Integer>> q = new PriorityQueue<>();
 
 	void pathExtension(Coordinate coordinate) throws ModelException {
 		Coordinate target = coordinate.sum(centerCube());
@@ -1309,22 +1309,22 @@ public class Unit {
 	 * @return
 	 */
 	boolean shouldStartFalling() {
-		return (this.getWorld()
+		return (this.getWorld().getGrid()
 				.terrainAtAdjacentCubes(this.getInWorldPosition())[0]
 						.isPassable()
-				&& this.getWorld()
+				&& this.getWorld().getGrid()
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[1]
 								.isPassable()
-				&& this.getWorld()
+				&& this.getWorld().getGrid()
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[2]
 								.isPassable()
-				&& this.getWorld()
+				&& this.getWorld().getGrid()
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[3]
 								.isPassable()
-				&& this.getWorld()
+				&& this.getWorld().getGrid()
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[4]
 								.isPassable()
-				&& this.getWorld()
+				&& this.getWorld().getGrid()
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[5]
 								.isPassable());
 	}
@@ -1333,7 +1333,7 @@ public class Unit {
 		this.addToPath(this.getPosition());
 		if (shouldStartFalling()) {
 			this.setActivity(Activity.FALLING);
-			while (this.getWorld()
+			while (this.getWorld().getGrid()
 					.getTerrainAt(this.getInWorldPosition()
 							.difference(new Coordinate(0, 0, 1)))
 					.isPassable() && this.getInWorldPosition().getZ() != 0)
@@ -1350,14 +1350,16 @@ public class Unit {
 	}
 
 	/**
-	 * @return the zLevels
+	 * Return the zLevels to fall of this unit
 	 */
+	@Basic
+	@Raw
 	int getzLevels() {
 		return zLevels;
 	}
 
 	/**
-	 * @param zLevels the zLevels to set
+	 * Set the zlevels of this unit to the given amount of zlevels.
 	 */
 	void setzLevels(int zLevels) {
 		this.zLevels = zLevels;
@@ -1366,6 +1368,7 @@ public class Unit {
 	private int zLevels = 0;
 
 	// Working (defensive) //
+
 	public void workAt(int x, int y, int z) throws ModelException {
 		Coordinate targetCube = new Coordinate(x, y, z);
 
