@@ -63,8 +63,6 @@ public class World {
 
 	// Terrain //
 
-
-
 	void caveIn(Coordinate coordinate) throws ModelException {
 		Terrain oldTerrain = this.getGrid().getMapAt(coordinate).getTerrain();
 
