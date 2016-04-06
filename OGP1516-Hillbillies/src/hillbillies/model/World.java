@@ -63,32 +63,12 @@ public class World {
 
 	// Terrain //
 
-	Terrain[] terrainAtAdjacentCubes(Coordinate coordinate) {
-		Terrain[] result = new Terrain[6];
-		result[0] = this.getTerrainAt(coordinate.sum(new Coordinate(1, 0, 0)));
-		result[1] = this
-				.getTerrainAt(coordinate.difference(new Coordinate(1, 0, 0)));
-		result[2] = this.getTerrainAt(coordinate.sum(new Coordinate(0, 1, 0)));
-		result[3] = this
-				.getTerrainAt(coordinate.difference(new Coordinate(0, 1, 0)));
-		result[4] = this.getTerrainAt(coordinate.sum(new Coordinate(0, 0, 1)));
-		result[5] = this
-				.getTerrainAt(coordinate.difference(new Coordinate(0, 0, 1)));
-		return result;
-	}
 
-	Terrain getTerrainAt(Coordinate coordinate) {
-		try {
-			return this.getMapAt(coordinate).getTerrain();
-		} catch (Exception e) {
-			return Terrain.AIR;
-		}
-	}
 
 	void caveIn(Coordinate coordinate) throws ModelException {
-		Terrain oldTerrain = this.getMapAt(coordinate).getTerrain();
+		Terrain oldTerrain = this.getGrid().getMapAt(coordinate).getTerrain();
 
-		this.getMapAt(coordinate).setTerrain(Terrain.AIR);
+		this.getGrid().getMapAt(coordinate).setTerrain(Terrain.AIR);
 		double random = Math.random();
 		if (random < 0.25) {
 			if (oldTerrain == Terrain.TREE)
@@ -133,7 +113,8 @@ public class World {
 		return this.algorithm;
 	}
 
-	ConnectedToBorder algorithm;
+	private final ConnectedToBorder algorithm;
+	
 	public void updateAlgorithm() {
 		for (int indexX = 0; indexX < this.getGrid()
 				.getMap().length; indexX++) {
@@ -160,12 +141,12 @@ public class World {
 				&& flooredCoordinate.getZ() >= 0
 				&& flooredCoordinate.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getMapAt(flooredCoordinate).getTerrain().isImpassable())
+		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain().isImpassable())
 			return false;
 		else {
 			if (flooredCoordinate.getZ() == 0)
 				return true;
-			if (this.getMapAt(flooredCoordinate.difference(new Coordinate(0, 0, 1)))
+			if (this.getGrid().getMapAt(flooredCoordinate.difference(new Coordinate(0, 0, 1)))
 					.getTerrain().isImpassable())
 				return true;
 			return false;
@@ -191,23 +172,18 @@ public class World {
 				&& flooredCoordinate.getZ() >= 0
 				&& flooredCoordinate.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getMapAt(flooredCoordinate).getTerrain().isImpassable())
+		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain().isImpassable())
 			return false;		
 		if (flooredCoordinate.getZ() == 0)
 			return true;
 		else {
 
-			for (Terrain cube : this.terrainAtAdjacentCubes(flooredCoordinate)) {
+			for (Terrain cube : this.getGrid().terrainAtAdjacentCubes(flooredCoordinate)) {
 				if (cube.isImpassable())
 					return true;
 			}
 			return false;
 		}
-	}
-
-	Cube getMapAt(Coordinate coordinate) {
-		return this.getGrid()
-				.getGridAt(coordinate);
 	}
 
 	@Basic
@@ -450,7 +426,7 @@ public class World {
 	 *        | result ==
 	 *        |   card({unit:Unit | hasAsUnit({unit)})
 	 */
-	public int getNbUnits() {
+	int getNbUnits() {
 		return unitSet.size();
 	}
 
@@ -485,7 +461,7 @@ public class World {
 	 *       | ! new.hasAsUnit(unit)
 	 */
 	@Raw
-	public void removeUnit(Unit unit) {
+	void removeUnit(Unit unit) {
 		assert this.hasAsUnit(unit) && (unit.getWorld() == null);
 		unitSet.remove(unit);
 	}
@@ -507,7 +483,7 @@ public class World {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidUnitSet(Set<Unit> unitSet) {
+	static boolean isValidUnitSet(Set<Unit> unitSet) {
 		return false;
 	}
 
@@ -527,7 +503,7 @@ public class World {
 	 */
 	@Basic
 	@Raw
-	public boolean hasAsGameObject(@Raw GameObject gameObject) {
+	boolean hasAsGameObject(@Raw GameObject gameObject) {
 		return gameObjects.contains(gameObject);
 	}
 
@@ -544,7 +520,7 @@ public class World {
 	 *       |   GameObject.isValidWorld(this)
 	 */
 	@Raw
-	public boolean canHaveAsGameObject(GameObject gameObject) {
+	boolean canHaveAsGameObject(GameObject gameObject) {
 		return (gameObject != null) && (GameObject.isValidWorld(this));
 	}
 
@@ -560,7 +536,7 @@ public class World {
 	 *       |     then canHaveAsGameObject(gameObject) &&
 	 *       |          (gameObject.getWorld() == this)
 	 */
-	public boolean hasProperGameObjects() {
+	boolean hasProperGameObjects() {
 		for (GameObject gameObject : gameObjects) {
 			if (!canHaveAsGameObject(gameObject))
 				return false;
@@ -577,7 +553,7 @@ public class World {
 	 *        | result ==
 	 *        |   card({gameObject:GameObject | hasAsGameObject({gameObject)})
 	 */
-	public int getNbGameObjects() {
+	int getNbGameObjects() {
 		return gameObjects.size();
 	}
 
@@ -612,7 +588,7 @@ public class World {
 	 *       | ! new.hasAsGameObject(gameObject)
 	 */
 	@Raw
-	public void removeGameObject(GameObject gameObject) {
+	void removeGameObject(GameObject gameObject) {
 		assert this.hasAsGameObject(gameObject)
 				&& (gameObject.getWorld() == null);
 		gameObjects.remove(gameObject);
@@ -637,8 +613,6 @@ public class World {
 	/**
 	 * Return the set of Logs of this World.
 	 */
-	@Basic
-	@Raw
 	public Set<Log> getLogSet() {
 		Set<Log> logSet = new HashSet<>();
 		for (GameObject gameObject : this.gameObjects)
@@ -652,9 +626,6 @@ public class World {
 	/**
 	 * Return the set of Boulders of this World.
 	 */
-
-	@Basic
-	@Raw
 	public Set<Boulder> getBoulderSet() {
 		Set<Boulder> boulderSet = new HashSet<>();
 		for (GameObject gameObject : this.gameObjects)

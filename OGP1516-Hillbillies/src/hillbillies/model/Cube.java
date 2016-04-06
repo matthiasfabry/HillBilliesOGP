@@ -31,14 +31,11 @@ import ogp.framework.util.ModelException;
  *
  */
 
-public class Cube {
+class Cube {
 	
 	// Constructor //
 	
-	/**
-	 * Default Constructor
-	 */
-	public Cube(Coordinate coordinate){
+	Cube(Coordinate coordinate){
 		this.position = coordinate;
 	}
 	
@@ -49,7 +46,6 @@ public class Cube {
 	 */
 	@Basic
 	@Raw
-	public
 	Terrain getTerrain() {
 		return this.terrain;
 	}
@@ -60,8 +56,9 @@ public class Cube {
 	 *  
 	 * @param  Terrain
 	 *         The Terrain to check.
-	 * @return 
-	 *       | result == 
+	 * @return Returns true, since in this iteration, every item of the Enum
+	 * 			Terrain is valid.
+	 *       | result == true
 	*/
 	static boolean isValidTerrain(Terrain terrain) {
 		return true;

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import hillbillies.model.Activity;
 import hillbillies.model.Boulder;
+import hillbillies.model.Coordinate;
 import hillbillies.model.Faction;
 import hillbillies.model.Log;
 import hillbillies.model.Terrain;
@@ -497,7 +498,7 @@ public class Facade implements IFacade {
 	@Override
 	public int getCubeType(World world, int x, int y, int z)
 			throws ModelException {
-		Terrain theTerrain = world.getGrid().getMap()[x][y][z].getTerrain();
+		Terrain theTerrain = world.getGrid().getTerrainAt(new Coordinate(x,y,z));
 		if (theTerrain == Terrain.AIR)
 			return 0;
 		else if (theTerrain == Terrain.WORKSHOP)
@@ -521,13 +522,13 @@ public class Facade implements IFacade {
 	public void setCubeType(World world, int x, int y, int z, int value)
 			throws ModelException {
 		if (value == 0)
-			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.AIR);
+			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.AIR);
 		else if (value == 1)
-			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.ROCK);
+			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.ROCK);
 		else if (value == 2)
-			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.TREE);
+			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.TREE);
 		else if (value == 3)
-			world.getGrid().getMap()[x][y][z].setTerrain(Terrain.WORKSHOP);
+			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.WORKSHOP);
 		else
 			throw new ModelException("Terrain type not existent");
 
