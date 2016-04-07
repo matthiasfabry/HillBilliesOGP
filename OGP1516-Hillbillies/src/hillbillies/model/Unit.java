@@ -1166,7 +1166,6 @@ public class Unit {
 	 * 		|	(this.getActivity() != Activity.MOVING && this.activity != Activity.SPRINTING)
 	*/
 	void updatePosition(double deltaT) throws ModelException {
-
 		if (this.getActivity() == Activity.MOVING
 				|| this.activity == Activity.SPRINTING) {
 			if (this.getPath().size() >= 2) {
@@ -1175,7 +1174,7 @@ public class Unit {
 						&& this.canSprint()) {
 					double decider = Math.random();
 					if (decider < 0.2)
-						this.startSprinting();;
+						this.startSprinting();
 				}
 				Coordinate start = this.getPath().get(0);
 				Coordinate target = this.getPath().get(1);
@@ -1369,8 +1368,7 @@ public class Unit {
 
 	// Working (defensive) //
 
-	public void workAt(int x, int y, int z) throws ModelException {
-		Coordinate targetCube = new Coordinate(x, y, z);
+	public void workAt(Coordinate coordinate) throws ModelException {
 
 	}
 
@@ -1389,7 +1387,7 @@ public class Unit {
 	 *		|	|| this.getActivity() == Activity.ATTACKING
 	 *		|	|| this.getActivity() == Activity.DEFENDING)
 	 */
-	public void work() throws ModelException {
+	public void work(Coordinate coordinate) throws ModelException {
 		if (this.getActivity() != Activity.MOVING
 				&& this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.WORKING
@@ -1415,12 +1413,13 @@ public class Unit {
 		if (this.getActivity() != Activity.WORKING)
 			throw new ModelException("The unit isn't in a working state");
 		else
-			try {
-				this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
-			} catch (ModelException e) {
-				this.setRemainingWorkTime(0);
-				this.stopWork();
-			}
+			this.workAt(this.getInWorldPosition());
+		try {
+			this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
+		} catch (ModelException e) {
+			this.setRemainingWorkTime(0);
+			this.stopWork();
+		}
 	}
 	/**
 	 * Method that stops a work task for a Unit
@@ -1429,7 +1428,21 @@ public class Unit {
 	 * 		| new.getActivity == IDLE
 	 */
 	void stopWork() {
-		this.AwardExperience(10);
+		if (this.isCarrying()) {
+			this.drop();
+		}
+		if (this.getWorld()
+				.getTerrainAt(this.getInWorldPosition()) == Terrain.WORKSHOP
+				&& this.getWorld().getCubeAt(this.getInWorldPosition())
+						.getBoulders().size() != 0 && this.getWorld().getCubeAt(this.getInWorldPosition())
+						.getLogs().size() != 0){
+			this.setToughness(this.getToughness() + 10);
+			this.setWeight(this.getWeight() + 10);
+			this.getWorld().getCubeAt(this.getInWorldPosition()).removeBoulder();
+			
+		}
+
+			this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
 	}
 
@@ -2022,7 +2035,7 @@ public class Unit {
 			if (decider == 0) {
 				rest();
 			} else if (decider == 1) {
-				work();
+				work(this.getInWorldPosition());
 			} else {
 				int x = random.nextInt(50);
 				int y = random.nextInt(50);

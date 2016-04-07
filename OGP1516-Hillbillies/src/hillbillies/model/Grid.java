@@ -9,17 +9,17 @@ import be.kuleuven.cs.som.annotate.Raw;
 import ogp.framework.util.ModelException;
 
 /**
- *
+ * Background class representing a game world map
  *
  * @author Matthias Fabry
  * @version 1.0
  *
  */
-public class Grid {
+class Grid {
 
 	// Constructor //
 
-	public Grid(Terrain[][][] features, World world) throws ModelException {
+	Grid(Terrain[][][] features, World world){
 		this.map = new Cube[features.length][features[0].length][features[0][0].length];
 		this.dimension = new int[]{features.length, features[0].length,
 				features[0][0].length};
@@ -29,16 +29,22 @@ public class Grid {
 				for (int indexZ = 0; indexZ < features[indexX][indexY].length; indexZ++) {
 					this.getMap()[indexX][indexY][indexZ] = new Cube(
 							new Coordinate(indexX, indexY, indexZ));
-					this.getMap()[indexX][indexY][indexZ]
-							.setTerrain(features[indexX][indexY][indexZ]);
+					try {
+						this.getMap()[indexX][indexY][indexZ]
+								.setTerrain(features[indexX][indexY][indexZ]);
+					} catch (ModelException e) {
+						// shouldn't happen
+					}
 				}
 			}
 		}
 	}
 
-	// World //
+	// World link //
 
-	public World getWorld() {
+	@Basic
+	@Raw
+	World getWorld() {
 		return this.world;
 	}
 
@@ -60,7 +66,7 @@ public class Grid {
 		return result;
 	}
 
-	public Terrain getTerrainAt(Coordinate coordinate) {
+	Terrain getTerrainAt(Coordinate coordinate) {
 		try {
 			return this.getMapAt(coordinate).getTerrain();
 		} catch (Exception e) {
@@ -68,12 +74,16 @@ public class Grid {
 		}
 	}
 	
-	public void setTerrainAt(Coordinate coordinate, Terrain terrain) throws ModelException {
-		this.getMapAt(coordinate).setTerrain(terrain);
+	void setTerrainAt(Coordinate coordinate, Terrain terrain) throws ModelException {
+		try {
+			this.getMapAt(coordinate).setTerrain(terrain);
+		} catch (IndexOutOfBoundsException e) {
+			throw new ModelException("Outside World");
+		}
 	}
 	
 
-	Cube getMapAt(Coordinate coordinate) {
+	Cube getMapAt(Coordinate coordinate) throws IndexOutOfBoundsException{
 		return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
 				.floor().getY()][(int) coordinate.floor().getZ()];
 	}

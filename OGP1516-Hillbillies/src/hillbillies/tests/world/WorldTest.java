@@ -27,7 +27,7 @@ import ogp.framework.util.Util;
  */
 public class WorldTest {
 
-	private static TerrainChangeListener thelistener;
+	private static TerrainChangeListener theListener;
 	private static Terrain[][][] testTerrain = new Terrain[50][50][50];
 	private static World emptyWorld;
 
@@ -37,12 +37,12 @@ public class WorldTest {
 			for (int j = 0; j < 50; j++)
 				for (int k = 0; k < 50; k++)
 					testTerrain[i][j][k] = Terrain.AIR;
-		emptyWorld = new World(testTerrain, thelistener);
+		emptyWorld = new World(testTerrain, theListener);
 	}
 
 	/**
 	 * @throws ModelException 
-	 * 			Should never happen, it is a legal unit
+	 * 			
 	 */
 	@Before
 	public void setUp() throws ModelException {
@@ -53,7 +53,9 @@ public class WorldTest {
 
 	@Test
 	public void constructorLegalCase() {
-
+		Terrain[][][] someTerrain = new Terrain[20][30][50];
+		World newWorld = new World(someTerrain, theListener);
+		assertEquals(theListener, newWorld.getListener());
 	}
 
 

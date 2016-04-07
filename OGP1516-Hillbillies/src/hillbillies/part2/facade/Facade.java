@@ -21,7 +21,7 @@ import ogp.framework.util.ModelException;
 /**
  *
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
  *
  */
@@ -337,7 +337,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void work(Unit unit) throws ModelException {
-		unit.work();
+		unit.work(unit.getInWorldPosition());
 	}
 
 	/*
@@ -451,7 +451,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getNbCubesX(World world) throws ModelException {
-		return world.getGrid().getDimension()[0];
+		return world.getDimension()[0];
 	}
 
 	/*
@@ -462,7 +462,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getNbCubesY(World world) throws ModelException {
-		return world.getGrid().getDimension()[1];
+		return world.getDimension()[1];
 	}
 
 	/*
@@ -473,7 +473,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public int getNbCubesZ(World world) throws ModelException {
-		return world.getGrid().getDimension()[2];
+		return world.getDimension()[2];
 	}
 
 	/*
@@ -498,7 +498,7 @@ public class Facade implements IFacade {
 	@Override
 	public int getCubeType(World world, int x, int y, int z)
 			throws ModelException {
-		Terrain theTerrain = world.getGrid().getTerrainAt(new Coordinate(x,y,z));
+		Terrain theTerrain = world.getTerrainAt(new Coordinate(x,y,z));
 		if (theTerrain == Terrain.AIR)
 			return 0;
 		else if (theTerrain == Terrain.WORKSHOP)
@@ -522,13 +522,13 @@ public class Facade implements IFacade {
 	public void setCubeType(World world, int x, int y, int z, int value)
 			throws ModelException {
 		if (value == 0)
-			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.AIR);
+			world.setTerrainAt(new Coordinate(x,y,z), Terrain.AIR);
 		else if (value == 1)
-			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.ROCK);
+			world.setTerrainAt(new Coordinate(x,y,z), Terrain.ROCK);
 		else if (value == 2)
-			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.TREE);
+			world.setTerrainAt(new Coordinate(x,y,z), Terrain.TREE);
 		else if (value == 3)
-			world.getGrid().setTerrainAt(new Coordinate(x,y,z), Terrain.WORKSHOP);
+			world.setTerrainAt(new Coordinate(x,y,z), Terrain.WORKSHOP);
 		else
 			throw new ModelException("Terrain type not existent");
 
