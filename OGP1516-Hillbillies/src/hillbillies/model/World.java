@@ -38,8 +38,16 @@ public class World {
 
 	// Constructor //
 
-	public World(Terrain[][][] features, TerrainChangeListener listener)
-			throws ModelException {
+	/**
+	 * Initialize a game world with given terrain features and a terrain
+	 * change listener
+	 * 
+	 * @param features
+	 * 		The terrain features to set
+	 * @param listener
+	 * 		The terrain change listener to set
+	 */
+	public World(Terrain[][][] features, TerrainChangeListener listener){
 		this.grid = new Grid(features, this);
 		this.algorithm = new ConnectedToBorder(this.getGrid().getDimension()[0],
 				this.getGrid().getDimension()[1],
@@ -62,30 +70,43 @@ public class World {
 	}
 
 	// Terrain //
+	
+	public Terrain getTerrainAt(Coordinate coordinate){
+		return this.getGrid().getTerrainAt(coordinate);
+	}
+
+	public void setTerrainAt(Coordinate coordinate, Terrain terrain)
+			throws ModelException {
+		this.getGrid().setTerrainAt(coordinate, terrain);
+	}
 
 	void caveIn(Coordinate coordinate) throws ModelException {
-		Terrain oldTerrain = this.getGrid().getMapAt(coordinate).getTerrain();
-
+		Terrain oldTerrain;
+		try {
+			oldTerrain = this.getGrid().getMapAt(coordinate).getTerrain();
+		} catch (IndexOutOfBoundsException e2) {
+			throw new ModelException("Outside World");
+		}
 		this.getGrid().getMapAt(coordinate).setTerrain(Terrain.AIR);
+		this.getListener().notify();
 		double random = Math.random();
 		if (random < 0.25) {
 			if (oldTerrain == Terrain.TREE)
 				try {
-					this.addGameObject(new Log(coordinate, this));
+
+					this.addGameObject(new Log(coordinate, this), coordinate);
 				} catch (ModelException e) {
 					// shouldn't happen
 				}
 			else if (oldTerrain == Terrain.ROCK)
 				try {
-					this.addGameObject(new Boulder(coordinate, this));
+					this.addGameObject(new Boulder(coordinate, this), coordinate);
 				} catch (ModelException e1) {
 					// shouldn't happen
 				}
 			else
 				throw new ModelException("This terrain can't cave in!");
-			this.getListener().notify();
 		}
-
 	}
 
 	// Terrain listener //
@@ -112,7 +133,7 @@ public class World {
 	}
 
 	private final ConnectedToBorder algorithm;
-	
+
 	public void updateAlgorithm() {
 		for (int indexX = 0; indexX < this.getGrid()
 				.getMap().length; indexX++) {
@@ -129,6 +150,10 @@ public class World {
 	}
 
 	// Map //
+	
+	Cube getCubeAt(Coordinate coordinate){
+		return this.getGrid().getMapAt(coordinate);
+	}
 
 	boolean isValidSpawnPosition(Coordinate coordinate) {
 		Coordinate flooredCoordinate = coordinate.floor();
@@ -136,15 +161,18 @@ public class World {
 				&& flooredCoordinate.getX() <= this.getGrid().getDimension()[0]
 				&& flooredCoordinate.getY() >= 0
 				&& flooredCoordinate.getY() <= this.getGrid().getDimension()[1]
-				&& flooredCoordinate.getZ() >= 0
-				&& flooredCoordinate.getZ() <= this.getGrid().getDimension()[2]))
+				&& flooredCoordinate.getZ() >= 0 && flooredCoordinate
+						.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain().isImpassable())
+		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain()
+				.isImpassable())
 			return false;
 		else {
 			if (flooredCoordinate.getZ() == 0)
 				return true;
-			if (this.getGrid().getMapAt(flooredCoordinate.difference(new Coordinate(0, 0, 1)))
+			if (this.getGrid()
+					.getMapAt(flooredCoordinate
+							.difference(new Coordinate(0, 0, 1)))
 					.getTerrain().isImpassable())
 				return true;
 			return false;
@@ -167,16 +195,18 @@ public class World {
 				&& flooredCoordinate.getX() <= this.getGrid().getDimension()[0]
 				&& flooredCoordinate.getY() >= 0
 				&& flooredCoordinate.getY() <= this.getGrid().getDimension()[1]
-				&& flooredCoordinate.getZ() >= 0
-				&& flooredCoordinate.getZ() <= this.getGrid().getDimension()[2]))
+				&& flooredCoordinate.getZ() >= 0 && flooredCoordinate
+						.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain().isImpassable())
-			return false;		
+		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain()
+				.isImpassable())
+			return false;
 		if (flooredCoordinate.getZ() == 0)
 			return true;
 		else {
 
-			for (Terrain cube : this.getGrid().terrainAtAdjacentCubes(flooredCoordinate)) {
+			for (Terrain cube : this.getGrid()
+					.terrainAtAdjacentCubes(flooredCoordinate)) {
 				if (cube.isImpassable())
 					return true;
 			}
@@ -184,6 +214,10 @@ public class World {
 		}
 	}
 
+	public int[] getDimension(){
+		return this.getGrid().getDimension();
+	}
+	
 	@Basic
 	@Raw
 	public Grid getGrid() {
@@ -290,7 +324,7 @@ public class World {
 	void addFaction(@Raw Faction faction) {
 		if (getNbFactions() < 5)
 			assert (faction != null) && (faction.getWorld() == this);
-			factions.add(faction);
+		factions.add(faction);
 	}
 
 	/**
@@ -344,13 +378,13 @@ public class World {
 			box[2] = decider.nextInt(this.getGrid().getDimension()[2]);
 			target = new Coordinate(box[0], box[1], box[2]);
 		} while (!this.isValidSpawnPosition(target));
-		if (getNbUnits() < 100){
-				Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
-						toughness, enableDefaultBehavior, this);
-				this.addUnit(theNewUnit);
+		if (getNbUnits() < 100) {
+			Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
+					toughness, enableDefaultBehavior, this);
+			this.addUnit(theNewUnit);
 		}
 		Unit theNewUnit = null;
-		return theNewUnit; 
+		return theNewUnit;
 	}
 
 	/**
@@ -392,7 +426,8 @@ public class World {
 	 */
 	@Raw
 	boolean canHaveAsUnit(Unit unit) {
-		return (unit != null) && (unit.canHaveAsWorld(this) && this.getUnitSet().size() < 100);
+		return (unit != null) && (unit.canHaveAsWorld(this)
+				&& this.getUnitSet().size() < 100);
 	}
 
 	/**
@@ -566,9 +601,10 @@ public class World {
 	 * @post   This World has the given GameObject as one of its GameObjects.
 	 *       | new.hasAsGameObject(gameObject)
 	 */
-	public void addGameObject(@Raw GameObject gameObject) {
+	public void addGameObject(@Raw GameObject gameObject, Coordinate coordinate) {
 		assert (gameObject != null) && (gameObject.getWorld() == this);
 		gameObjects.add(gameObject);
+		this.getCubeAt(coordinate).addGameObject(gameObject);
 	}
 
 	/**
@@ -607,6 +643,11 @@ public class World {
 	private final Set<GameObject> gameObjects = new HashSet<>();
 
 	// Logs //
+	
+	void removeLogAt(Coordinate coordinate){
+		Log theLog = this.getCubeAt(coordinate).removeLog();
+		this.removeGameObject(theLog);
+	}
 
 	/**
 	 * Return the set of Logs of this World.
@@ -620,6 +661,11 @@ public class World {
 	}
 
 	// Boulders //
+	
+	void removeBoulderAt(Coordinate coordinate){
+		Boulder theBoulder = this.getCubeAt(coordinate).removeBoulder();
+		this.removeGameObject(theBoulder);
+	}
 
 	/**
 	 * Return the set of Boulders of this World.
