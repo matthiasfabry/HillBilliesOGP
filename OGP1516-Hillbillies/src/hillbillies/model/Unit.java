@@ -3,6 +3,7 @@ package hillbillies.model;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
@@ -882,7 +883,6 @@ public class Unit {
 		this.addToPath(this.getPosition());
 		this.findPath();
 		this.setActivity(Activity.MOVING);
-
 	}
 	/**
 	 * Method that seeks the path for the Unit to move to its destination when in an empty world.
@@ -940,7 +940,27 @@ public class Unit {
 	}
 
 	void findPath() throws ModelException {
-
+		if (this.getDestinationCube() != null) {
+			while (!this.getPath().contains(this.getDestinationCube())) {
+				Tuple<Coordinate, Integer>destination = 
+						new Tuple<Coordinate , Integer>(this.getDestinationCube(), 0);
+				q.add(destination);
+				makeCoordinateQueue();
+				int i = 1;
+				while (!getCoordinateQueue().contains(this.getInWorldPosition()) && i<100) {
+					for (Coordinate coordinate : CoordinateQueue)
+						search(coordinate, i);
+					i = i+1;
+				}
+				makeCoordinateQueue();
+				if (getCoordinateQueue().contains(this.getInWorldPosition())) {
+					
+				}
+				else
+					throw new ModelException("not able to reach destination!");	
+			}				
+		} else
+			throw new ModelException("No destination!");
 	}
 	/**
 	 * Method that adds all accessible cubes together with a cost starting from 
@@ -1020,6 +1040,15 @@ public class Unit {
 	}
 
 	private Queue<Tuple<Coordinate, Integer>> q = new PriorityQueue<>();
+	private LinkedList<Coordinate> CoordinateQueue = new LinkedList<Coordinate>();
+	
+	void makeCoordinateQueue(){
+		for (Tuple<Coordinate, Integer> tuple : this.q)
+			this.CoordinateQueue.add(tuple.get(0));
+	}
+	LinkedList<Coordinate> getCoordinateQueue(){
+		return this.CoordinateQueue;
+	}
 
 	void pathExtension(Coordinate coordinate) throws ModelException {
 		Coordinate target = coordinate.sum(centerCube());
