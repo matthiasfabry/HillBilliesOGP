@@ -70,6 +70,7 @@ public class World {
 	}
 
 	// Terrain //
+	
 	/**
 	 * Method that returns the terrain at the given coordinate
 	 * @param coordinate
