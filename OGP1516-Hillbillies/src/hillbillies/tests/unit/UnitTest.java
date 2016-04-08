@@ -27,6 +27,7 @@ public class UnitTest {
 	private static TerrainChangeListener thelistener;
 	private Unit legalUnit;
 	private static World theWorld;
+	private static Faction theFaction;
 	private static Terrain[][][] testTerrain = new Terrain[50][50][50];
 
 	@BeforeClass
@@ -45,7 +46,7 @@ public class UnitTest {
 	@Before
 	public void setUp() throws ModelException {
 		legalUnit = new Unit("TestUnit", new int[]{1, 1, 0}, 50, 50, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 	}
 
 	// Constructor //
@@ -74,7 +75,7 @@ public class UnitTest {
 	@Test
 	public void constructorIllegalAttribute() throws ModelException {
 		Unit theUnit = new Unit("TestUnit", new int[]{2, 1, 0}, 50, 24, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 		assertEquals(25, theUnit.getAgility());
 		assertEquals(50, theUnit.getStrength());
 		assertEquals(50, theUnit.getToughness());
@@ -97,7 +98,7 @@ public class UnitTest {
 	@Test
 	public void constructorIllegalWeight() throws ModelException {
 		Unit theUnit = new Unit("TestUnit", new int[]{2, 1, 0}, 2, 26, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 		assertEquals(26, theUnit.getAgility());
 		assertEquals(50, theUnit.getStrength());
 		assertEquals(50, theUnit.getToughness());
@@ -380,7 +381,7 @@ public class UnitTest {
 
 	@Test
 	public void work_LegalCase() throws ModelException {
-		legalUnit.work();
+		legalUnit.work(legalUnit.getInWorldPosition());
 		assertEquals(Activity.WORKING, legalUnit.getActivity());
 		advanceTimeFor(legalUnit, 20, 0.1);
 		assertEquals(Activity.IDLE, legalUnit.getActivity());
@@ -389,7 +390,7 @@ public class UnitTest {
 	@Test(expected = ModelException.class)
 	public void work_IllegalCase() throws ModelException {
 		legalUnit.moveTo(2, 2, 3);
-		legalUnit.work();
+		legalUnit.work(legalUnit.getInWorldPosition());
 	}
 
 	// Attacking //
@@ -397,7 +398,7 @@ public class UnitTest {
 	@Test
 	public void attack_LegalCase() throws ModelException {
 		Unit victim = new Unit("Victim", new int[]{2, 1, 0}, 50, 25, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 		legalUnit.attack(victim);
 		assertEquals(Activity.ATTACKING, legalUnit.getActivity());
 		assertEquals(Activity.DEFENDING, victim.getActivity());
@@ -414,14 +415,14 @@ public class UnitTest {
 	@Test(expected = ModelException.class)
 	public void attack_IllegalCase_VictimTooFar() throws ModelException {
 		Unit victim = new Unit("Victim", new int[]{10, 1, 0}, 50, 24, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 		legalUnit.attack(victim);
 	}
 
 	@Test(expected = ModelException.class)
 	public void attack_IllegalCase_NotReady() throws ModelException {
 		Unit victim = new Unit("Victim", new int[]{1, 1, 0}, 50, 24, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 		legalUnit.moveTo(10, 2, 0);
 		legalUnit.attack(victim);
 	}
@@ -478,7 +479,7 @@ public class UnitTest {
 	@Test(expected = ModelException.class)
 	public void rest_IllegalCase_WhileAttacked() throws ModelException {
 		Unit victim = new Unit("Victim", new int[]{1, 1, 1}, 50, 24, 50, 50,
-				false, theWorld);
+				false, theWorld, theFaction);
 		victim.setStamina(12);
 		legalUnit.attack(victim);
 		victim.rest();

@@ -4,17 +4,17 @@
 package hillbillies.model;
 
 /**
- * Simple class representing a tuple of 2 objects.
+ * Simple class representing a tuple of an object with an Integer.
  *
  * @author Matthias Fabry
  * @version 1.0
  *
  */
-public class Tuple<C, V> {
+public class Tuple<C> implements Comparable<Tuple<C>> {
 
 	// Constructor //
 
-	public Tuple(C c, V v) {
+	public Tuple(C c, int v) {
 		this.c = c;
 		this.v = v;
 	}
@@ -22,14 +22,14 @@ public class Tuple<C, V> {
 	// Fields //
 
 	private final C c;
-	private final V v;
+	private final int v;
 
 	// Getters //
 
 	public C getC() {
 		return this.c;
 	}
-	public V getV() {
+	public int getV() {
 		return this.v;
 	}
 
@@ -37,7 +37,7 @@ public class Tuple<C, V> {
 
 	@Override
 	public int hashCode() {
-		return (this.getC().hashCode() * this.getV().hashCode());
+		return (this.getC().hashCode() * this.getV());
 	}
 
 	@Override
@@ -45,9 +45,16 @@ public class Tuple<C, V> {
 		if (object.getClass() != Tuple.class)
 			return false;
 		@SuppressWarnings("unchecked")
-		Tuple<C, V> casted = (Tuple<C, V>) object;
+		Tuple<C> casted = (Tuple<C>) object;
 		return this.getC().equals(casted.getC())
-				&& this.getV().equals(casted.getV());
+				&& this.getV() == (casted.getV());
 
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Tuple<C> arg0) {
+		return this.getV()-arg0.getV();
 	}
 }

@@ -634,7 +634,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void workAt(Unit unit, int x, int y, int z) throws ModelException {
-		unit.workAt(x, y, z);
+		unit.workAt(new Coordinate(x,y,z));
 
 	}
 

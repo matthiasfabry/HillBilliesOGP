@@ -380,11 +380,14 @@ public class World {
 		} while (!this.isValidSpawnPosition(target));
 		if (getNbUnits() < 100) {
 			Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
-					toughness, enableDefaultBehavior, this);
+					toughness, enableDefaultBehavior, this, this.getFactiontoJoin());
 			this.addUnit(theNewUnit);
+			return theNewUnit;
 		}
-		Unit theNewUnit = null;
-		return theNewUnit;
+		else {
+			Unit theNewUnit = null;
+			return theNewUnit;
+		}
 	}
 
 	/**
@@ -393,8 +396,7 @@ public class World {
 	 */
 	void shouldDie(Unit unit) {
 		if (unit.getHitpoints() <= 0) {
-			unit.drop();
-			unit.setWorld(null);
+			unit.die();
 			this.getUnitSet().remove(unit);
 		}
 	}

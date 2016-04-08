@@ -81,6 +81,7 @@ public class Unit {
 	public Unit(String name, int[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior)
 					throws ModelException {
+		this.setWorld(null);
 		if (isValidInitialAttribute(agility)) {
 			this.setAgility(agility);
 		} else
@@ -110,13 +111,37 @@ public class Unit {
 		this.setHitpoints(this.maxSecondaryAttribute());
 		this.setActivity(Activity.IDLE);
 		this.setDefaultBehavior(enableDefaultBehavior);
-		this.faction = this.getWorld().getFactiontoJoin();
-		this.world = null;
-	}
+		this.setFaction(null);
 
+	}
+	/**
+	 * Initialize a Unit with given name, initial position, weight, agility, toughness, strength
+	 * 		and default behavior, as well as a specified world and faction
+	 * 
+	 * @param name
+	 *            The Name of the Unit
+	 * @param initialPosition
+	 *            the initial position of the Unit
+	 * @param weight
+	 *            the Weight of the Unit
+	 * @param agility
+	 *            the Agility of the Unit
+	 * @param strength
+	 *            the Strength of the Unit
+	 * @param toughness
+	 *            the Toughness of the Unit
+	 * @param enableDefaultBehavior
+	 *            Flag to signal whether the Unit performs default behavior.
+	 * @param world
+	 * 			  The world to join
+	 * @param faction
+	 * 			  The faction to join
+	 * @throws ModelException
+	 * 			The given position is not valid for a unit to be created at.
+	 */
 	public Unit(String name, int[] position, int weight, int agility,
 			int strength, int toughness, boolean enableDefaultBehavior,
-			World world) throws ModelException {
+			World world, Faction faction) throws ModelException {
 		this.setWorld(world);
 		if (isValidInitialAttribute(agility)) {
 			this.setAgility(agility);
@@ -147,14 +172,35 @@ public class Unit {
 		this.setHitpoints(this.maxSecondaryAttribute());
 		this.setActivity(Activity.IDLE);
 		this.setDefaultBehavior(enableDefaultBehavior);
-		this.faction = this.getWorld().getFactiontoJoin();
+		this.setFaction(faction);
 
 	}
 
+	
+	// Destructor //
+	
+	void die(){
+		this.drop();
+		this.isDead = true;
+		this.setWorld(null);
+		this.setFaction(null);
+	}
+	
+	private boolean isDead = false;
+	
+	
 	// World //
-
+	
+	/**
+	 * Sets the world of the unit to the given world
+	 * 
+	 * @param world
+	 * 		The world to set
+	 */
 	void setWorld(World world) {
-		this.world = world;
+		if (canHaveAsWorld(world)) {
+			this.world = world;
+		}
 	}
 
 	/**
@@ -171,12 +217,15 @@ public class Unit {
 	 *  
 	 * @param  world
 	 *         The World to check.
-	 * @return 
-	 *       | result == (world != null)
+	 * @return Any world is valid
+	 *       | result == true
 	*/
 	@Raw
 	public boolean canHaveAsWorld(World world) {
-		return (world != null);
+		if(isDead)
+			return world == null;
+		else
+			return world != null;
 	}
 	/**
 	 * Variable registering the World of this Unit.
@@ -243,6 +292,11 @@ public class Unit {
 	public static final double CUBE_LENGTH = 1.0;
 
 	// Faction //
+	
+	void setFaction(Faction faction){
+		if (canHaveAsFaction(faction))
+			this.faction = faction;
+	}
 
 	/**
 	 * Return the Faction of this Unit.
@@ -264,7 +318,7 @@ public class Unit {
 	@Raw
 	boolean canHaveAsFaction(Faction faction) {
 		if (this.getWorld() == null)
-			return true;
+			return faction == null;
 		else
 			return (faction != null);
 	}
@@ -942,15 +996,15 @@ public class Unit {
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
 			while (!this.getPath().contains(this.getDestinationCube())) {
-				Tuple<Coordinate, Integer>destination = 
-						new Tuple<Coordinate , Integer>(this.getDestinationCube(), 0);
-				q.add(destination);
+				Tuple<Coordinate> destination = 
+						new Tuple<Coordinate>(this.getDestinationCube(), 0);
+				q.offer(destination);
 				makeCoordinateQueue();
 				int i = 1;
-				while (!getCoordinateQueue().contains(this.getInWorldPosition()) && i<100) {
+				while (!getCoordinateQueue().contains(this.getInWorldPosition())) {
 					for (Coordinate coordinate : CoordinateQueue)
 						search(coordinate, i);
-					i = i+1;
+					i++;
 				}
 				makeCoordinateQueue();
 				if (getCoordinateQueue().contains(this.getInWorldPosition())) {
@@ -958,7 +1012,7 @@ public class Unit {
 				}
 				else
 					throw new ModelException("not able to reach destination!");	
-			}				
+			}
 		} else
 			throw new ModelException("No destination!");
 	}
@@ -975,9 +1029,9 @@ public class Unit {
 		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(coordinate);
 		for (Cube cube : neighbours)
 			if (cube.getTerrain().isPassable() && neighbourssolid(cube)
-					&& !alreadyinQueue(new Tuple<Coordinate, Integer>(
+					&& !alreadyinQueue(new Tuple<Coordinate>(
 							cube.getPlaceInGrid(), n)))
-				q.add(new Tuple<Coordinate, Integer>(cube.getPlaceInGrid(),
+				q.add(new Tuple<Coordinate>(cube.getPlaceInGrid(),
 						n + 1));
 	}
 
@@ -996,13 +1050,13 @@ public class Unit {
 	 * 		|		return false
 	 * 			
 	 */
-	public boolean alreadyinQueue(Tuple<Coordinate, Integer> tuple) {
+	public boolean alreadyinQueue(Tuple<Coordinate> tuple) {
 		boolean alreadyinQ = false;
-		Tuple<Coordinate, Integer> decending = tuple;
+		Tuple<Coordinate> decending = tuple;
 		do {
 			if (q.contains(decending))
 				alreadyinQ = true;
-			decending = new Tuple<Coordinate, Integer>(decending.getC(),
+			decending = new Tuple<Coordinate>(decending.getC(),
 					decending.getV() - 1);
 		} while (decending.getV() >= 0 && !alreadyinQ);
 		return alreadyinQ;
@@ -1039,11 +1093,11 @@ public class Unit {
 		q.clear();
 	}
 
-	private Queue<Tuple<Coordinate, Integer>> q = new PriorityQueue<>();
+	private Queue<Tuple<Coordinate>> q = new PriorityQueue<>();
 	private LinkedList<Coordinate> CoordinateQueue = new LinkedList<Coordinate>();
 	
 	void makeCoordinateQueue(){
-		for (Tuple<Coordinate, Integer> tuple : this.q)
+		for (Tuple<Coordinate> tuple : q)
 			this.CoordinateQueue.add(tuple.getC());
 	}
 	LinkedList<Coordinate> getCoordinateQueue(){
