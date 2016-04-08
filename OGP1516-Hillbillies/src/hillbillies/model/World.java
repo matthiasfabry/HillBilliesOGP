@@ -70,16 +70,34 @@ public class World {
 	}
 
 	// Terrain //
-	
+	/**
+	 * Method that returns the terrain at the given coordinate
+	 * @param coordinate
+	 * 			the coordinate at which we require the terrain
+	 * @return	the terrain at coordinate
+	 * 		|	this.getGrid().getTerrainAt(coordinate)
+	 */
 	public Terrain getTerrainAt(Coordinate coordinate){
 		return this.getGrid().getTerrainAt(coordinate);
 	}
-
+	/**
+	 * Method that sets the terrain at the given coordinate
+	 * @param coordinate
+	 * 			the coordinate at which define the terrain
+	 * @post	the terrain at the coordinate is the given terrain
+	 */
 	public void setTerrainAt(Coordinate coordinate, Terrain terrain)
 			throws ModelException {
 		this.getGrid().setTerrainAt(coordinate, terrain);
 	}
 
+	/**
+	 * Method that makes the cube at the given coordinate cave in
+	 * @param coordinate
+	 * 			the position of the cave in
+	 * @throws ModelException
+	 * 			The terrain can't cave in at the given coordinate
+	 */
 	void caveIn(Coordinate coordinate) throws ModelException {
 		Terrain oldTerrain;
 		try {
@@ -150,11 +168,21 @@ public class World {
 	}
 
 	// Map //
-	
+	/**
+	 * @param coordinate
+	 * 			the coordinate of the cube required
+	 * @return the cube at given coordinate
+	 */
 	Cube getCubeAt(Coordinate coordinate){
 		return this.getGrid().getMapAt(coordinate);
 	}
-
+	/**
+	 * Determines whether the given coordinate is a valid spawn 
+	 * position
+	 * @param coordinate
+	 * 			the position that needs to be examined
+	 * @return	true when possible to spawn there
+	 */
 	boolean isValidSpawnPosition(Coordinate coordinate) {
 		Coordinate flooredCoordinate = coordinate.floor();
 		if (!(flooredCoordinate.getX() >= 0
@@ -213,17 +241,23 @@ public class World {
 			return false;
 		}
 	}
-
+	/**
+	 * @return the dimension of the World
+	 */
 	public int[] getDimension(){
 		return this.getGrid().getDimension();
 	}
-	
+	/**
+	 * @return the grid of the current world
+	 */
 	@Basic
 	@Raw
 	public Grid getGrid() {
 		return this.grid;
 	}
-
+	/**
+	 * Variable that keeps the grid of this World.
+	 */
 	private final Grid grid;
 
 	// Faction //
@@ -231,7 +265,11 @@ public class World {
 	public ArrayList<Faction> getFactionList() {
 		return this.factions;
 	}
-
+	/**
+	 * Method that decides what Faction the Unit will join. If the maximum amount 
+	 * of factions is reached, the smallest is chosen. If not, a new Faction is created
+	 * @return	the appropriate faction to join
+	 */
 	Faction getFactiontoJoin() {
 		if (this.getFactionList().size() < 5) {
 			Faction theNew = new Faction("Dwarfs", this);
@@ -362,7 +400,15 @@ public class World {
 	private final ArrayList<Faction> factions = new ArrayList<Faction>();
 
 	// Units //
-
+	/**
+	 * Method that creates a Unit at a random location in this World, 
+	 * with or without DefaultBehaviour enabled.
+	 * @param enableDefaultBehavior
+	 * 			whether or not the unit has DefaultBehaviour enabled 
+	 * 			when being spawned
+	 * @return	A Unit at a random location
+	 * @throws ModelException
+	 */
 	public Unit spawnUnit(boolean enableDefaultBehavior) throws ModelException {
 		Random decider = new Random();
 		int strength = decider.nextInt(76) + 25;
@@ -645,7 +691,11 @@ public class World {
 	private final Set<GameObject> gameObjects = new HashSet<>();
 
 	// Logs //
-	
+	/**
+	 * removes the log at the given coordinate
+	 * @param coordinate
+	 * 			the coordinate where the log will be removed
+	 */
 	void removeLogAt(Coordinate coordinate){
 		Log theLog = this.getCubeAt(coordinate).removeLog();
 		this.removeGameObject(theLog);
@@ -663,7 +713,11 @@ public class World {
 	}
 
 	// Boulders //
-	
+	/**
+	 * removes the boulder at the given coordinate
+	 * @param coordinate
+	 * 			the coordinate where the boulder will be removed
+	 */
 	void removeBoulderAt(Coordinate coordinate){
 		Boulder theBoulder = this.getCubeAt(coordinate).removeBoulder();
 		this.removeGameObject(theBoulder);

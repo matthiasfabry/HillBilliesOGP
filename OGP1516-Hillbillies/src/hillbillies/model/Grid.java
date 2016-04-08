@@ -59,7 +59,13 @@ class Grid {
 	private final World world;
 
 	// Map //
-	
+	/**
+	 * Makes a list of the terrains at the adjacent cubes of 
+	 * the given coordinate
+	 * @param coordinate
+	 * 			of which the terreain of the adjacent cubes is required
+	 * @return	A list of the adjacent terrains
+	 */
 	Terrain[] terrainAtAdjacentCubes(Coordinate coordinate) {
 		Terrain[] result = new Terrain[6];
 		result[0] = this.getTerrainAt(coordinate.sum(new Coordinate(1, 0, 0)));
@@ -73,7 +79,11 @@ class Grid {
 				.getTerrainAt(coordinate.difference(new Coordinate(0, 0, 1)));
 		return result;
 	}
-
+	/**
+	 * @param coordinate
+	 * 			the coordinate of the cube of which we require the terrain
+	 * @return	the terrain of the cube of the given coordinate
+	 */
 	Terrain getTerrainAt(Coordinate coordinate) {
 		try {
 			return this.getMapAt(coordinate).getTerrain();
@@ -81,7 +91,15 @@ class Grid {
 			return Terrain.AIR;
 		}
 	}
-	
+	/**
+	 * Method that sets the terrain at the given coordinate to the given terrain type
+	 * @param coordinate
+	 * 			the position of the cubes that needs alteration
+	 * @param terrain
+	 * 			the type to which the terrain will change
+	 * @throws ModelException
+	 * 			If the given coordinate lies outside this grid
+	 */
 	void setTerrainAt(Coordinate coordinate, Terrain terrain) throws ModelException {
 		try {
 			this.getMapAt(coordinate).setTerrain(terrain);
@@ -102,7 +120,7 @@ class Grid {
 		return this.map;
 	}
 	/**
-	 * 
+	 * The 
 	 */
 	private final Cube[][][] map;
 
