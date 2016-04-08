@@ -20,12 +20,18 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar  Each Faction can have its Name as Name.
  *       | canHaveAsName(this.getName())
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
  *
  */
 public class Faction {
-
+	/**
+	 * Initializes a Faction with the given name in the given world.
+	 * @param name
+	 * 			the name of the faction
+	 * @param world
+	 * 			the world where the faction needs to be created.
+	 */
 	public Faction(String name, World world) {
 		this.world = world;
 		this.name = name;
@@ -111,6 +117,9 @@ public class Faction {
 	
 	// Units //
 	
+	/**
+	 * @return	the Units of this faction.
+	 */
 	public Set<Unit> getUnitSet(){
 		return this.Units;
 	}

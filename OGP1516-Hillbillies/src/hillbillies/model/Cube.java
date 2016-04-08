@@ -102,7 +102,9 @@ class Cube {
 				theQueue.offer((Log) gameObject);
 		return theQueue;
 	}
-
+	/**
+	 * removes a Log from the cube.
+	 */
 	Log removeLog() {
 		return this.getLogs().poll();
 	}
@@ -118,11 +120,17 @@ class Cube {
 				theQueue.offer((Boulder) gameObject);
 		return theQueue;
 	}
-
+	/**
+	 * removes a Boulder from the cube.
+	 */
 	Boulder removeBoulder() {
 		return this.getBoulders().poll();
 	}
-
+	/**
+	 * adds a given GameObject to the cube.
+	 * @param gameObject
+	 * 			the object that needs to be added
+	 */
 	void addGameObject(GameObject gameObject){
 		this.getGameObjects().offer(gameObject);
 	}
@@ -140,10 +148,16 @@ class Cube {
 	private Queue<GameObject> gameObjects = new PriorityQueue<>();
 
 	// Position //
-
+	/**
+	 * gives the position of the cube.
+	 * @return	the position
+	 * 		|	this.position
+	 */
 	Coordinate getPlaceInGrid() {
 		return this.position;
 	}
-
+	/**
+	 * the in world Coordinate value of this cube
+	 */
 	private final Coordinate position;
 }

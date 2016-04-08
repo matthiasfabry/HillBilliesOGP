@@ -11,14 +11,18 @@ import ogp.framework.util.ModelException;
 /**
  * Background class representing a game world map
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
  *
  */
 class Grid {
 
 	// Constructor //
-
+	/**
+	 * Initializes a Grid
+	 * @param features
+	 * @param world
+	 */
 	Grid(Terrain[][][] features, World world){
 		this.map = new Cube[features.length][features[0].length][features[0][0].length];
 		this.dimension = new int[]{features.length, features[0].length,
@@ -41,13 +45,17 @@ class Grid {
 	}
 
 	// World link //
-
+	/**
+	 * @return this.world
+	 */
 	@Basic
 	@Raw
 	World getWorld() {
 		return this.world;
 	}
-
+	/**
+	 * the World where the grid is the representation of.
+	 */
 	private final World world;
 
 	// Map //
@@ -93,7 +101,9 @@ class Grid {
 	Cube[][][] getMap() {
 		return this.map;
 	}
-
+	/**
+	 * 
+	 */
 	private final Cube[][][] map;
 
 	// Dimension //
@@ -114,7 +124,12 @@ class Grid {
 	private final int[] dimension;
 
 	// Additional methods //
-
+	/**
+	 * Lists all cubes that are directly adjacent to the given coordinate
+	 * @param coordinate
+	 * 			the coordinate from which we require the directly adjacent cubes
+	 * @return	a list of Cubes that are directly adjacent to coordinate
+	 */
 	Cube[] directAdjCube(Coordinate coordinate) {
 		Cube[] result = new Cube[6];
 		result[0] = this.getMapAt(coordinate.sum(new Coordinate(1, 0, 0)));
@@ -128,19 +143,25 @@ class Grid {
 				.getMapAt(coordinate.difference(new Coordinate(0, 0, 1)));
 		return result;
 	}
-
+	/**
+	 * Method that lists all Cubes that are adjacent to the given coordinate
+	 * @param coordinate
+	 * 			the coordinate from which we require the adjacent cubes
+	 * @return	a list of Cubes that are adjacent to coordinate
+	 * 			
+	 */
 	Cube[] adjacentCubes(Coordinate coordinate) {
 		Cube[] result = new Cube[26];
-		result[0] = this.getMapAt(coordinate.sum(new Coordinate(1, 0, 0)));
-		result[1] = this.getMapAt(coordinate.sum(new Coordinate(-1, 0, 0)));
-		result[2] = this.getMapAt(coordinate.sum(new Coordinate(0, 1, 0)));
-		result[3] = this.getMapAt(coordinate.sum(new Coordinate(0, -1, 0)));
-		result[4] = this.getMapAt(coordinate.sum(new Coordinate(0, 0, 1)));
-		result[5] = this.getMapAt(coordinate.sum(new Coordinate(0, 0, -1)));
-		result[6] = this.getMapAt(coordinate.sum(new Coordinate(1, 1, 0)));
-		result[7] = this.getMapAt(coordinate.sum(new Coordinate(-1, -1, 0)));
-		result[8] = this.getMapAt(coordinate.sum(new Coordinate(1, 1, 1)));
-		result[9] = this.getMapAt(coordinate.sum(new Coordinate(-1, -1, -1)));
+		result[0]  = this.getMapAt(coordinate.sum(new Coordinate(1, 0, 0)));
+		result[1]  = this.getMapAt(coordinate.sum(new Coordinate(-1, 0, 0)));
+		result[2]  = this.getMapAt(coordinate.sum(new Coordinate(0, 1, 0)));
+		result[3]  = this.getMapAt(coordinate.sum(new Coordinate(0, -1, 0)));
+		result[4]  = this.getMapAt(coordinate.sum(new Coordinate(0, 0, 1)));
+		result[5]  = this.getMapAt(coordinate.sum(new Coordinate(0, 0, -1)));
+		result[6]  = this.getMapAt(coordinate.sum(new Coordinate(1, 1, 0)));
+		result[7]  = this.getMapAt(coordinate.sum(new Coordinate(-1, -1, 0)));
+		result[8]  = this.getMapAt(coordinate.sum(new Coordinate(1, 1, 1)));
+		result[9]  = this.getMapAt(coordinate.sum(new Coordinate(-1, -1, -1)));
 		result[10] = this.getMapAt(coordinate.sum(new Coordinate(1, 0, 1)));
 		result[11] = this.getMapAt(coordinate.sum(new Coordinate(-1, 0, -1)));
 		result[12] = this.getMapAt(coordinate.sum(new Coordinate(0, 1, 1)));
