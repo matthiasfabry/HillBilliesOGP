@@ -1008,7 +1008,18 @@ public class Unit {
 				}
 				makeCoordinateQueue();
 				if (getCoordinateQueue().contains(this.getInWorldPosition())) {
-					
+					Coordinate nextposition = new Coordinate(0,0,0);
+					Cube[] neighbours = null;
+					int cost = 100000000;
+					while (!this.getPath().contains(destinationCube))
+						neighbours = this.getWorld().getGrid().adjacentCubes(this.getPath().getLast());
+						for (Cube cube : neighbours)
+							if (this.getCoordinateQueue().contains(cube))
+								//vraag cost op
+								//if cube.cost < cost
+								//		cost = cube.cost
+										nextposition = cube.getPlaceInGrid();			
+						path.add(nextposition);
 				}
 				else
 					throw new ModelException("not able to reach destination!");	
@@ -1094,7 +1105,7 @@ public class Unit {
 	}
 
 	private Queue<Tuple<Coordinate>> q = new PriorityQueue<>();
-	private LinkedList<Coordinate> CoordinateQueue = new LinkedList<Coordinate>();
+	private LinkedList<Coordinate> CoordinateQueue = new LinkedList<>();
 	
 	void makeCoordinateQueue(){
 		for (Tuple<Coordinate> tuple : q)
