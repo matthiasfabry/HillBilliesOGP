@@ -1044,7 +1044,7 @@ public class Unit {
 	
 	void makeCoordinateQueue(){
 		for (Tuple<Coordinate, Integer> tuple : this.q)
-			this.CoordinateQueue.add(tuple.get(0));
+			this.CoordinateQueue.add(tuple.getC());
 	}
 	LinkedList<Coordinate> getCoordinateQueue(){
 		return this.CoordinateQueue;
