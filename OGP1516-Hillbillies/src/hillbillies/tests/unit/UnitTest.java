@@ -381,7 +381,7 @@ public class UnitTest {
 
 	@Test
 	public void work_LegalCase() throws ModelException {
-		legalUnit.work(legalUnit.getInWorldPosition());
+		legalUnit.workAt(legalUnit.getInWorldPosition());
 		assertEquals(Activity.WORKING, legalUnit.getActivity());
 		advanceTimeFor(legalUnit, 20, 0.1);
 		assertEquals(Activity.IDLE, legalUnit.getActivity());
@@ -390,7 +390,7 @@ public class UnitTest {
 	@Test(expected = ModelException.class)
 	public void work_IllegalCase() throws ModelException {
 		legalUnit.moveTo(2, 2, 3);
-		legalUnit.work(legalUnit.getInWorldPosition());
+		legalUnit.workAt(legalUnit.getInWorldPosition());
 	}
 
 	// Attacking //

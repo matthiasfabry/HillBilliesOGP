@@ -337,7 +337,7 @@ public class Facade implements IFacade {
 	 */
 	@Override
 	public void work(Unit unit) throws ModelException {
-		unit.work(unit.getInWorldPosition());
+		unit.workAt(unit.getInWorldPosition());
 	}
 
 	/*
