@@ -14,23 +14,12 @@ import ogp.framework.util.ModelException;
  * 
  * @invar  The Terrain of each Cube must be a valid Terrain for any
  *         Cube.
- *       | isValidTerrain(getTerrain())
- * @invar  The set of Logs of each Cube must be a valid set of Logs for any
- *         Cube.
- *       | isValidLogs(getLogs())
- * @invar  The set of Boulders of each Cube must be a valid set of Boulders for any
- *         Cube.
- *       | isValidBoulders(getBoulders())
- * @invar  The Position of each Cube must be a valid Position for any
- *         Cube.
- *       | isValidPosition(getPosition())
- *       
+ *       | isValidTerrain(getTerrain())     
  *
  * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
  *
  */
-
 class Cube {
 
 	// Constructor //

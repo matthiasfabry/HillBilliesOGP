@@ -110,8 +110,12 @@ class Grid {
 	
 
 	Cube getMapAt(Coordinate coordinate) throws IndexOutOfBoundsException{
-		return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
-				.floor().getY()][(int) coordinate.floor().getZ()];
+		try {
+			return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
+					.floor().getY()][(int) coordinate.floor().getZ()];
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	@Basic

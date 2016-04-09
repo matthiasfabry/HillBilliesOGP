@@ -176,32 +176,19 @@ public class Unit {
 
 	}
 
-	
 	// Destructor //
-	/**
-	 * Method that lets the Unit die, cutting all connections with worlds or factions.
-	 * @post	the unit is dead
-	 * 		|	this.isDead == true
-	 * @post	the unit isn't carrying anything
-	 * 		|	this.isCarrying() = false
-	 * @post	the unit doesn't belong to any world nor faction
-	 * 		|	this.getWorld = null
-	 * 		|	this.getFaction = null
-	 */
-	void die(){
+
+	void die() {
 		this.drop();
 		this.isDead = true;
 		this.setWorld(null);
 		this.setFaction(null);
 	}
-	/**
-	 * flag that keeps whether the unit is dead or not.
-	 */
+
 	private boolean isDead = false;
-	
-	
+
 	// World //
-	
+
 	/**
 	 * Sets the world of the unit to the given world
 	 * 
@@ -233,7 +220,7 @@ public class Unit {
 	*/
 	@Raw
 	public boolean canHaveAsWorld(World world) {
-		if(isDead)
+		if (isDead)
 			return world == null;
 		else
 			return world != null;
@@ -280,18 +267,7 @@ public class Unit {
 		this.position = new Coordinate(position.getX(), position.getY(),
 				position.getZ());
 	}
-	/**
-	 * Method that checks whether the given coordinate is a valid coordinate
-	 * for the Units world.
-	 * @param coordinate
-	 * 			the coordinate that needs to be evaluated
-	 * @return	true when the coordinate is valid
-	 * 		|	if this.getWorld().isValidPosition(coordinate)
-	 * 		|		return true
-	 * 		|	else
-	 * 		|		return false
-	 * 		
-	 */
+
 	private boolean isValidPosition(Coordinate coordinate) {
 		return this.getWorld().isValidPosition(coordinate);
 	}
@@ -314,15 +290,8 @@ public class Unit {
 	public static final double CUBE_LENGTH = 1.0;
 
 	// Faction //
-	/**
-	 * Appoints the given faction the the current Unit if possible.
-	 * @param faction
-	 * 			the faction the unit will belong to
-	 * @post The unit will be part of the given faction when possible
-	 * 		|	if (canHaveAsFaction(faction))
-			|		this.faction = faction
-	 */
-	void setFaction(Faction faction){
+
+	void setFaction(Faction faction) {
 		if (canHaveAsFaction(faction))
 			this.faction = faction;
 	}
@@ -959,10 +928,7 @@ public class Unit {
 	public void moveTo(int x, int y, int z) throws ModelException {
 		this.clearPath();
 		this.clearQueue();
-		Coordinate destination = new Coordinate(x, y, z);
-
-		this.setDestinationCube(destination);
-
+		this.setDestinationCube(new Coordinate(x, y, z));
 		this.addToPath(this.getPosition());
 		this.findPath();
 		this.setActivity(Activity.MOVING);
@@ -1021,52 +987,27 @@ public class Unit {
 		} else
 			throw new ModelException("No destination!");
 	}
-	/**
-	 * Method that seeks the path for the Unit to move to its destination.
-	 *
-	 * @effect The subsequent steps in the path to the destination will be
-	 * 			added to the unit's movement path
-	 * 		| pathExtension(step)
-	 * @post The unit's destination will be the last coordinate in the unit's
-	 * 			movement path
-	 * 		| new.getPath().getLast() == this.getDestination
-	 * @throws	ModelException
-	 * 			the unit has no destination
-	 * 		| this.getDestinationCube() == null
-	 * @throws	ModelException
-	 * 			the destination can't be reached
-	 * 		| ! this.getCoordinateQueue().contains(this.getInWorldPosition()))
-	 */
+
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
 			while (!this.getPath().contains(this.getDestinationCube())) {
-				Tuple<Coordinate> destination = 
-						new Tuple<Coordinate>(this.getDestinationCube(), 0);
-				q.offer(destination);
+				q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
 				makeCoordinateQueue();
 				int i = 1;
-				while (!getCoordinateQueue().contains(this.getInWorldPosition())) {
-					for (Coordinate coordinate : CoordinateQueue)
-						search(coordinate, i);
+				while (!getCoordinateQueue()
+						.contains(this.getInWorldPosition())) {
+					for (Tuple<Coordinate> tuple : q)
+						search(new Tuple<Coordinate>(tuple.getC(), i));
 					i++;
+					makeCoordinateQueue();
 				}
 				makeCoordinateQueue();
-				if (this.getCoordinateQueue().contains(this.getInWorldPosition())) {
-					Coordinate nextposition = new Coordinate(0,0,0);
-					Cube[] neighbours = null;
-					int cost = 100000000;
-					while (!this.getPath().contains(destinationCube))
-						neighbours = this.getWorld().getGrid().adjacentCubes(this.getPath().getLast());
-						for (Cube cube : neighbours)
-							if (this.getCoordinateQueue().contains(cube))
-								//vraag cost op
-								//if cube.cost < cost
-								//		cost = cube.cost
-										nextposition = cube.getPlaceInGrid();			
-						pathExtension(nextposition);
-				}
-				else
-					throw new ModelException("not able to reach destination!");	
+				if (getCoordinateQueue().contains(this.getInWorldPosition())) {
+					Tuple<Coordinate> current = new Tuple<>(
+							this.getInWorldPosition(), 1);
+
+				} else
+					throw new ModelException("not able to reach destination!");
 			}
 		} else
 			throw new ModelException("No destination!");
@@ -1080,14 +1021,15 @@ public class Unit {
 	 * 			the cost of the given coordinate.
 	 * * @post	the queue will contain the accessible cubes with their costs.
 	 */
-	void search(Coordinate coordinate, int n) {
-		Cube[] neighbours = this.getWorld().getGrid().adjacentCubes(coordinate);
+	void search(Tuple<Coordinate> tuple) {
+		Cube[] neighbours = this.getWorld().getGrid()
+				.adjacentCubes(tuple.getC());
 		for (Cube cube : neighbours)
 			if (cube.getTerrain().isPassable() && neighbourssolid(cube)
 					&& !alreadyinQueue(new Tuple<Coordinate>(
-							cube.getPlaceInGrid(), n)))
+							cube.getPlaceInGrid(), tuple.getV())))
 				q.add(new Tuple<Coordinate>(cube.getPlaceInGrid(),
-						n + 1));
+						tuple.getV() + 1));
 	}
 
 	/**
@@ -1147,48 +1089,21 @@ public class Unit {
 	void clearQueue() {
 		q.clear();
 	}
-	/**
-	 * Queue that helps finding the right path. It contains Tuples consisting
-	 * of a coordinate and a cost to get from this coordinate to the destination.
-	 */
+
 	private Queue<Tuple<Coordinate>> q = new PriorityQueue<>();
-	/**
-	 * List that keeps the coordinates that exist in the Queue q.
-	 */
-	private LinkedList<Coordinate> CoordinateQueue = new LinkedList<>();
-	/**
-	 * Method that constructs the CoordinateQueue
-	 * @post	CoordinateQueue consists of the coordinates that live in q.
-	 * 		|	for Tuple tuple: q
-	 * 		|		this.CoordinateQueue.contains(tuple.getC)
-	 */
-	void makeCoordinateQueue(){
-		for (Tuple<Coordinate> tuple : q)
-			this.CoordinateQueue.add(tuple.getC());
+	private LinkedList<Coordinate> coordinateQueue = new LinkedList<Coordinate>();
+
+	void makeCoordinateQueue() {
+		for (Tuple<Coordinate> tuple : q) {
+			if (!coordinateQueue.contains(tuple.getC())) {
+				this.coordinateQueue.add(tuple.getC());
+			}
+		}
 	}
-	/**
-	 * returns current CoordinateQueue
-	 * @return the current CoordinateQueue
-	 * 		|	return this.CoordinateQueue
-	 */
-	LinkedList<Coordinate> getCoordinateQueue(){
-		return this.CoordinateQueue;
+	LinkedList<Coordinate> getCoordinateQueue() {
+		return this.coordinateQueue;
 	}
-	/**
-	 * Method that adds a given coordinate to the
-	 * movement path of the unit
-	 * 
-	 * @param coordinate
-	 * 			the coordinate that needs to be added
-	 * @effect	The coordinate will be added to the unit's movement path
-	 * 		| addToPath(coordinate)
-	 * @post The unit will have the given coordinate as the last coordinate
-	 * 			in its movement path
-	 * 		| new.getPath().getLast() == coordinate
-	 * @throws ModelException
-	 * 			the the given coordinate is not a valid in world position.
-	 * 		| (! this.isValidPosition(target))
-	 */
+
 	void pathExtension(Coordinate coordinate) throws ModelException {
 		Coordinate target = coordinate.sum(centerCube());
 		if (this.isValidPosition(target))
@@ -1196,6 +1111,7 @@ public class Unit {
 		else
 			throw new ModelException("Cannot go here");
 	}
+
 	/**
 	 * Method that adds a given set of coordinates to the
 	 * movement path of the unit
@@ -1231,6 +1147,12 @@ public class Unit {
 	 */
 	void stopMoving() {
 		this.setActivity(Activity.IDLE);
+		if (isMovingToWork)
+			try {
+				this.work();
+			} catch (ModelException e) {
+				// shoudn't happen
+			}
 	}
 	/**
 	 * Method that initiates a unit to sprint.
@@ -1494,11 +1416,7 @@ public class Unit {
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[5]
 								.isPassable());
 	}
-	/**
-	 * Method that governs the falling process of a Unit.
-	 * @throws ModelException
-	 * 			when a coordinate is handled that is not a valid one.
-	 */
+
 	void fall() throws ModelException {
 		this.addToPath(this.getPosition());
 		if (shouldStartFalling()) {
@@ -1512,11 +1430,7 @@ public class Unit {
 			this.setzLevels(this.getPath().size());
 		}
 	}
-	/**
-	 * Method that makes a Unit to stop falling.
-	 * @post	the unit is no longer falling
-	 * 		|	this.getActivity != FALLING
-	 */
+
 	void stopFalling() {
 		this.setHitpoints(this.getHitpoints() - 10 * this.getzLevels());
 		this.setzLevels(0);
@@ -1531,26 +1445,26 @@ public class Unit {
 	int getzLevels() {
 		return zLevels;
 	}
+
 	/**
 	 * Set the zlevels of this unit to the given amount of zlevels.
 	 */
 	void setzLevels(int zLevels) {
 		this.zLevels = zLevels;
 	}
-	/**
-	 * Variable that contains the levels the Unit has falling so far.
-	 */
+
 	private int zLevels = 0;
-	/**
-	 * Method that makes the Unit go work at the given coordinate.
-	 * @param coordinate
-	 * 			the coordinate the Unit needs to work on.
-	 * @throws ModelException
-	 */
+
 	// Working (defensive) //
 
 	public void workAt(Coordinate coordinate) throws ModelException {
-
+		if (this.getInWorldPosition().equals(coordinate))
+			this.work();
+		else{
+			moveTo((int) coordinate.getX(), (int) coordinate.getY(),
+					(int) coordinate.getZ());
+			isMovingToWork = true;
+		}
 	}
 
 	/**
@@ -1568,7 +1482,7 @@ public class Unit {
 	 *		|	|| this.getActivity() == Activity.ATTACKING
 	 *		|	|| this.getActivity() == Activity.DEFENDING)
 	 */
-	public void work(Coordinate coordinate) throws ModelException {
+	void work() throws ModelException {
 		if (this.getActivity() != Activity.MOVING
 				&& this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.WORKING
@@ -1593,8 +1507,6 @@ public class Unit {
 	void working(double deltaT) throws ModelException {
 		if (this.getActivity() != Activity.WORKING)
 			throw new ModelException("The unit isn't in a working state");
-		else
-			this.workAt(this.getInWorldPosition());
 		try {
 			this.setRemainingWorkTime(this.getRemainingWorkTime() - deltaT);
 		} catch (ModelException e) {
@@ -1615,18 +1527,23 @@ public class Unit {
 		if (this.getWorld()
 				.getTerrainAt(this.getInWorldPosition()) == Terrain.WORKSHOP
 				&& this.getWorld().getCubeAt(this.getInWorldPosition())
-						.getBoulders().size() != 0 && this.getWorld().getCubeAt(this.getInWorldPosition())
-						.getLogs().size() != 0){
+						.getBoulders().size() != 0
+				&& this.getWorld().getCubeAt(this.getInWorldPosition())
+						.getLogs().size() != 0) {
 			this.setToughness(this.getToughness() + 10);
 			this.setWeight(this.getWeight() + 10);
-			this.getWorld().getCubeAt(this.getInWorldPosition()).removeBoulder();
-			
+			this.getWorld().getCubeAt(this.getInWorldPosition())
+					.removeBoulder();
+
 		}
 
-			this.AwardExperience(10);
+		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
 	}
 
+	
+	private boolean isMovingToWork = false;
+	
 	/**
 	 * Return the remaining work time of this Unit.
 	 */
@@ -1679,13 +1596,7 @@ public class Unit {
 	 * Variable registering the remaining work time of this Unit.
 	 */
 	private double remainingWorkTime;
-	/**
-	 * Method that makes the Unit drop the gameobject it is currently carrying.
-	 * @post 	the Unit is not carrying anything.
-	 * 		|	this.isCarrying == false
-	 * @post	at the position of the Unit, a gamobject appears.
-	 * 		|	
-	 */
+
 	// Carrying //
 
 	void drop() {
@@ -1713,9 +1624,7 @@ public class Unit {
 	public GameObject getObjectCarried() {
 		return ObjectCarried;
 	}
-	/**
-	 * The Object that is being carried by the Unit.
-	 */
+
 	private GameObject ObjectCarried;
 
 	/**
@@ -2224,7 +2133,7 @@ public class Unit {
 			if (decider == 0) {
 				rest();
 			} else if (decider == 1) {
-				work(this.getInWorldPosition());
+				work();
 			} else {
 				int x = random.nextInt(50);
 				int y = random.nextInt(50);
@@ -2266,9 +2175,7 @@ public class Unit {
 	*/
 	private boolean defaultBehavior = false;
 
-	//Experience
-	
-	// experience //
+	// Experience //
 
 	void AwardExperience(int experience) {
 		this.setTotalExperience(this.getTotalExperience() + experience);
