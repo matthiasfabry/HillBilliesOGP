@@ -36,15 +36,21 @@ public abstract class GameObject {
 	 *         the given World.
 	 *       | this.setWorld(world)
 	 */
-	public GameObject(Coordinate coordinate, World world) throws ModelException {
+	public GameObject(Coordinate coordinate, World world)
+			throws ModelException {
 		this.world = world;
 		Random decider = new Random();
-		int weight = decider.nextInt(41)+10;
+		int weight = decider.nextInt(41) + 10;
 		this.weight = weight;
 		this.setPosition(coordinate);
 	}
 
 	// World //
+
+	void setWorld(World world){
+		if (isValidWorld(world))
+			this.world = world;
+	}
 	
 	/**
 	 * Return the World of this GameObject.
@@ -62,27 +68,35 @@ public abstract class GameObject {
 	 * @param  world
 	 *         The World to check.
 	 * @return 
-	 *       | result == (world != null)
-	*/
-	public static boolean isValidWorld(World world) {
-		return (world != null);
+	 *       | if (isBeingCarried)
+	 *		 |    return world == null;
+	 *	     | else
+	 *		 |    return world != null;
+	 */
+	boolean isValidWorld(World world) {
+		if (isBeingCarried)
+			return world == null;
+		else
+			return world != null;
 	}
 
 	/**
 	 * Variable registering the World of this GameObject.
 	 */
-	private final World world;
-	
+	private World world;
+
 	// Weight //
-	
+
 	/**
 	 * Return the weight of this GameObject.
 	 */
-	@Basic @Raw @Immutable
+	@Basic
+	@Raw
+	@Immutable
 	public int getWeight() {
 		return this.weight;
 	}
-	
+
 	/**
 	 * Check whether this GameObject can have the given weight as its weight.
 	 *  
@@ -95,22 +109,23 @@ public abstract class GameObject {
 	public boolean canHaveAsWeight(int weight) {
 		return (weight <= 50 && weight >= 10);
 	}
-	
+
 	/**
 	 * Variable registering the weight of this GameObject.
 	 */
 	private final int weight;
-	
+
 	// Position //
 
 	/**
 	 * Return the Position of this GameObject.
 	 */
-	@Basic @Raw
+	@Basic
+	@Raw
 	public Coordinate getPosition() {
 		return this.position;
 	}
-	
+
 	/**
 	 * Check whether the given Position is a valid Position for
 	 * any GameObject.
@@ -120,10 +135,10 @@ public abstract class GameObject {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidPosition(Coordinate position) {
-		return false;
+	boolean isValidPosition(Coordinate position) {
+		return this.getWorld().isValidPosition(position);
 	}
-	
+
 	/**
 	 * Set the Position of this GameObject to the given Position.
 	 * 
@@ -138,16 +153,32 @@ public abstract class GameObject {
 	 *       | ! isValidPosition(getPosition())
 	 */
 	@Raw
-	public void setPosition(Coordinate position) 
-			throws ModelException {
-		if (! isValidPosition(position))
+	public void setPosition(Coordinate position) throws ModelException {
+		if (!isValidPosition(position))
 			throw new ModelException();
 		this.position = position;
 	}
-	
+
 	/**
 	 * Variable registering the Position of this GameObject.
 	 */
 	private Coordinate position;
+	
+	void isPickedUp(){
+		this.isBeingCarried = true;
+		this.setWorld(null);
+	}
+	
+	void isDropped(Coordinate coordinate, World world) throws ModelException{
+		try {
+			this.setWorld(world);
+			this.setPosition(coordinate);
+			this.isBeingCarried = false;
+		} catch (ModelException e) {
+			throw new ModelException("Can't drop object here!");
+		}
+	}
+	
+	private boolean isBeingCarried = false;
 
 }

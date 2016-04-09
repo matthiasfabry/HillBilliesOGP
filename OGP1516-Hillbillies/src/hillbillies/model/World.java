@@ -586,7 +586,7 @@ public class World {
 	@Basic
 	@Raw
 	boolean hasAsGameObject(@Raw GameObject gameObject) {
-		return gameObjects.contains(gameObject);
+		return this.getGameObjects().contains(gameObject);
 	}
 
 	/**
@@ -603,7 +603,7 @@ public class World {
 	 */
 	@Raw
 	boolean canHaveAsGameObject(GameObject gameObject) {
-		return (gameObject != null) && (GameObject.isValidWorld(this));
+		return (gameObject != null) && (gameObject.isValidWorld(this));
 	}
 
 	/**
@@ -619,7 +619,7 @@ public class World {
 	 *       |          (gameObject.getWorld() == this)
 	 */
 	boolean hasProperGameObjects() {
-		for (GameObject gameObject : gameObjects) {
+		for (GameObject gameObject : getGameObjects()) {
 			if (!canHaveAsGameObject(gameObject))
 				return false;
 			if (gameObject.getWorld() != this)
@@ -636,11 +636,11 @@ public class World {
 	 *        |   card({gameObject:GameObject | hasAsGameObject({gameObject)})
 	 */
 	int getNbGameObjects() {
-		return gameObjects.size();
+		return getGameObjects().size();
 	}
 
 	/**
-	 * Add the given GameObject to the set of GameObjects of this World.
+	 * Add the given GameObject to this World.
 	 * 
 	 * @param  gameObject
 	 *         The GameObject to be added.
@@ -652,7 +652,6 @@ public class World {
 	 */
 	public void addGameObject(@Raw GameObject gameObject, Coordinate coordinate) {
 		assert (gameObject != null) && (gameObject.getWorld() == this);
-		gameObjects.add(gameObject);
 		this.getCubeAt(coordinate).addGameObject(gameObject);
 	}
 
@@ -674,24 +673,21 @@ public class World {
 	void removeGameObject(GameObject gameObject) {
 		assert this.hasAsGameObject(gameObject)
 				&& (gameObject.getWorld() == null);
-		gameObjects.remove(gameObject);
+		getGameObjects().remove(gameObject);
+	}
+	
+	Set<GameObject> getGameObjects(){
+		Set<GameObject> theSet = new HashSet<>();
+		for(Cube[][] cubePlane : this.getGrid().getMap())
+			for(Cube[] cubeRow : cubePlane)
+				for(Cube cube : cubeRow)
+					for(GameObject gameObject : cube.getGameObjects())
+						theSet.add(gameObject);
+		return theSet;
 	}
 
-	/**
-	 * Variable referencing a set collecting all the GameObjects
-	 * of this World.
-	 * 
-	 * @invar  The referenced set is effective.
-	 *       | gameObjects != null
-	 * @invar  Each GameObject registered in the referenced list is
-	 *         effective and not yet terminated.
-	 *       | for each gameObject in gameObjects:
-	 *       |   ( (gameObject != null) &&
-	 *       |     (! gameObject.isTerminated()) )
-	 */
-	private final Set<GameObject> gameObjects = new HashSet<>();
-
 	// Logs //
+	
 	/**
 	 * removes the log at the given coordinate
 	 * @param coordinate
@@ -707,13 +703,14 @@ public class World {
 	 */
 	public Set<Log> getLogSet() {
 		Set<Log> logSet = new HashSet<>();
-		for (GameObject gameObject : this.gameObjects)
+		for (GameObject gameObject : this.getGameObjects())
 			if (gameObject instanceof Log)
 				logSet.add((Log) gameObject);
 		return logSet;
 	}
-
+	
 	// Boulders //
+	
 	/**
 	 * removes the boulder at the given coordinate
 	 * @param coordinate
@@ -729,7 +726,7 @@ public class World {
 	 */
 	public Set<Boulder> getBoulderSet() {
 		Set<Boulder> boulderSet = new HashSet<>();
-		for (GameObject gameObject : this.gameObjects)
+		for (GameObject gameObject : this.getGameObjects())
 			if (gameObject instanceof Log)
 				boulderSet.add((Boulder) gameObject);
 		return boulderSet;

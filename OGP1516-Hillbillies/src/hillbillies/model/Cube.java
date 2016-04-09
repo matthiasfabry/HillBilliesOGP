@@ -24,8 +24,23 @@ class Cube {
 
 	// Constructor //
 
-	Cube(Coordinate coordinate) {
+	/**
+	 * Initialize this new Cube with given World.
+	 * 
+	 * @param coordinate
+	 * 			The position of the cube in the game world
+	 * @param  world
+	 *         The World for this new Cube.
+	 * @post   The World of this new Cube is equal to the given
+	 *         World.
+	 *       | new.getWorld() == world
+	 * @throws ModelException
+	 *         This new Cube cannot have the given World as its World.
+	 *       | ! canHaveAsWorld(this.getWorld())
+	 */
+	Cube(Coordinate coordinate, World world) {
 		this.position = coordinate;
+		this.world = world;
 	}
 
 	// Terrain //
@@ -38,7 +53,6 @@ class Cube {
 	Terrain getTerrain() {
 		return this.terrain;
 	}
-
 	/**
 	 * Check whether the given Terrain is a valid Terrain for
 	 * any Cube.
@@ -52,7 +66,6 @@ class Cube {
 	static boolean isValidTerrain(Terrain terrain) {
 		return true;
 	}
-
 	/**
 	 * Set the Terrain of this Cube to the given Terrain.
 	 * 
@@ -72,7 +85,6 @@ class Cube {
 			throw new ModelException();
 		this.terrain = terrain;
 	}
-
 	/**
 	 * Variable registering the Terrain of this Cube.
 	 */
@@ -95,7 +107,9 @@ class Cube {
 	 * removes a Log from the cube.
 	 */
 	Log removeLog() {
-		return this.getLogs().poll();
+		Log theLog = this.getLogs().poll();
+		gameObjects.remove(theLog);
+		return theLog;
 	}
 
 	/**
@@ -113,30 +127,36 @@ class Cube {
 	 * removes a Boulder from the cube.
 	 */
 	Boulder removeBoulder() {
-		return this.getBoulders().poll();
+		Boulder theBoulder = this.getBoulders().poll();
+		gameObjects.remove(theBoulder);
+		this.getWorld().removeBoulderAt(getPlaceInGrid());
+		return theBoulder;
 	}
+
 	/**
 	 * adds a given GameObject to the cube.
 	 * @param gameObject
 	 * 			the object that needs to be added
 	 */
-	void addGameObject(GameObject gameObject){
+	void addGameObject(GameObject gameObject) {
 		this.getGameObjects().offer(gameObject);
 	}
-	
+
 	/**
+	 * Return the gameObjects present on this cube
+	 * 
 	 * @return the gameObjects
 	 */
 	public Queue<GameObject> getGameObjects() {
 		return gameObjects;
 	}
-
 	/**
 	 * Variable registering the set of Boulders of this Cube.
 	 */
 	private Queue<GameObject> gameObjects = new PriorityQueue<>();
 
 	// Position //
+
 	/**
 	 * gives the position of the cube.
 	 * @return	the position
@@ -149,4 +169,22 @@ class Cube {
 	 * the in world Coordinate value of this cube
 	 */
 	private final Coordinate position;
+
+	// World //
+	
+	/**
+	 * Return the World of this Cube.
+	 */
+	@Basic
+	@Raw
+	@Immutable
+	public World getWorld() {
+		return this.world;
+	}
+
+	/**
+	 * Variable registering the World of this Cube.
+	 */
+	private final World world;
+
 }

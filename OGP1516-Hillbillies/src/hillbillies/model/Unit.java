@@ -1,9 +1,7 @@
 
 package hillbillies.model;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
@@ -179,7 +177,11 @@ public class Unit {
 	// Destructor //
 
 	void die() {
-		this.drop();
+		try {
+			this.drop();
+		} catch (Exception e) {
+			this.setObjectCarried(null);
+		}
 		this.isDead = true;
 		this.setWorld(null);
 		this.setFaction(null);
@@ -469,7 +471,10 @@ public class Unit {
 	 *         | weight <= 200)
 	 */
 	boolean isValidWeight(int weight) {
-		return (weight >= this.lowestValidWeight() && weight <= MAX_ATTRIBUTE);
+		if(isCarrying())
+			return (weight >= this.lowestValidWeight());
+		else
+			return (weight >= this.lowestValidWeight() && weight <= MAX_ATTRIBUTE);
 	}
 	/**
 	 * Set the Weight of this Unit to the given Weight.
@@ -1416,7 +1421,16 @@ public class Unit {
 						.terrainAtAdjacentCubes(this.getInWorldPosition())[5]
 								.isPassable());
 	}
-
+	/**
+	 * Method that starts a unit to fall straight down
+	 * 
+	 * @effect Extends the movement path of subsequent cubes straight down 
+	 * 			from the unit's current position
+	 * 		| this.pathExtension(this.getInWorldPosition()
+	 * 		|  			.difference(new Coordinate(0, 0, 1)));
+	 * @throws ModelException
+	 * 		A coordinate a unit would fall to is invalid
+	 */
 	void fall() throws ModelException {
 		this.addToPath(this.getPosition());
 		if (shouldStartFalling()) {
@@ -1430,13 +1444,17 @@ public class Unit {
 			this.setzLevels(this.getPath().size());
 		}
 	}
-
+	/**
+	 * Executes the consequences when a unit hits the ground after falling
+	 * 
+	 * @effect The unit receives damage according to the depth of his fall
+	 * 		this.setHitpoints(this.getHitpoints() - 10 * this.getzLevels());	
+	 */
 	void stopFalling() {
 		this.setHitpoints(this.getHitpoints() - 10 * this.getzLevels());
 		this.setzLevels(0);
 		this.setActivity(Activity.IDLE);
 	}
-
 	/**
 	 * Return the zLevels to fall of this unit
 	 */
@@ -1445,22 +1463,35 @@ public class Unit {
 	int getzLevels() {
 		return zLevels;
 	}
-
 	/**
 	 * Set the zlevels of this unit to the given amount of zlevels.
 	 */
 	void setzLevels(int zLevels) {
 		this.zLevels = zLevels;
 	}
-
+	/**
+	 * Variable that hold the amount of levels a unit will fall
+	 */
 	private int zLevels = 0;
 
 	// Working (defensive) //
 
+	/**
+	 * Method that issues a work command at a specific cube in the game world
+	 * 
+	 * @param coordinate
+	 * 		The Coordinate of the cube to work at
+	 * @effect If not already there, the unit first moves to the cube, if able, or an adjacent cube
+	 * 		| moveTo(coordinate)
+	 * @effect If already on the cube, the unit starts working
+	 * 		| work()
+	 * @throws ModelException
+	 * 		| the Target cube is not passable, nor are its neighbors
+	 */
 	public void workAt(Coordinate coordinate) throws ModelException {
 		if (this.getInWorldPosition().equals(coordinate))
 			this.work();
-		else{
+		else {
 			moveTo((int) coordinate.getX(), (int) coordinate.getY(),
 					(int) coordinate.getZ());
 			isMovingToWork = true;
@@ -1516,34 +1547,49 @@ public class Unit {
 	}
 	/**
 	 * Method that stops a work task for a Unit
+	 * @throws ModelException 
 	 * 
 	 * @post The unit will be idle 
 	 * 		| new.getActivity == IDLE
 	 */
-	void stopWork() {
+	void stopWork() throws ModelException {
 		if (this.isCarrying()) {
 			this.drop();
-		}
-		if (this.getWorld()
+		} else if (this.getWorld()
 				.getTerrainAt(this.getInWorldPosition()) == Terrain.WORKSHOP
 				&& this.getWorld().getCubeAt(this.getInWorldPosition())
 						.getBoulders().size() != 0
 				&& this.getWorld().getCubeAt(this.getInWorldPosition())
 						.getLogs().size() != 0) {
-			this.setToughness(this.getToughness() + 10);
-			this.setWeight(this.getWeight() + 10);
-			this.getWorld().getCubeAt(this.getInWorldPosition())
-					.removeBoulder();
-
+			Log theLog = this.getWorld().getCubeAt(this.getInWorldPosition())
+					.removeLog();
+			Boulder theBoulder = this.getWorld()
+					.getCubeAt(this.getInWorldPosition()).removeBoulder();
+			this.setToughness(this.getToughness() + theLog.getWeight()
+					+ theBoulder.getWeight());
+			this.setWeight(this.getWeight() + theLog.getWeight()
+					+ theBoulder.getWeight());
+		} else if (this.getWorld().getCubeAt(this.getInWorldPosition())
+				.getBoulders().size() != 0) {
+			Boulder theBoulder = this.getWorld()
+					.getCubeAt(this.getInWorldPosition()).removeBoulder();
+			this.pickUp(theBoulder);
+		} else if (this.getWorld().getCubeAt(this.getInWorldPosition())
+				.getLogs().size() != 0) {
+			Log theLog = this.getWorld().getCubeAt(this.getInWorldPosition())
+					.removeLog();
+			this.pickUp(theLog);
+		} else if (this.getWorld().getTerrainAt(workTarget) == Terrain.TREE){
+			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
+			
 		}
 
 		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
 	}
-
-	
+	private Coordinate workTarget;
 	private boolean isMovingToWork = false;
-	
+
 	/**
 	 * Return the remaining work time of this Unit.
 	 */
@@ -1599,12 +1645,17 @@ public class Unit {
 
 	// Carrying //
 
-	void drop() {
-		if (this.getObjectCarried() instanceof Log) {
-			// plaats van unit komt log
-		} else {
-			// plaats van unit komt boulder
-		}
+	void pickUp(GameObject gameObject) {
+		this.setObjectCarried(gameObject);
+		this.setWeight(this.getWeight() + gameObject.getWeight());
+		gameObject.isPickedUp();
+	}
+
+	void drop() throws ModelException {
+		this.setWeight(this.getWeight() - this.getObjectCarried().getWeight());
+		this.getObjectCarried().isDropped(this.getInWorldPosition(),
+				this.getWorld());
+		this.setObjectCarried(null);
 	}
 
 	/**
