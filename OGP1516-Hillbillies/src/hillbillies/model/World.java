@@ -67,6 +67,15 @@ public class World {
 			unit.advanceTime(deltaT);
 		for (Unit unit : this.getUnitSet())
 			shouldDie(unit);
+		for(int i=0; i<this.getDimension()[0]; i++)
+			for(int j=0; j<this.getDimension()[1] ; j++)
+				for(int k=0; k<this.getDimension()[2]; k++)
+					if(getAlgorithm().isSolidConnectedToBorder(i, j, k))
+						try {
+							this.caveIn(new Coordinate(i,j,k));
+						} catch (ModelException e) {
+							// shouldn't happen
+						}
 	}
 
 	// Terrain //
@@ -147,29 +156,43 @@ public class World {
 
 	// Border connection //
 
+	/**
+	 * Method that returns the current state of the connected
+	 * to border algorithm
+	 * 
+	 * @return algorithm
+	 */
 	public ConnectedToBorder getAlgorithm() {
 		return this.algorithm;
 	}
-
-	private final ConnectedToBorder algorithm;
-
+	/**
+	 * Method that updates the connected to border algorithm for
+	 * every cube in the gameworld
+	 * 
+	 * @effect Calls changeSolidToPassable() on every cube
+	 * 		| algorithm.changeSolidToPassable()
+	 */
 	public void updateAlgorithm() {
 		for (int indexX = 0; indexX < this.getGrid()
-				.getMap().length; indexX++) {
+				.getMap().length; indexX++) 
 			for (int indexY = 0; indexY < this.getGrid()
-					.getMap()[indexX].length; indexY++) {
+					.getMap()[indexX].length; indexY++) 
 				for (int indexZ = 0; indexZ < this.getGrid()
-						.getMap()[indexX][indexY].length; indexZ++) {
+						.getMap()[indexX][indexY].length; indexZ++) 
 					if (this.getGrid().getMap()[indexX][indexY][indexZ]
 							.getTerrain().isPassable())
 						algorithm.changeSolidToPassable(indexX, indexY, indexZ);
-				}
-			}
-		}
 	}
-
-	// Map //
 	/**
+	 * Variable containing the connected to border algorithm state
+	 */
+	private final ConnectedToBorder algorithm;
+	
+	// Map //
+	
+	/**
+	 * Returns the cube in the world at the given coordinate
+	 * 
 	 * @param coordinate
 	 * 			the coordinate of the cube required
 	 * @return the cube at given coordinate
@@ -177,9 +200,11 @@ public class World {
 	Cube getCubeAt(Coordinate coordinate){
 		return this.getGrid().getMapAt(coordinate);
 	}
+	
 	/**
 	 * Determines whether the given coordinate is a valid spawn 
 	 * position
+	 * 
 	 * @param coordinate
 	 * 			the position that needs to be examined
 	 * @return	true when possible to spawn there
@@ -210,14 +235,10 @@ public class World {
 
 	/**
 	 * Check whether the given position is a valid position for
-	 * any world.
+	 * any a unit to be on.
 	 *  
-	 * @return True if the given position component is valid for this world
-	 *       | if (position >= MIN_POSITION && result <= MAX_POSITION)
-	 *       | 		return True
-	 *       | else
-	 *       | 		return False
-	*/
+	 * @return True if the given position is valid for this world
+	 */
 	boolean isValidPosition(Coordinate coordinate) {
 		Coordinate flooredCoordinate = coordinate.floor();
 		if (!(flooredCoordinate.getX() >= 0
@@ -345,7 +366,7 @@ public class World {
 	 *        | result ==
 	 *        |   card({faction:Faction | hasAsFaction({faction)})
 	 */
-	public int getNbFactions() {
+	int getNbFactions() {
 		return factions.size();
 	}
 
@@ -381,7 +402,7 @@ public class World {
 	 *       | ! new.hasAsFaction(faction)
 	 */
 	@Raw
-	public void removeFaction(Faction faction) {
+	void removeFaction(Faction faction) {
 		assert this.hasAsFaction(faction) && (faction.getWorld() == null);
 		factions.remove(faction);
 	}
@@ -650,7 +671,7 @@ public class World {
 	 * @post   This World has the given GameObject as one of its GameObjects.
 	 *       | new.hasAsGameObject(gameObject)
 	 */
-	public void addGameObject(@Raw GameObject gameObject, Coordinate coordinate) {
+	void addGameObject(@Raw GameObject gameObject, Coordinate coordinate) {
 		assert (gameObject != null) && (gameObject.getWorld() == this);
 		this.getCubeAt(coordinate).addGameObject(gameObject);
 	}
