@@ -1661,8 +1661,6 @@ public class Unit {
 			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
 			// at worktarget appears a boulder
 		}
-	
-
 		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
 	}
