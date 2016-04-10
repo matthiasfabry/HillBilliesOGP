@@ -15,6 +15,9 @@ import ogp.framework.util.ModelException;
  * @invar  The Terrain of each Cube must be a valid Terrain for any
  *         Cube.
  *       | isValidTerrain(getTerrain())     
+ * @invar  The timeToCollapse of each Cube must be a valid timeToCollapse for any
+ *         Cube.
+ *       | isValidTimeToCollapse(getTimeToCollapse())
  *
  * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
@@ -89,6 +92,91 @@ class Cube {
 	 * Variable registering the Terrain of this Cube.
 	 */
 	private Terrain terrain = Terrain.AIR;
+
+	/**
+	 * Return the timeToCollapse of this Cube.
+	 */
+	@Basic
+	@Raw
+	double getTimeToCollapse() {
+		return this.timeToCollapse;
+	}
+
+	/**
+	 * Check whether the given timeToCollapse is a valid timeToCollapse for
+	 * any Cube.
+	 *  
+	 * @param  propertyname_Java
+	 *         The timeToCollapse to check.
+	 * @return 
+	 *       | result == timeToCollapse >= 0 && timeToCollapse <= 5
+	*/
+	static boolean isValidTimeToCollapse(double timeToCollapse) {
+		return (timeToCollapse >= 0 && timeToCollapse <= 5);
+	}
+
+	/**
+	 * Set the timeToCollapse of this Cube to the given timeToCollapse.
+	 * 
+	 * @param  timeToCollapse
+	 *         The new timeToCollapse for this Cube.
+	 * @throws ModelException 
+				The given time is not a valid time
+	 * @post   The timeToCollapse of this Cube is equal to the given
+	 *         timeToCollapse.
+	 *       | new.getTimeToCollapse() == timeToCollapse
+	 */
+	@Raw
+	public void setTimeToCollapse(double timeToCollapse) throws ModelException {
+		if(isValidTimeToCollapse(timeToCollapse))
+			this.timeToCollapse = timeToCollapse;
+		else
+			throw new ModelException();
+	}
+
+	/**
+	 * Variable registering the timeToCollapse of this Cube.
+	 */
+	private double timeToCollapse;
+	
+	boolean isCavingIn = false;
+	
+	/**
+	 * Method that makes the cube at the given coordinate collapse
+	 * 
+	 * @param coordinate
+	 * 			the position of the cave in
+	 * @throws ModelException
+	 * 			The terrain can't cave in at the given coordinate
+	 */
+	void collapse() throws ModelException {
+		Terrain oldTerrain;
+		try {
+			oldTerrain = this.getTerrain();
+		} catch (IndexOutOfBoundsException e2) {
+			throw new ModelException("Outside World");
+		}
+		if (oldTerrain != Terrain.ROCK || oldTerrain != Terrain.TREE)
+			throw new ModelException("This terrain can't cave in!");
+		this.setTerrain(Terrain.AIR);
+		this.getWorld().getListener().notify();
+		double random = Math.random();
+		if (random < 0.25) {
+			if (oldTerrain == Terrain.TREE)
+				try {
+					this.addGameObject(new Log(this.getPlaceInGrid(), this.getWorld()));
+				} catch (ModelException e) {
+					// shouldn't happen
+				}
+			else if (oldTerrain == Terrain.ROCK)
+				try {
+					this.addGameObject(new Boulder(this.getPlaceInGrid(), this.getWorld()));
+				} catch (ModelException e1) {
+					// shouldn't happen
+				}
+		}
+		isCavingIn = false;
+	}
 
 	// GameObjects //
 
@@ -171,7 +259,7 @@ class Cube {
 	private final Coordinate position;
 
 	// World //
-	
+
 	/**
 	 * Return the World of this Cube.
 	 */

@@ -38,15 +38,38 @@ public abstract class GameObject {
 	 */
 	public GameObject(Coordinate coordinate, World world)
 			throws ModelException {
-		this.world = world;
+		this.setWorld(world);
 		Random decider = new Random();
 		int weight = decider.nextInt(41) + 10;
 		this.weight = weight;
 		this.setPosition(coordinate);
 	}
 
+	// Time Control //
+	
+	void advanceTime(double deltaT){
+		if(isFalling)
+			try {
+				this.setPosition(getPosition().difference(new Coordinate(0,0,1).scalarMult(deltaT)));
+			} catch (ModelException e) {
+				try {
+					this.setPosition(new Coordinate(getPosition().getX(), getPosition().getY(), getPosition().getZ()-1));
+					this.isFalling = false;
+				} catch (ModelException e1) {
+					// shoudn't happen
+				}
+			}
+			
+	}
+	
 	// World //
-
+	
+	/**
+	 * Sets the World of this gameObject to the given world
+	 * 
+	 * @param world
+	 * 		The World to set
+	 */
 	void setWorld(World world){
 		if (isValidWorld(world))
 			this.world = world;
@@ -136,7 +159,7 @@ public abstract class GameObject {
 	 *       | result == 
 	*/
 	boolean isValidPosition(Coordinate position) {
-		return this.getWorld().isValidPosition(position);
+		return this.getWorld().isValidSpawnPosition(position);
 	}
 
 	/**
@@ -163,22 +186,44 @@ public abstract class GameObject {
 	 * Variable registering the Position of this GameObject.
 	 */
 	private Coordinate position;
-	
+	/**
+	 * Method that simulates the picking up of a gameObject
+	 * 
+	 * @post The gameObject shall be in no world
+	 * 		| This.getWorld() == null
+	 */
 	void isPickedUp(){
 		this.isBeingCarried = true;
 		this.setWorld(null);
 	}
-	
+	/**
+	 * Method that simulates the dropping of a gameObject onto a cube of the gameWorld
+	 * 
+	 * @param coordinate
+	 * 		The place to drop the gameObject
+	 * @param world
+	 * 		The world to drop the gameObject into
+	 * @throws ModelException
+	 * 		When the given coordinate is outside of the given world
+	 * @post The gameObject shall be member of the given world
+	 * 		| this.getWorld() == world
+	 */
 	void isDropped(Coordinate coordinate, World world) throws ModelException{
+		this.setWorld(world);
 		try {
-			this.setWorld(world);
 			this.setPosition(coordinate);
 			this.isBeingCarried = false;
 		} catch (ModelException e) {
 			throw new ModelException("Can't drop object here!");
 		}
 	}
-	
+	/**
+	 * Flag registering whether the gameObject is being carried by a unit or not
+	 */
 	private boolean isBeingCarried = false;
+	/**
+	 * flag registering whether the gameObject is falling or not
+	 */
+	private boolean isFalling = false;
 
 }
