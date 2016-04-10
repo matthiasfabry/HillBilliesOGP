@@ -283,7 +283,9 @@ public class World {
 	private final Grid grid;
 
 	// Faction //
-
+	/**
+	 * Return the set of Factions of this World.
+	 */
 	public ArrayList<Faction> getFactionList() {
 		return this.factions;
 	}
@@ -696,7 +698,9 @@ public class World {
 				&& (gameObject.getWorld() == null);
 		getGameObjects().remove(gameObject);
 	}
-	
+	/**
+	 * Return the set of GameObjects of this World.
+	 */
 	Set<GameObject> getGameObjects(){
 		Set<GameObject> theSet = new HashSet<>();
 		for(Cube[][] cubePlane : this.getGrid().getMap())

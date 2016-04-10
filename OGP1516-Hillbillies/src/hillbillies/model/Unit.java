@@ -175,7 +175,16 @@ public class Unit {
 	}
 
 	// Destructor //
-
+	/**
+	 * Method that lets the Unit die, cutting all connections with worlds or factions.
+	 * @post	the unit is dead
+ +	 * 		|	this.isDead == true
+ +	 * @post	the unit isn't carrying anything
+ +	 * 		|	this.isCarrying() = false
+ +	 * @post	the unit doesn't belong to any world nor faction
+ +	 * 		|	this.getWorld = null
+ +	 * 		|	this.getFaction = null
+ +	 */
 	void die() {
 		try {
 			this.drop();
@@ -186,7 +195,9 @@ public class Unit {
 		this.setWorld(null);
 		this.setFaction(null);
 	}
-
+	/**
+	 +	 * flag that keeps whether the unit is dead or not.
+	 +	 */
 	private boolean isDead = false;
 
 	// World //
