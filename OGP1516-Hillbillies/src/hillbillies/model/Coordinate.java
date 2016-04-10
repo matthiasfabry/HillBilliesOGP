@@ -137,6 +137,44 @@ public class Coordinate {
 		return this.z;
 	}
 
+	// Neighbouring//
+	/**
+	 * Method that lists all Coordinate that are adjacent to this coordinate
+	 * @return	a list of Coordinates that are adjacent this coordinate
+	 * 			
+	 */
+	Coordinate[] adjacentCoordinates() {
+		Coordinate[] result = new Coordinate[26];
+		result[0]  = this.sum(new Coordinate(1, 0, 0));
+		result[1]  = this.sum(new Coordinate(-1, 0, 0));
+		result[2]  = this.sum(new Coordinate(0, 1, 0));
+		result[3]  = this.sum(new Coordinate(0, -1, 0));
+		result[4]  = this.sum(new Coordinate(0, 0, 1));
+		result[5]  = this.sum(new Coordinate(0, 0, -1));
+		result[6]  = this.sum(new Coordinate(1, 1, 0));
+		result[7]  = this.sum(new Coordinate(-1, -1, 0));
+		result[8]  = this.sum(new Coordinate(1, 1, 1));
+		result[9]  = this.sum(new Coordinate(-1, -1, -1));
+		result[10] = this.sum(new Coordinate(1, 0, 1));
+		result[11] = this.sum(new Coordinate(-1, 0, -1));
+		result[12] = this.sum(new Coordinate(0, 1, 1));
+		result[13] = this.sum(new Coordinate(0, -1, -1));
+		result[14] = this.sum(new Coordinate(1, -1, 0));
+		result[15] = this.sum(new Coordinate(-1, 1, 0));
+		result[16] = this.sum(new Coordinate(1, 0, -1));
+		result[17] = this.sum(new Coordinate(-1, 0, 1));
+		result[18] = this.sum(new Coordinate(0, 1, -1));
+		result[19] = this.sum(new Coordinate(0, -1, 1));
+		result[20] = this.sum(new Coordinate(1, 1, -1));
+		result[21] = this.sum(new Coordinate(-1, -1, 1));
+		result[22] = this.sum(new Coordinate(1, -1, 1));
+		result[23] = this.sum(new Coordinate(-1, 1, -1));
+		result[24] = this.sum(new Coordinate(-1, 1, 1));
+		result[25] = this.sum(new Coordinate(1, -1, -1));
+		return result;
+
+	}
+	
 	// Fields //
 	
 	/**

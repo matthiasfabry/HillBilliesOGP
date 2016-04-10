@@ -1024,26 +1024,36 @@ public class Unit {
 	 */
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
-			while (!this.getPath().contains(this.getDestinationCube())) {
 				q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
 				makeCoordinateQueue();
 				int i = 1;
 				while (!getCoordinateQueue()
-						.contains(this.getInWorldPosition())) {
+						.contains(this.getInWorldPosition()) && i<100) {
 					for (Tuple<Coordinate> tuple : q)
 						search(new Tuple<Coordinate>(tuple.getC(), i));
 					i++;
 					makeCoordinateQueue();
-				}
-				makeCoordinateQueue();
-				if (this.getCoordinateQueue()
+				} if (this.getCoordinateQueue()
 						.contains(this.getInWorldPosition())) {
-					Tuple<Coordinate> current = new Tuple<>(
-							this.getInWorldPosition(), 1);
-
-				} else
+					while (this.getPath().getLast() != this.getDestinationCube()) {
+						int counter = 0;
+						Coordinate next = new Coordinate(0,0,0);
+						Coordinate current = this.getPath().getLast();
+						Coordinate[] coordinatelist= current.adjacentCoordinates();
+						for (Coordinate coordinate : coordinatelist) {
+							if (this.getCoordinateQueue().contains(coordinate)) {
+								for (Tuple<Coordinate> tuple : q) {
+									if (tuple.getC() == coordinate) {
+										if (tuple.getV() < counter)
+											counter = tuple.getV();
+											next = tuple.getC();
+									}
+								}	
+							}	
+						}
+						addToPath(next);
+				}} else 
 					throw new ModelException("not able to reach destination!");
-			}
 		} else
 			throw new ModelException("No destination!");
 	}
@@ -1760,8 +1770,8 @@ public class Unit {
 		return ObjectCarried;
 	}
 	/**
-	 +	 * The Object that is being carried by the Unit.
-	 +	 */
+	 * The Object that is being carried by the Unit.
+	 */
 	private GameObject ObjectCarried;
 
 	/**

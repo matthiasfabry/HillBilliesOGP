@@ -6,7 +6,7 @@ package hillbillies.model;
 /**
  * Simple class representing a tuple of an object with an Integer.
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
  *
  */
