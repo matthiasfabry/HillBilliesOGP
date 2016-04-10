@@ -1656,8 +1656,12 @@ public class Unit {
 			this.pickUp(theLog);
 		} else if (this.getWorld().getTerrainAt(workTarget) == Terrain.TREE){
 			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
-			
+			// at worktarget appears a log
+		} else if (this.getWorld().getTerrainAt(workTarget) == Terrain.ROCK){
+			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
+			// at worktarget appears a boulder
 		}
+	
 
 		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
@@ -2333,7 +2337,15 @@ public class Unit {
 	private boolean defaultBehavior = false;
 
 	// Experience //
-
+	/**
+	 * Adds the given amount of experience to both the totalExperience
+	 * and the countExp
+	 * @param experience
+	 * 			The amount to be added to both variable
+	 * @post	the new amount will exceed the old by a vaue of the given experience
+	 * 		|	this.setTotalExperience(this.getTotalExperience() + experience) &&
+	 * 		|	this.setCountExp(this.getCountExp() + experience)
+	 */
 	void AwardExperience(int experience) {
 		this.setTotalExperience(this.getTotalExperience() + experience);
 		this.setCountExp(this.getCountExp() + experience);
@@ -2373,14 +2385,24 @@ public class Unit {
 				return;
 		}
 	}
-
+	/**
+	 * @return the count Experience
+	 * 		|	this.countExp
+	 */
 	public int getCountExp() {
 		return this.countExp;
 	}
-
+	/**
+	 * sets the count Experience at the given value
+	 * @param countExp
+	 * 			the new value of the count Experience
+	 */
 	public void setCountExp(int countExp) {
 		this.countExp = countExp;
 	}
+	/**
+	 * variable that keeps the count Experience of the unit
+	 */
 	private int countExp;
 
 	/**
