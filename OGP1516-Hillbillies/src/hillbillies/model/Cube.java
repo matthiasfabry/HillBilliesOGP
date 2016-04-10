@@ -127,7 +127,7 @@ class Cube {
 	 *       | new.getTimeToCollapse() == timeToCollapse
 	 */
 	@Raw
-	public void setTimeToCollapse(double timeToCollapse) throws ModelException {
+	void setTimeToCollapse(double timeToCollapse) throws ModelException {
 		if(isValidTimeToCollapse(timeToCollapse))
 			this.timeToCollapse = timeToCollapse;
 		else
@@ -235,7 +235,7 @@ class Cube {
 	 * 
 	 * @return the gameObjects
 	 */
-	public Queue<GameObject> getGameObjects() {
+	Queue<GameObject> getGameObjects() {
 		return gameObjects;
 	}
 	/**
@@ -266,7 +266,7 @@ class Cube {
 	@Basic
 	@Raw
 	@Immutable
-	public World getWorld() {
+	World getWorld() {
 		return this.world;
 	}
 

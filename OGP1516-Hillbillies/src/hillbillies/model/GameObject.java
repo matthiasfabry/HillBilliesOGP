@@ -43,38 +43,41 @@ public abstract class GameObject {
 		int weight = decider.nextInt(41) + 10;
 		this.weight = weight;
 		this.setPosition(coordinate);
+		this.getWorld().addGameObject(this, coordinate);
 	}
 
 	// Time Control //
-	
-	void advanceTime(double deltaT){
-		if(isFalling)
+
+	void advanceTime(double deltaT) {
+		if (isFalling)
 			try {
-				this.setPosition(getPosition().difference(new Coordinate(0,0,1).scalarMult(deltaT)));
+				this.setPosition(getPosition().difference(
+						new Coordinate(0, 0, 1).scalarMult(deltaT)));
 			} catch (ModelException e) {
 				try {
-					this.setPosition(new Coordinate(getPosition().getX(), getPosition().getY(), getPosition().getZ()-1));
+					this.setPosition(new Coordinate(getPosition().getX(),
+							getPosition().getY(), getPosition().getZ() - 1));
 					this.isFalling = false;
 				} catch (ModelException e1) {
 					// shoudn't happen
 				}
 			}
-			
+
 	}
-	
+
 	// World //
-	
+
 	/**
 	 * Sets the World of this gameObject to the given world
 	 * 
 	 * @param world
 	 * 		The World to set
 	 */
-	void setWorld(World world){
+	void setWorld(World world) {
 		if (isValidWorld(world))
 			this.world = world;
 	}
-	
+
 	/**
 	 * Return the World of this GameObject.
 	 */
@@ -129,7 +132,7 @@ public abstract class GameObject {
 	 *       | result == weight <= 50 && weight >= 10
 	*/
 	@Raw
-	public boolean canHaveAsWeight(int weight) {
+	boolean canHaveAsWeight(int weight) {
 		return (weight <= 50 && weight >= 10);
 	}
 
@@ -159,7 +162,23 @@ public abstract class GameObject {
 	 *       | result == 
 	*/
 	boolean isValidPosition(Coordinate position) {
-		return this.getWorld().isValidSpawnPosition(position);
+		if (!isFalling) {
+			return this.getWorld().isValidSpawnPosition(position);
+		} else {
+			Coordinate flooredCoordinate = position.floor();
+			if (flooredCoordinate.getX() >= 0
+					&& flooredCoordinate.getX() <= this.getWorld().getGrid()
+							.getDimension()[0]
+					&& flooredCoordinate.getY() >= 0
+					&& flooredCoordinate.getY() <= this.getWorld().getGrid()
+							.getDimension()[1]
+					&& flooredCoordinate.getZ() >= 0
+					&& flooredCoordinate.getZ() <= this.getWorld().getGrid()
+							.getDimension()[2])
+				return true;
+			else
+				return false;
+		}
 	}
 
 	/**
@@ -176,7 +195,7 @@ public abstract class GameObject {
 	 *       | ! isValidPosition(getPosition())
 	 */
 	@Raw
-	public void setPosition(Coordinate position) throws ModelException {
+	void setPosition(Coordinate position) throws ModelException {
 		if (!isValidPosition(position))
 			throw new ModelException();
 		this.position = position;
@@ -192,7 +211,7 @@ public abstract class GameObject {
 	 * @post The gameObject shall be in no world
 	 * 		| This.getWorld() == null
 	 */
-	void isPickedUp(){
+	void isPickedUp() {
 		this.isBeingCarried = true;
 		this.setWorld(null);
 	}
@@ -208,7 +227,7 @@ public abstract class GameObject {
 	 * @post The gameObject shall be member of the given world
 	 * 		| this.getWorld() == world
 	 */
-	void isDropped(Coordinate coordinate, World world) throws ModelException{
+	void isDropped(Coordinate coordinate, World world) throws ModelException {
 		this.setWorld(world);
 		try {
 			this.setPosition(coordinate);
@@ -221,6 +240,11 @@ public abstract class GameObject {
 	 * Flag registering whether the gameObject is being carried by a unit or not
 	 */
 	private boolean isBeingCarried = false;
+	
+	void shouldFall(){
+		if (this.getWorld().getTerrainAt(this.getPosition().difference(new Coordinate(0,0,1))).isPassable())
+			this.isFalling = true;
+	}
 	/**
 	 * flag registering whether the gameObject is falling or not
 	 */

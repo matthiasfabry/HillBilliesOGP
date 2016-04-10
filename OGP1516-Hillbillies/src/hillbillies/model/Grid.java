@@ -18,6 +18,7 @@ import ogp.framework.util.ModelException;
 class Grid {
 
 	// Constructor //
+	
 	/**
 	 * Initializes a Grid
 	 * @param features
@@ -59,6 +60,7 @@ class Grid {
 	private final World world;
 
 	// Map //
+	
 	/**
 	 * Makes a list of the terrains at the adjacent cubes of 
 	 * the given coordinate
@@ -136,10 +138,9 @@ class Grid {
 	@Basic
 	@Raw
 	@Immutable
-	public int[] getDimension() {
+	int[] getDimension() {
 		return this.dimension;
 	}
-
 	/**
 	 * Variable registering the Dimension of this World.
 	 */

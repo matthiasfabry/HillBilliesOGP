@@ -1,21 +1,14 @@
-/**
- * 
- */
 package hillbillies.tests.world;
 
 import static org.junit.Assert.*;
 
 import java.util.HashSet;
-
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import hillbillies.common.internal.ui.viewmodel.IViewModel.NewSpriteListener;
 import hillbillies.model.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.ModelException;
-import ogp.framework.util.Util;
+
 
 /**
  *
@@ -24,29 +17,20 @@ import ogp.framework.util.Util;
  * @version 1.0
  *
  */
-@SuppressWarnings("unused")
 public class WorldTest {
 
 	private static TerrainChangeListener theListener;
 	private static Terrain[][][] someTerrain = new Terrain[20][30][50];
 	private static World emptyWorld;
 
-	@BeforeClass
-	public static void setUpWorld() throws ModelException {
+
+	@Before
+	public void setUp() throws ModelException {
 		for (int i = 0; i < 20; i++)
 			for (int j = 0; j < 30; j++)
 				for (int k = 0; k < 50; k++)
 					someTerrain[i][j][k] = Terrain.AIR;
 		emptyWorld = new World(someTerrain, theListener);
-	}
-
-	/**
-	 * @throws ModelException 
-	 * 			
-	 */
-	@Before
-	public void setUp() throws ModelException {
-	
 	}
 
 	// Constructor //
@@ -60,9 +44,33 @@ public class WorldTest {
 		assertEquals(50, newWorld.getDimension()[2]);
 		assertEquals(Terrain.AIR, newWorld.getTerrainAt(new Coordinate(1,1,1)));
 		assertEquals(new HashSet<Unit>(), newWorld.getUnitSet());
+		assertEquals(0, newWorld.getLogSet().size());
+		assertEquals(0, newWorld.getBoulderSet().size());
 		assertNotNull(newWorld.getAlgorithm());
 	}
-
+	
+	// Units // 
+	
+	@Test
+	public void spawnUnit(){
+		Unit theUnit = emptyWorld.spawnUnit(false);
+		assertEquals(1,emptyWorld.getNbUnits());
+		assertTrue(emptyWorld.hasAsUnit(theUnit));
+		assertEquals(0, (int) theUnit.getInWorldPosition().getZ());
+	}
+	
+	// GameObjects //
+	
+	@Test
+	public void addGameObject() throws ModelException{
+		Boulder theBoulder = new Boulder(new Coordinate(0,0,0), emptyWorld);
+		assertTrue(emptyWorld.hasAsGameObject(theBoulder));
+		assertEquals(1,emptyWorld.getNbGameObjects());
+		Log theLog = new Log(new Coordinate(1,1,0), emptyWorld);
+		assertTrue(emptyWorld.hasAsGameObject(theLog));
+		assertEquals(2,emptyWorld.getNbGameObjects());
+		
+	}
 
 	// Time Control //
 

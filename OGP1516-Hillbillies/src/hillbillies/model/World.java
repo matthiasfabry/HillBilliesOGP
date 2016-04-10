@@ -75,27 +75,28 @@ public class World {
 						} catch (ModelException e) {
 							// shouldn't happen
 						}
-		for (GameObject gameObject : getGameObjects())
+		for (GameObject gameObject : getGameObjects()) {
+			gameObject.shouldFall();
 			gameObject.advanceTime(deltaT);
+		}
+
 		for (int i = 0; i < this.getDimension()[0]; i++)
 			for (int j = 0; j < this.getDimension()[1]; j++)
 				for (int k = 0; k < this.getDimension()[2]; k++) {
-					Coordinate thePlace = new Coordinate(i,j,k);
+					Coordinate thePlace = new Coordinate(i, j, k);
 					if (this.getCubeAt(thePlace).isCavingIn) {
 						try {
-							this.getCubeAt(thePlace)
-									.setTimeToCollapse(this
-											.getCubeAt(thePlace)
-											.getTimeToCollapse() - deltaT);
+							this.getCubeAt(thePlace).setTimeToCollapse(
+									this.getCubeAt(thePlace).getTimeToCollapse()
+											- deltaT);
 						} catch (ModelException e) {
 							try {
-								this.getCubeAt(thePlace)
-										.setTimeToCollapse(0);
+								this.getCubeAt(thePlace).setTimeToCollapse(0);
 								this.getCubeAt(thePlace).collapse();
 							} catch (ModelException e1) {
 								// shoudn't happen
 							}
-						} 
+						}
 					}
 				}
 	}
@@ -216,15 +217,13 @@ public class World {
 				&& flooredCoordinate.getZ() >= 0 && flooredCoordinate
 						.getZ() <= this.getGrid().getDimension()[2]))
 			return false;
-		if (this.getGrid().getMapAt(flooredCoordinate).getTerrain()
-				.isImpassable())
+		if (this.getCubeAt(flooredCoordinate).getTerrain().isImpassable())
 			return false;
 		else {
 			if (flooredCoordinate.getZ() == 0)
 				return true;
-			if (this.getGrid()
-					.getMapAt(flooredCoordinate
-							.difference(new Coordinate(0, 0, 1)))
+			if (this.getCubeAt(
+					flooredCoordinate.difference(new Coordinate(0, 0, 1)))
 					.getTerrain().isImpassable())
 				return true;
 			return false;
@@ -262,13 +261,15 @@ public class World {
 		}
 	}
 	/**
-	 * @return the dimension of the World
+	 * return the dimension of the World
 	 */
+	@Basic
+	@Raw
 	public int[] getDimension() {
 		return this.getGrid().getDimension();
 	}
 	/**
-	 * @return the grid of the current world
+	 * return the grid of the current world
 	 */
 	@Basic
 	@Raw
@@ -281,15 +282,19 @@ public class World {
 	private final Grid grid;
 
 	// Faction //
+
 	/**
 	 * Return the set of Factions of this World.
 	 */
+	@Basic
+	@Raw
 	public ArrayList<Faction> getFactionList() {
 		return this.factions;
 	}
 	/**
 	 * Method that decides what Faction the Unit will join. If the maximum amount 
 	 * of factions is reached, the smallest is chosen. If not, a new Faction is created
+	 * 
 	 * @return	the appropriate faction to join
 	 */
 	Faction getFactiontoJoin() {
@@ -432,7 +437,7 @@ public class World {
 	 * @return	A Unit at a random location
 	 * @throws ModelException
 	 */
-	public Unit spawnUnit(boolean enableDefaultBehavior) throws ModelException {
+	public Unit spawnUnit(boolean enableDefaultBehavior) {
 		Random decider = new Random();
 		int strength = decider.nextInt(76) + 25;
 		int agility = decider.nextInt(76) + 25;
@@ -448,11 +453,17 @@ public class World {
 			target = new Coordinate(box[0], box[1], box[2]);
 		} while (!this.isValidSpawnPosition(target));
 		if (getNbUnits() < 100) {
-			Unit theNewUnit = new Unit("Billie", box, weight, agility, strength,
-					toughness, enableDefaultBehavior, this,
-					this.getFactiontoJoin());
-			this.addUnit(theNewUnit);
-			return theNewUnit;
+			Unit theNewUnit;
+			try {
+				theNewUnit = new Unit("Billie", box, weight, agility, strength,
+						toughness, enableDefaultBehavior, this,
+						this.getFactiontoJoin());
+				this.addUnit(theNewUnit);
+				return theNewUnit;
+			} catch (ModelException e) {
+				// shoudn't happen
+				return null;
+			}
 		} else {
 			Unit theNewUnit = null;
 			return theNewUnit;
@@ -479,7 +490,7 @@ public class World {
 	 */
 	@Basic
 	@Raw
-	boolean hasAsUnit(@Raw Unit unit) {
+	public boolean hasAsUnit(@Raw Unit unit) {
 		return unitSet.contains(unit);
 	}
 
@@ -530,7 +541,7 @@ public class World {
 	 *        | result ==
 	 *        |   card({unit:Unit | hasAsUnit({unit)})
 	 */
-	int getNbUnits() {
+	public int getNbUnits() {
 		return unitSet.size();
 	}
 
@@ -607,7 +618,7 @@ public class World {
 	 */
 	@Basic
 	@Raw
-	boolean hasAsGameObject(@Raw GameObject gameObject) {
+	public boolean hasAsGameObject(@Raw GameObject gameObject) {
 		return this.getGameObjects().contains(gameObject);
 	}
 
@@ -657,7 +668,7 @@ public class World {
 	 *        | result ==
 	 *        |   card({gameObject:GameObject | hasAsGameObject({gameObject)})
 	 */
-	int getNbGameObjects() {
+	public int getNbGameObjects() {
 		return getGameObjects().size();
 	}
 

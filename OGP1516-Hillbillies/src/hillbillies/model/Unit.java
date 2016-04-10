@@ -1092,7 +1092,7 @@ public class Unit {
 	 * 		|		return false
 	 * 			
 	 */
-	public boolean alreadyinQueue(Tuple<Coordinate> tuple) {
+	boolean alreadyinQueue(Tuple<Coordinate> tuple) {
 		boolean alreadyinQ = false;
 		Tuple<Coordinate> decending = tuple;
 		do {
@@ -1113,7 +1113,7 @@ public class Unit {
 	 * 		|	else
 	 * 		|		return false
 	 */
-	public boolean neighbourssolid(Cube cube) {
+	boolean neighbourssolid(Cube cube) {
 		Cube[] neighbours = this.getWorld().getGrid()
 				.adjacentCubes(cube.getPlaceInGrid());
 		boolean neighboursSolid = false;
