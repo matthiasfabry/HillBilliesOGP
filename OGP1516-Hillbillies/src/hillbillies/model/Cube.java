@@ -104,7 +104,7 @@ class Cube {
 		return theQueue;
 	}
 	/**
-	 * removes a Log from the cube.
+	 * removes the Logs from the cube.
 	 */
 	Log removeLog() {
 		Log theLog = this.getLogs().poll();
@@ -124,7 +124,7 @@ class Cube {
 		return theQueue;
 	}
 	/**
-	 * removes a Boulder from the cube.
+	 * removes the Boulders from the cube.
 	 */
 	Boulder removeBoulder() {
 		Boulder theBoulder = this.getBoulders().poll();
