@@ -2,6 +2,7 @@
 package hillbillies.model;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
@@ -1913,7 +1914,7 @@ public class Unit {
 	 * 		| ! isValidVictim()
 	 */
 	void setVictim(Unit victim) throws ModelException {
-		if (isValidVictim(victim))
+		if (isValidVictim(victim) && this.getVictim().getActivity() != Activity.FALLING)
 			this.victim = victim;
 		else
 			throw new ModelException("Target belongs to the same Faction");
@@ -2263,26 +2264,43 @@ public class Unit {
 	 * 			The Unit isn't executing default behavior
 	 * 		|	(! this.getDefaultBehavior())
 	 */
+	@SuppressWarnings("null")
 	void doDefaultBehavior() throws ModelException {
 		if (!this.getDefaultBehavior())
 			throw new ModelException("Unit isn't executing default behavior");
 		if (this.getActivity() == Activity.IDLE) {
+			Cube[] neighbours = this.getWorld().getGrid()
+					.adjacentCubes(this.getInWorldPosition());
+			List <Coordinate> neigbours = null; 
+			for (Cube cube : neighbours)
+				neigbours.add(cube.getPlaceInGrid());
+			Unit possiblevictim = null;
+			for (Unit unit: this.getWorld().getUnitSet())
+				if (neigbours.contains(unit.getInWorldPosition()))
+					possiblevictim = unit;
+			
 			Random random = new Random();
-			int decider = random.nextInt(3);
+			int decider = 0;
+			if (possiblevictim == null)
+				decider = random.nextInt(3);
+			else
+				decider = random.nextInt(4);
 			if (decider == 0) {
 				rest();
 			} else if (decider == 1) {
 				work();
-			} else {
-				int x = random.nextInt(50);
-				int y = random.nextInt(50);
-				int z = random.nextInt(50);
+			} else if (decider ==2){
+				int x = random.nextInt(15);
+				int y = random.nextInt(15);
+				int z = random.nextInt(15);
 				try {
 					moveTo(x, y, z);
 				} catch (Exception e) {
 					// shouldn't happen
 				}
 			}
+			else 
+				attack(possiblevictim);
 		}
 	}
 	/**
