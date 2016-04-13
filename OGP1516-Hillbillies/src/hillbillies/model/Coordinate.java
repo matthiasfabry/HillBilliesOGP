@@ -137,7 +137,8 @@ public class Coordinate {
 		return this.z;
 	}
 
-	// Neighbouring//
+	// Neighboring //
+	
 	/**
 	 * Method that lists all Coordinate that are adjacent to this coordinate
 	 * @return	a list of Coordinates that are adjacent this coordinate

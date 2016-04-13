@@ -1,6 +1,7 @@
 
 package hillbillies.model;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -1024,36 +1025,42 @@ public class Unit {
 	 */
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
-				q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
+			q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
+			makeCoordinateQueue();
+			Queue<Tuple<Coordinate>> searched = new PriorityQueue<>();
+			int i=0;
+			while (!getCoordinateQueue().contains(this.getInWorldPosition())
+					&& q.size() != 0) {
+				Tuple<Coordinate> next = q.poll();
+				search(next);
 				makeCoordinateQueue();
-				int i = 1;
-				while (!getCoordinateQueue()
-						.contains(this.getInWorldPosition()) && i<100) {
-					for (Tuple<Coordinate> tuple : q)
-						search(new Tuple<Coordinate>(tuple.getC(), i));
-					i++;
-					makeCoordinateQueue();
-				} if (this.getCoordinateQueue()
-						.contains(this.getInWorldPosition())) {
-					while (this.getPath().getLast() != this.getDestinationCube()) {
-						int counter = 0;
-						Coordinate next = new Coordinate(0,0,0);
-						Coordinate current = this.getPath().getLast();
-						Coordinate[] coordinatelist= current.adjacentCoordinates();
-						for (Coordinate coordinate : coordinatelist) {
-							if (this.getCoordinateQueue().contains(coordinate)) {
-								for (Tuple<Coordinate> tuple : q) {
-									if (tuple.getC() == coordinate) {
-										if (tuple.getV() < counter)
-											counter = tuple.getV();
-											next = tuple.getC();
-									}
-								}	
-							}	
+				searched.add(next);
+				System.out.println(i + "search");
+				i++;
+
+			}
+			if (this.getCoordinateQueue().contains(this.getInWorldPosition())) {
+				searched.add(new Tuple<Coordinate>(this.getInWorldPosition(), i));
+				while (this.getPath().getLast() != this.getDestinationCube().sum(centerCube())) {
+					int counter = 10000;
+
+					Coordinate next = new Coordinate(0, 0, 0);
+					Coordinate current = this.getPath().getLast();
+					for (Coordinate coordinate : current.adjacentCoordinates()) {
+						if (this.getCoordinateQueue().contains(coordinate)) {
+							for (Tuple<Coordinate> tuple : searched) {
+								if (tuple.getC() == coordinate) {
+									if (tuple.getV() < counter)
+										counter = tuple.getV();
+									next = tuple.getC();
+								}
+							}
 						}
-						addToPath(next);
-				}} else 
-					throw new ModelException("not able to reach destination!");
+					}
+					addToPath(next.sum(centerCube()));
+				}
+			} else
+				throw new ModelException("not able to reach destination!");
 		} else
 			throw new ModelException("No destination!");
 	}
@@ -1069,12 +1076,15 @@ public class Unit {
 	void search(Tuple<Coordinate> tuple) {
 		Cube[] neighbours = this.getWorld().getGrid()
 				.adjacentCubes(tuple.getC());
-		for (Cube cube : neighbours)
-			if (cube.getTerrain().isPassable() && neighbourssolid(cube)
-					&& !alreadyinQueue(new Tuple<Coordinate>(
-							cube.getPlaceInGrid(), tuple.getV())))
-				q.add(new Tuple<Coordinate>(cube.getPlaceInGrid(),
-						tuple.getV() + 1));
+		for (Cube cube : neighbours) {
+			if (cube != null) {
+				if (cube.getTerrain().isPassable() && neighbourssolid(cube)
+						&& !alreadyinQueue(new Tuple<Coordinate>(
+								cube.getPlaceInGrid(), tuple.getV())))
+					q.add(new Tuple<Coordinate>(cube.getPlaceInGrid(),
+							tuple.getV() + 1));
+			}
+		}
 	}
 
 	/**
@@ -1119,10 +1129,12 @@ public class Unit {
 		boolean neighboursSolid = false;
 		int i = 0;
 		do {
-			if (neighbours[i].getTerrain().isPassable())
-				neighboursSolid = true;
-			else
-				i++;
+			if (neighbours[i] != null) {
+				if (neighbours[i].getTerrain().isPassable())
+					neighboursSolid = true;
+				else
+					i++;
+			}
 		} while (i < neighbours.length && !neighboursSolid);
 		return neighboursSolid;
 	}
@@ -1724,7 +1736,7 @@ public class Unit {
 	private double remainingWorkTime;
 
 	// Carrying //
-	
+
 	/**
 	 * Method that makes the Unit pick up the gameobject at its current location.
 	 * 
