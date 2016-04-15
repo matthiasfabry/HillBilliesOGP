@@ -1,5 +1,7 @@
 package hillbillies.model;
 
+import org.antlr.v4.runtime.atn.EpsilonTransition;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -190,9 +192,9 @@ public class Coordinate {
 		if (object.getClass() != Coordinate.class)
 			return false;
 		Coordinate casted = (Coordinate) object;
-		return (this.getX() == casted.getX() &&
-				this.getY() == casted.getY() && 
-				this.getZ() == casted.getZ());
+		return (this.getX() - casted.getX() < 0.0001 &&
+				this.getY() - casted.getY() < 0.0001 && 
+				this.getZ() - casted.getZ() < 0.0001 );
 		
 	}
 }

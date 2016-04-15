@@ -89,8 +89,8 @@ class Grid {
 	Terrain getTerrainAt(Coordinate coordinate) {
 		try {
 			return this.getMapAt(coordinate).getTerrain();
-		} catch (Exception e) {
-			return Terrain.AIR;
+		} catch (NullPointerException e) {
+			return null;
 		}
 	}
 	/**
@@ -110,8 +110,7 @@ class Grid {
 		}
 	}
 	
-
-	Cube getMapAt(Coordinate coordinate) throws IndexOutOfBoundsException{
+	Cube getMapAt(Coordinate coordinate){
 		try {
 			return this.getMap()[(int) coordinate.floor().getX()][(int) coordinate
 					.floor().getY()][(int) coordinate.floor().getZ()];
@@ -147,6 +146,7 @@ class Grid {
 	private final int[] dimension;
 
 	// Additional methods //
+	
 	/**
 	 * Lists all cubes that are directly adjacent to the given coordinate
 	 * @param coordinate

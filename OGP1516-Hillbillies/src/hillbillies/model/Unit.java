@@ -938,8 +938,7 @@ public class Unit {
 	 * @effect	In order to find the path to the given square, findPath() is called
 	 * 		| findPath()
 	 * @throws	ModelException
-	 * 			When the unit is already in a moving state
-	 * 		| this.getActivity == MOVING || this.getActivity == STPRINTING
+	 * 			The unit is not ready to move when it is falling or defending
 	 */
 	public void moveTo(int x, int y, int z) throws ModelException {
 		if (this.getActivity() != Activity.FALLING
@@ -1028,25 +1027,27 @@ public class Unit {
 			q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
 			makeCoordinateQueue();
 			Queue<Tuple<Coordinate>> searched = new PriorityQueue<>();
-			int i=0;
+			int i = 0;
 			while (!getCoordinateQueue().contains(this.getInWorldPosition())
 					&& q.size() != 0) {
 				Tuple<Coordinate> next = q.poll();
 				search(next);
-				makeCoordinateQueue();
 				searched.add(next);
 				System.out.println(i + "search");
 				i++;
-
 			}
+			makeCoordinateQueue();
 			if (this.getCoordinateQueue().contains(this.getInWorldPosition())) {
-				searched.add(new Tuple<Coordinate>(this.getInWorldPosition(), i));
-				while (this.getPath().getLast() != this.getDestinationCube().sum(centerCube())) {
+				searched.add(
+						new Tuple<Coordinate>(this.getInWorldPosition(), i));
+				while (this.getPath().getLast() != this.getDestinationCube()
+						.sum(centerCube())) {
 					int counter = 10000;
 
 					Coordinate next = new Coordinate(0, 0, 0);
-					Coordinate current = this.getPath().getLast();
-					for (Coordinate coordinate : current.adjacentCoordinates()) {
+					Coordinate current = this.getPath().getLast().floor();
+					for (Coordinate coordinate : current
+							.adjacentCoordinates()) {
 						if (this.getCoordinateQueue().contains(coordinate)) {
 							for (Tuple<Coordinate> tuple : searched) {
 								if (tuple.getC() == coordinate) {
@@ -1582,12 +1583,25 @@ public class Unit {
 		if (this.getInWorldPosition().equals(coordinate))
 			this.work();
 		else {
-			moveTo((int) coordinate.getX(), (int) coordinate.getY(),
-					(int) coordinate.getZ());
+			try {
+				moveTo((int) coordinate.getX(), (int) coordinate.getY(),
+						(int) coordinate.getZ());
+			} catch (ModelException e) {
+				boolean neighborAvail = false;
+				Coordinate[] neighbors = coordinate.adjacentCoordinates();
+				for (Coordinate neighbor : neighbors)
+					if (this.getWorld().getTerrainAt(neighbor).isPassable()) {
+						moveTo((int) neighbor.getX(), (int) neighbor.getY(),
+								(int) neighbor.getZ());
+						neighborAvail = true;
+					}
+				if (!neighborAvail)
+					throw new ModelException("Cannot go work there");
+			}
 			isMovingToWork = true;
+			this.setWorkTarget(coordinate);
 		}
 	}
-
 	/**
 	 * Method that initiates a work task for a Unit.
 	 * 
@@ -1671,15 +1685,37 @@ public class Unit {
 			this.pickUp(theLog);
 		} else if (this.getWorld().getTerrainAt(workTarget) == Terrain.TREE) {
 			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
-			// at worktarget appears a log
+			this.getWorld().addGameObject(
+					new Log(getWorkTarget(), this.getWorld()), getWorkTarget());
 		} else if (this.getWorld().getTerrainAt(workTarget) == Terrain.ROCK) {
 			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
-			// at worktarget appears a boulder
+			this.getWorld().addGameObject(
+					new Boulder(getWorkTarget(), this.getWorld()), getWorkTarget());
 		}
 		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
 	}
+	/**
+	 * Variable referencing the cube where the unit will work at.
+	 */
 	private Coordinate workTarget;
+	/**
+	 * return the workTarget
+	 */
+	public Coordinate getWorkTarget() {
+		return workTarget;
+	}
+	/**
+	 * Set the worktarget to the given worktarget
+	 * 
+	 * @param workTarget the workTarget to set
+	 */
+	public void setWorkTarget(Coordinate workTarget) {
+		this.workTarget = workTarget;
+	}
+	/**
+	 * Flag registering whether the unit is moving to work
+	 */
 	private boolean isMovingToWork = false;
 
 	/**
