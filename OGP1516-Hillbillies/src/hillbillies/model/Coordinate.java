@@ -1,7 +1,5 @@
 package hillbillies.model;
 
-import org.antlr.v4.runtime.atn.EpsilonTransition;
-
 import be.kuleuven.cs.som.annotate.*;
 
 /**

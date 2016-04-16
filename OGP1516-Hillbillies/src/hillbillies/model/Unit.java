@@ -1025,19 +1025,21 @@ public class Unit {
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
 			q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
-			makeCoordinateQueue();
 			Queue<Tuple<Coordinate>> searched = new PriorityQueue<>();
+			LinkedList<Coordinate> coordinateQueue = new LinkedList<>();
 			int i = 0;
-			while (!getCoordinateQueue().contains(this.getInWorldPosition())
+			while (!coordinateQueue.contains(this.getInWorldPosition())
 					&& q.size() != 0) {
 				Tuple<Coordinate> next = q.poll();
 				search(next);
 				searched.add(next);
+				if (!coordinateQueue.contains(next.getC())) {
+					coordinateQueue.add(next.getC());
+				}
 				System.out.println(i + "search");
 				i++;
 			}
-			makeCoordinateQueue();
-			if (this.getCoordinateQueue().contains(this.getInWorldPosition())) {
+			if (coordinateQueue.contains(this.getInWorldPosition())) {
 				searched.add(
 						new Tuple<Coordinate>(this.getInWorldPosition(), i));
 				while (this.getPath().getLast() != this.getDestinationCube()
@@ -1048,7 +1050,7 @@ public class Unit {
 					Coordinate current = this.getPath().getLast().floor();
 					for (Coordinate coordinate : current
 							.adjacentCoordinates()) {
-						if (this.getCoordinateQueue().contains(coordinate)) {
+						if (coordinateQueue.contains(coordinate)) {
 							for (Tuple<Coordinate> tuple : searched) {
 								if (tuple.getC() == coordinate) {
 									if (tuple.getV() < counter)
@@ -1152,35 +1154,7 @@ public class Unit {
 	 * of a coordinate and a cost to get from this coordinate to the destination.
 	 */
 	private Queue<Tuple<Coordinate>> q = new PriorityQueue<>();
-	/**
-	 * List that keeps the coordinates that exist in the Queue q.
-	 */
-	private LinkedList<Coordinate> coordinateQueue = new LinkedList<Coordinate>();
-	/**
-	 * Method that constructs the CoordinateQueue
-	 * 
-	 * @post	CoordinateQueue consists of the coordinates that live in q.
-	 * 		|	for Tuple tuple: q
-	 * 		|		this.CoordinateQueue.contains(tuple.getC)
-	 */
-	void makeCoordinateQueue() {
-		for (Tuple<Coordinate> tuple : q) {
-			if (!coordinateQueue.contains(tuple.getC())) {
-				this.coordinateQueue.add(tuple.getC());
-			}
-		}
-	}
-	/**
-	 * returns current CoordinateQueue
-	 * 
-	 * @return the current CoordinateQueue
-	 * 		|	return this.CoordinateQueue
-	 */
-	@Basic
-	@Raw
-	LinkedList<Coordinate> getCoordinateQueue() {
-		return this.coordinateQueue;
-	}
+
 	/**
 	 * Method that adds a given coordinate to the
 	 * movement path of the unit

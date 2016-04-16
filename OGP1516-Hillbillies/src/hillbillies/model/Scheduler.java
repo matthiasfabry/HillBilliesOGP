@@ -206,6 +206,13 @@ public class Scheduler {
 		Tasks.add(Task);
 	}
 
+	void addTasks(@Raw Task...tasks){
+		for(Task task : tasks)
+			if(canHaveAsTask(task))
+				this.addTask(task);
+	}
+	
+	
 	/**
 	 * Remove the given Task from the list of Tasks of this Scheduler.
 	 * 

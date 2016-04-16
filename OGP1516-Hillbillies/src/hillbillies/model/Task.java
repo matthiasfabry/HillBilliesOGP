@@ -6,6 +6,7 @@ package hillbillies.model;
 import java.util.HashSet;
 
 import be.kuleuven.cs.som.annotate.*;
+import ogp.framework.util.ModelException;
 
 /**
  *
@@ -15,6 +16,9 @@ import be.kuleuven.cs.som.annotate.*;
  *       | canHaveAsName(this.getName())
  * @invar  Each Task can have its Priority as Priority .
  *       | canHaveAsPriority(this.getPriority())
+ * @invar  The Unit of each Task must be a valid Unit for any
+ *         Task.
+ *       | isValidUnit(getUnit())
  *
  * @author Matthias Fabry
  * @version 1.0
@@ -231,5 +235,54 @@ public class Task {
 	 * Variable registering the Priority of this Task.
 	 */
 	private final int priority;
+
+	// Unit //
+
+	/**
+	 * Return the Unit of this Task.
+	 */
+	@Basic
+	@Raw
+	public Unit getUnit() {
+		return this.unit;
+	}
+
+	/**
+	 * Check whether the given Unit is a valid Unit for
+	 * any Task.
+	 *  
+	 * @param  Unit
+	 *         The Unit to check.
+	 * @return 
+	 *       | result == 
+	*/
+	public static boolean isValidUnit(Unit unit) {
+		return false;
+	}
+
+	/**
+	 * Set the Unit of this Task to the given Unit.
+	 * 
+	 * @param  unit
+	 *         The new Unit for this Task.
+	 * @post   The Unit of this new Task is equal to
+	 *         the given Unit.
+	 *       | new.getUnit() == unit
+	 * @throws ModelException
+	 *         The given Unit is not a valid Unit for any
+	 *         Task.
+	 *       | ! isValidUnit(getUnit())
+	 */
+	@Raw
+	public void setUnit(Unit unit) throws ModelException {
+		if (!isValidUnit(unit))
+			throw new ModelException();
+		this.unit = unit;
+	}
+
+	/**
+	 * Variable registering the Unit of this Task.
+	 */
+	private Unit unit;
 
 }

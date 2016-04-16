@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import be.kuleuven.cs.som.annotate.*;
+import ogp.framework.util.ModelException;
 
 /**
  * A class describing a hillbillie faction of units
@@ -19,6 +20,8 @@ import be.kuleuven.cs.som.annotate.*;
  *        | hasProperUnits()
  * @invar  Each Faction can have its Name as Name.
  *       | canHaveAsName(this.getName())
+ * @invar  Each Faction can have its Scheduler as Scheduler.
+ *       | canHaveAsScheduler(this.getScheduler())
  *
  * @author Matthias Fabry & Lukas Van Riel
  * @version 1.0
@@ -31,22 +34,30 @@ public class Faction {
 	 * 			the name of the faction
 	 * @param world
 	 * 			the world where the faction needs to be created.
+	 * @throws ModelException 
 	 */
-	public Faction(String name, World world) {
+	public Faction(String name, World world){
 		this.world = world;
 		this.name = name;
+		try {
+			this.setScheduler(new Scheduler(this));
+		} catch (ModelException e) {
+			// shouldn't happen
+		}
 	}
 
 	// Name //
-	
+
 	/**
 	 * Return the Name of this Faction.
 	 */
-	@Basic @Raw @Immutable
+	@Basic
+	@Raw
+	@Immutable
 	public String getName() {
 		return this.name;
 	}
-	
+
 	/**
 	 * Check whether this Faction can have the given Name as its Name.
 	 *  
@@ -69,12 +80,12 @@ public class Faction {
 		boolean firstLetterCorrect = firstLetter.matches();
 		return (fullNameCorrect && firstLetterCorrect && name.length() >= 2);
 	}
-	
+
 	/**
 	 * Variable registering the Name of this Faction.
 	 */
 	private final String name;
-	
+
 	/**
 	 * Pattern containing the set of valid characters for the first letter of Unit names.
 	 */
@@ -84,7 +95,7 @@ public class Faction {
 	 */
 	private static final Pattern validCharacters = Pattern
 			.compile("[[a-zA-Z][\"][\'][\\s]]*");
-	
+
 	// World //
 
 	/**
@@ -114,13 +125,13 @@ public class Faction {
 	 * Variable registering the World of this Faction.
 	 */
 	private final World world;
-	
+
 	// Units //
-	
+
 	/**
 	 * @return	the Units of this faction.
 	 */
-	public Set<Unit> getUnitSet(){
+	public Set<Unit> getUnitSet() {
 		return this.Units;
 	}
 
@@ -133,8 +144,7 @@ public class Faction {
 	 */
 	@Basic
 	@Raw
-	public boolean hasAsUnit(
-			@Raw Unit Unit) {
+	public boolean hasAsUnit(@Raw Unit Unit) {
 		return Units.contains(Unit);
 	}
 
@@ -151,10 +161,8 @@ public class Faction {
 	 *       |   unit.isValidFaction(this)
 	 */
 	@Raw
-	public boolean canHaveAsUnit(
-			Unit unit) {
-		return (unit != null)
-				&& (unit.canHaveAsFaction(this));
+	public boolean canHaveAsUnit(Unit unit) {
+		return (unit != null) && (unit.canHaveAsFaction(this));
 	}
 
 	/**
@@ -201,8 +209,7 @@ public class Faction {
 	 * @post   This Faction has the given Unit as one of its Units.
 	 *       | new.hasAsUnit(Unit)
 	 */
-	public void addUnit(
-			@Raw Unit Unit) {
+	public void addUnit(@Raw Unit Unit) {
 		assert (Unit != null) && (Unit.getFaction() == this);
 		Units.add(Unit);
 	}
@@ -222,10 +229,8 @@ public class Faction {
 	 *       | ! new.hasAsUnit(Unit)
 	 */
 	@Raw
-	public void removeUnit(
-			Unit Unit) {
-		assert this.hasAsUnit(Unit)
-				&& (Unit.getFaction() == null);
+	public void removeUnit(Unit Unit) {
+		assert this.hasAsUnit(Unit) && (Unit.getFaction() == null);
 		Units.remove(Unit);
 	}
 
@@ -242,4 +247,39 @@ public class Faction {
 	 *       |     (! Unit.isTerminated()) )
 	 */
 	private final Set<Unit> Units = new HashSet<Unit>();
+
+	// Scheduler //
+	
+	void setScheduler(Scheduler scheduler){
+		if (canHaveAsScheduler(scheduler))
+			this.scheduler = scheduler;
+	}
+	
+	/**
+	 * Return the Scheduler of this Faction.
+	 */
+	@Basic
+	@Raw
+	@Immutable
+	public Scheduler getScheduler() {
+		return this.scheduler;
+	}
+
+	/**
+	 * Check whether this Faction can have the given Scheduler as its Scheduler.
+	 *  
+	 * @param  scheduler
+	 *         The Scheduler to check.
+	 * @return 
+	 *       | result == 
+	*/
+	@Raw
+	public boolean canHaveAsScheduler(Scheduler scheduler) {
+		return false;
+	}
+
+	/**
+	 * Variable registering the Scheduler of this Faction.
+	 */
+	private Scheduler scheduler;
 }

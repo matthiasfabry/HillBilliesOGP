@@ -296,6 +296,7 @@ public class World {
 	 * of factions is reached, the smallest is chosen. If not, a new Faction is created
 	 * 
 	 * @return	the appropriate faction to join
+	 * @throws ModelException 
 	 */
 	Faction getFactiontoJoin() {
 		if (this.getFactionList().size() < 5) {
