@@ -211,7 +211,17 @@ public class Scheduler {
 			if(canHaveAsTask(task))
 				this.addTask(task);
 	}
-	
+
+	public void replace(Task original, Task replacement) throws ModelException{
+		if (! hasAsTask(original))
+			throw new ModelException("Original not in Scheduler");
+		if (! canHaveAsTask(replacement))
+			throw new ModelException("replacement is not valid");
+		else {
+			this.removeTask(original);
+			this.addTask(replacement);
+		}
+	}
 	
 	/**
 	 * Remove the given Task from the list of Tasks of this Scheduler.

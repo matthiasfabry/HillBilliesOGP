@@ -284,5 +284,14 @@ public class Task {
 	 * Variable registering the Unit of this Task.
 	 */
 	private Unit unit;
+	
+	// Overrides of Object //
+	
+	@Override
+	public String toString(){
+		String theString;
+		theString = "Name: "+ this.getName();
+		return theString;
+	}
 
 }
