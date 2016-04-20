@@ -4,8 +4,10 @@
 package hillbillies.model;
 
 import java.util.HashSet;
+import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.*;
+import hillbillies.model.expression.Expression;
 import ogp.framework.util.ModelException;
 
 /**
@@ -19,6 +21,8 @@ import ogp.framework.util.ModelException;
  * @invar  The Unit of each Task must be a valid Unit for any
  *         Task.
  *       | isValidUnit(getUnit())
+ * @invar  Each Task can have its Activities as Activities.
+ *       | canHaveAsActivities(this.getActivities())
  *
  * @author Matthias Fabry
  * @version 1.0
@@ -47,18 +51,16 @@ public class Task {
 	 *       | if (isValidName(name))
 	 *       |   then new.getName() == name
 	 *       |   else new.getName() == "task"
+	 *       
 	 */
-	public Task(String name, int priority) {
+	public Task(String name, int priority, Expression activity) {
 		if (!canHaveAsName(name))
 			name = "task";
 		this.name = name;
 		if (!canHaveAsPriority(priority))
 			priority = 0;
 		this.priority = priority;
-	}
-
-	public Task() {
-		this(null, 0);
+		this.addActivity(activity);
 	}
 
 	// Scheduler //
@@ -284,13 +286,51 @@ public class Task {
 	 * Variable registering the Unit of this Task.
 	 */
 	private Unit unit;
-	
+
 	// Overrides of Object //
+
+	// Activities //
 	
+	void addActivity(Expression activity){
+		activities.add(activity);
+	}
+
+	/**
+	 * Return the Activities of this Task.
+	 */
+	@Basic
+	@Raw
+	@Immutable
+	public ArrayList<Expression> getActivities() {
+		return this.activities;
+	}
+
+	/**
+	 * Check whether this Task can have the given Activities as its Activities.
+	 *  
+	 * @param  activities
+	 *         The Activities to check.
+	 * @return 
+	 *       | result == activities.size()>0
+	*/
+	@Raw
+	public boolean canHaveAsActivities(ArrayList<Expression> activities) {
+		return activities.size()>0;
+	}
+
+	/**
+	 * Variable registering the Activities of this Task.
+	 */
+	private ArrayList<Expression> activities = new ArrayList<>();
+
+	// Overrides from object //
+
 	@Override
-	public String toString(){
+	public String toString() {
 		String theString;
-		theString = "Name: "+ this.getName();
+		theString = "Name: " + this.getName() + "\nPriority: "
+				+ this.getPriority() + "\nActivities "
+				+ this.getActivities().toString();
 		return theString;
 	}
 

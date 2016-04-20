@@ -1,7 +1,7 @@
 /**
  * 
  */
-package hillbillies.model;
+package hillbillies.model.expression;
 
 /**
  *
@@ -10,6 +10,6 @@ package hillbillies.model;
  * @version 1.0
  *
  */
-public class Statement {
+public class Expression {
 
 }

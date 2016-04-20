@@ -5,6 +5,8 @@ package hillbillies.model;
 
 import java.util.List;
 
+import hillbillies.model.expression.Expression;
+import hillbillies.model.statement.Statement;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
 
