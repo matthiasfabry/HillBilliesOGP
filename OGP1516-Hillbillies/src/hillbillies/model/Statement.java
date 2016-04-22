@@ -1,7 +1,7 @@
 /**
  * 
  */
-package hillbillies.model.statement;
+package hillbillies.model;
 
 /**
  *
@@ -10,6 +10,6 @@ package hillbillies.model.statement;
  * @version 1.0
  *
  */
-public class Statement {
+public abstract class Statement {
 
 }
