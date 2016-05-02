@@ -345,4 +345,14 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see hillbillies.part3.programs.ITaskFactory#createPositionOf(java.lang.Object, hillbillies.part3.programs.SourceLocation)
+	 */
+	@Override
+	public Expression createPositionOf(Expression unit,
+			SourceLocation sourceLocation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
