@@ -12,6 +12,6 @@ import hillbillies.model.Statement;
  * @version 1.0
  *
  */
-public class PrintStatement extends Statement {
+public class PrintStatement implements Statement {
 
 }

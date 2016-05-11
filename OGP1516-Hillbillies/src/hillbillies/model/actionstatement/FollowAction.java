@@ -12,6 +12,6 @@ import hillbillies.model.statement.ActionStatement;
  * @version 1.0
  *
  */
-public class FollowAction extends ActionStatement {
+public class FollowAction implements ActionStatement {
 
 }

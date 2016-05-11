@@ -10,6 +10,6 @@ package hillbillies.model;
  * @version 1.0
  *
  */
-public abstract class Statement {
+public interface Statement {
 
 }

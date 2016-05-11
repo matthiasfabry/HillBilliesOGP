@@ -12,6 +12,6 @@ import hillbillies.model.Statement;
  * @version 1.0
  *
  */
-public class WhileLoop extends Statement {
+public class WhileLoop implements Statement {
 
 }
