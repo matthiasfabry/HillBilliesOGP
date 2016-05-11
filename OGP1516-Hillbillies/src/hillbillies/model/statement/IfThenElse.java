@@ -13,10 +13,14 @@ import hillbillies.model.Statement;
  * @version 1.0
  *
  */
-public class IfThenElse extends Statement {
+public class IfThenElse implements Statement {
 
 	public IfThenElse(Expression condition, Statement thenBody, Statement elseBody){
 		
 	}
+	
+	private Statement thenBody;
+	private Statement elseBody;
+	private Expression condition;
 	
 }

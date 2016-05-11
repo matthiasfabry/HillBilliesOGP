@@ -298,7 +298,7 @@ public class World {
 	 * @return	the appropriate faction to join
 	 * @throws ModelException 
 	 */
-	Faction getFactiontoJoin() {
+	public Faction getFactiontoJoin() {
 		if (this.getFactionList().size() < 5) {
 			Faction theNew = new Faction("Dwarfs", this);
 			this.addFaction(theNew);

@@ -12,6 +12,6 @@ import hillbillies.model.Statement;
  * @version 1.0
  *
  */
-public class BreakStatement extends Statement {
+public class BreakStatement implements Statement {
 
 }
