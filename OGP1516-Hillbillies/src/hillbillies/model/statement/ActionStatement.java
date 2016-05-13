@@ -14,4 +14,7 @@ import hillbillies.model.Statement;
  */
 public interface ActionStatement extends Statement {
 
+	
+	@Override
+	public void execute();
 }

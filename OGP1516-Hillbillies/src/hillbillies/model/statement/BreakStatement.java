@@ -14,4 +14,8 @@ import hillbillies.model.Statement;
  */
 public class BreakStatement implements Statement {
 
+	
+	public void execute(){
+		break;
+	}
 }

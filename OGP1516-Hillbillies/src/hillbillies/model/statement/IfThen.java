@@ -13,10 +13,20 @@ import hillbillies.model.Statement;
  * @version 1.0
  *
  */
-public class IfThen extends IfThenElse {
+public class IfThen implements Statement{
 
-	public IfThen(Expression condition, Statement thenBody){
-		super(condition,thenBody, null);
+	public IfThen(Expression<Boolean> condition, Statement thenBody){
+		this.thenBody = thenBody;
+		this.condition = condition;
 	}
 	
+
+	private final Statement thenBody;
+	private final Expression<Boolean> condition;
+		
+	@Override
+	public void execute(){
+		if(condition.evaluate())
+			thenBody.execute();
+	}
 }

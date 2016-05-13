@@ -5,8 +5,11 @@ package hillbillies.model;
 
 import java.util.List;
 
+import hillbillies.model.statement.PrintStatement;
+import hillbillies.model.statement.SequenceStatement;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
+
 
 /**
  *
@@ -15,7 +18,7 @@ import hillbillies.part3.programs.SourceLocation;
  * @version 1.0
  *
  */
-public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
+public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
@@ -70,10 +73,10 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createPrint(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createPrint(Expression value,
+	public Statement createPrint(Expression<?> value,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new PrintStatement<>(value);
 	}
 
 	/* (non-Javadoc)
@@ -83,14 +86,14 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	public Statement createSequence(List<Statement> statements,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new SequenceStatement(statements);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createMoveTo(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createMoveTo(Expression position,
+	public Statement createMoveTo(Expression<Coordinate> position,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
 		return null;
@@ -170,7 +173,7 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsEnemy(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsEnemy(Expression unit,
+	public Expression<Unit> createIsEnemy(Expression unit,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
 		return new Expression<Unit>() {

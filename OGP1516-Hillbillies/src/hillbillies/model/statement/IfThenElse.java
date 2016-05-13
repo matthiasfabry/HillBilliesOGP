@@ -15,17 +15,19 @@ import hillbillies.model.Statement;
  */
 public class IfThenElse implements Statement {
 
-	public IfThenElse(Expression condition, Statement thenBody, Statement elseBody){
-		
+	public IfThenElse(Expression<Boolean> condition, Statement thenBody, Statement elseBody){
+		this.condition = condition;
+		this.thenBody = thenBody;
+		this.elseBody = elseBody;
 	}
 	
-	private Statement thenBody;
-	private Statement elseBody;
-	private Expression condition;
+	private final Statement thenBody;
+	private final Statement elseBody;
+	private final Expression<Boolean> condition;
 	
 	@Override
 	public void execute() {
-		if ((boolean) condition.evaluate())
+		if (condition.evaluate())
 			thenBody.execute();
 		else
 			elseBody.execute();	
