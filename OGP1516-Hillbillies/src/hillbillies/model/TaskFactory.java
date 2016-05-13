@@ -173,7 +173,15 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	public Expression createIsEnemy(Expression unit,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new Expression<Unit>() {
+
+			@Override
+			public Unit evaluate() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 	}
 
 	/* (non-Javadoc)
