@@ -272,5 +272,4 @@ public class Scheduler {
 	 *       |     (Tasks.get(I) != Tasks.get(J))
 	 */
 	private final ArrayList<Task> Tasks = new ArrayList<Task>();
-
 }

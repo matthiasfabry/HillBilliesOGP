@@ -195,4 +195,7 @@ public class Coordinate {
 				this.getZ() - casted.getZ() < 0.0001 );
 		
 	}
+	
+	
+	
 }

@@ -23,4 +23,11 @@ public class IfThenElse implements Statement {
 	private Statement elseBody;
 	private Expression condition;
 	
+	@Override
+	public void execute() {
+		if ((boolean) condition.evaluate())
+			thenBody.execute();
+		else
+			elseBody.execute();	
+	}
 }

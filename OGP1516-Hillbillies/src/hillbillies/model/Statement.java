@@ -12,4 +12,5 @@ package hillbillies.model;
  */
 public interface Statement {
 
+	void execute();
 }

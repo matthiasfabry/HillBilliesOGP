@@ -1042,8 +1042,8 @@ public class Unit {
 			if (coordinateQueue.contains(this.getInWorldPosition())) {
 				searched.add(
 						new Tuple<Coordinate>(this.getInWorldPosition(), i));
-				while (this.getPath().getLast() != this.getDestinationCube()
-						.sum(centerCube())) {
+				while (! this.getPath().getLast().equals(this.getDestinationCube()
+						.sum(centerCube()))) {
 					int counter = 10000;
 
 					Coordinate next = new Coordinate(0, 0, 0);
@@ -1052,7 +1052,7 @@ public class Unit {
 							.adjacentCoordinates()) {
 						if (coordinateQueue.contains(coordinate)) {
 							for (Tuple<Coordinate> tuple : searched) {
-								if (tuple.getC() == coordinate) {
+								if (tuple.getC().equals(coordinate)) {
 									if (tuple.getV() < counter)
 										counter = tuple.getV();
 									next = tuple.getC();
