@@ -2449,6 +2449,4 @@ public class Unit {
 	 */
 	public int totalExperience;
 	
-	boolean test;
-
 }
