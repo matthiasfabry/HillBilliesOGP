@@ -7,8 +7,12 @@ import hillbillies.model.Expression;
 *
 * @author Lukas Van Riel
 * @version 1.0
+ * @param <T>
 *
 */
-public abstract class PositionExpression extends Expression<Coordinate> {
+public abstract class PositionExpression<T> extends Expression<T> {
 
+	public abstract T evaluate();
+	
 }
+

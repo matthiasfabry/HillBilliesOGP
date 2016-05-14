@@ -17,7 +17,7 @@ public class BooleanExpression<T> extends Expression<T> {
 	
 	@Override
 	public T evaluate() {
-		return value;
+		return this.value;
 	}
 	private final T value;
 
