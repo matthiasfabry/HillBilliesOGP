@@ -6,18 +6,19 @@ import hillbillies.model.Expression;
 *
 * @author Lukas Van Riel
 * @version 1.0
+ * @param <T>
 *
 */
-public class BooleanExpression extends Expression<Boolean> {
+public class BooleanExpression<T> extends Expression<T> {
 
-	public BooleanExpression(boolean Value) {
+	public BooleanExpression(T Value) {
 		this.value = Value;
 	}
 	
 	@Override
-	public Boolean evaluate() {
+	public T evaluate() {
 		return value;
 	}
-	private final boolean value;
+	private final T value;
 
 }
