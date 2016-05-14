@@ -1,7 +1,6 @@
 
 package hillbillies.model.expression;
 
-import hillbillies.model.Expression;
 /**
 *
 *

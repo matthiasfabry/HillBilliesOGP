@@ -1,13 +1,13 @@
 /**
  * 
  */
-package hillbillies.model.actionstatement;
+package hillbillies.model.statement;
 
 import hillbillies.model.Coordinate;
-import hillbillies.model.Expression;
 import hillbillies.model.statement.ActionStatement;
 import ogp.framework.util.ModelException;
 import hillbillies.model.Unit;
+import hillbillies.model.expression.Expression;
 
 /**
  *

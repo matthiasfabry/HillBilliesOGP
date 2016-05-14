@@ -3,8 +3,7 @@
  */
 package hillbillies.model.statement;
 
-import hillbillies.model.Expression;
-import hillbillies.model.Statement;
+import hillbillies.model.expression.Expression;
 
 /**
  *

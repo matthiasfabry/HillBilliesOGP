@@ -5,7 +5,6 @@ package hillbillies.model.statement;
 
 import java.util.List;
 
-import hillbillies.model.Statement;
 import ogp.framework.util.ModelException;
 
 /**

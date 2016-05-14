@@ -3,8 +3,6 @@
  */
 package hillbillies.model.statement;
 
-import hillbillies.model.Statement;
-
 /**
  *
  *

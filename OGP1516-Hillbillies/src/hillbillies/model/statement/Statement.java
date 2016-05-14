@@ -1,7 +1,9 @@
 /**
  * 
  */
-package hillbillies.model;
+package hillbillies.model.statement;
+
+import java.lang.reflect.Method;
 
 import ogp.framework.util.ModelException;
 
@@ -14,5 +16,5 @@ import ogp.framework.util.ModelException;
  */
 public interface Statement {
 
-	void execute() throws ModelException;
+	Method execute() throws ModelException;
 }

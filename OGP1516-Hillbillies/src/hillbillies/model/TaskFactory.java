@@ -5,7 +5,6 @@ package hillbillies.model;
 
 import java.util.List;
 
-import hillbillies.model.actionstatement.MoveAction;
 import hillbillies.model.expression.*;
 import hillbillies.model.statement.*;
 import hillbillies.part3.programs.ITaskFactory;
@@ -19,7 +18,7 @@ import hillbillies.part3.programs.SourceLocation;
  * @version 1.0
  *
  */
-public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
+public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
@@ -124,10 +123,10 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createAttack(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createAttack(Expression unit,
+	public Statement createAttack(Expression<Unit> unit,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new AttackAction(unit);
 	}
 
 	/* (non-Javadoc)

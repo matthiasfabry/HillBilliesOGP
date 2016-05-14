@@ -1,10 +1,10 @@
 /**
  * 
  */
-package hillbillies.model.actionstatement;
+package hillbillies.model.statement;
 
-import hillbillies.model.Expression;
 import hillbillies.model.Unit;
+import hillbillies.model.expression.Expression;
 import hillbillies.model.statement.ActionStatement;
 
 /**
@@ -14,9 +14,9 @@ import hillbillies.model.statement.ActionStatement;
  * @version 1.0
  *
  */
-public class AttackAction implements ActionStatement {
+public class FollowAction implements Statement {
 
-	public AttackAction(Expression<Unit> unit){
+	public FollowAction(Expression<Unit> unit){
 		this.victim = unit;
 	}
 	private final Expression<Unit> victim;
@@ -26,7 +26,8 @@ public class AttackAction implements ActionStatement {
 	 */
 	@Override
 	public void execute() {
-		if()
+		// TODO Auto-generated method stub
+		
 	}
 
 }

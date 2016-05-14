@@ -1,10 +1,10 @@
 /**
  * 
  */
-package hillbillies.model.actionstatement;
+package hillbillies.model.statement;
 
-import hillbillies.model.Expression;
-import hillbillies.model.Unit;
+import hillbillies.model.Coordinate;
+import hillbillies.model.expression.Expression;
 import hillbillies.model.statement.ActionStatement;
 
 /**
@@ -14,12 +14,12 @@ import hillbillies.model.statement.ActionStatement;
  * @version 1.0
  *
  */
-public class FollowAction implements ActionStatement {
+public class WorkAction implements ActionStatement {
 
-	public FollowAction(Expression<Unit> unit){
-		this.victim = unit;
+	public WorkAction(Expression<Coordinate> position){
+		this.position = position;
 	}
-	private final Expression<Unit> victim;
+	private final Expression<Coordinate> position;
 	
 	/* (non-Javadoc)
 	 * @see hillbillies.model.statement.ActionStatement#execute()

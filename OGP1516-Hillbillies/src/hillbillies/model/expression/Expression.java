@@ -1,7 +1,7 @@
 /**
  * 
  */
-package hillbillies.model;
+package hillbillies.model.expression;
 
 /**
  *

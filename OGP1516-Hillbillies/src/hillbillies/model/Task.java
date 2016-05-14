@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.*;
+import hillbillies.model.expression.Expression;
 import ogp.framework.util.ModelException;
 
 /**
