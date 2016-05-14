@@ -2,12 +2,18 @@ package hillbillies.model.unitexpression;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.model.expression.UnitExpression;
 
+/**
+*
+*
+* @author Lukas Van Riel
+* @version 1.0
+*
+*/
 public class EnemyExpression extends UnitExpression<Unit> {
 
 	public EnemyExpression(Unit unit) {

@@ -8,6 +8,13 @@ import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.model.expression.UnitExpression;
 
+/**
+*
+*
+* @author Lukas Van Riel
+* @version 1.0
+*
+*/
 public class AnyExpression extends UnitExpression<Unit> {
 
 	public AnyExpression(Unit unit) {

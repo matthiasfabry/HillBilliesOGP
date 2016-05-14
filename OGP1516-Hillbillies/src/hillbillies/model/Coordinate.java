@@ -144,7 +144,7 @@ public class Coordinate {
 	 * @return	a list of Coordinates that are adjacent this coordinate
 	 * 			
 	 */
-	public Coordinate[] adjacentCoordinates() {
+	public fCoordinate[] adjacentCoordinates() {
 		Coordinate[] result = new Coordinate[26];
 		result[0]  = this.sum(new Coordinate(1, 0, 0));
 		result[1]  = this.sum(new Coordinate(-1, 0, 0));

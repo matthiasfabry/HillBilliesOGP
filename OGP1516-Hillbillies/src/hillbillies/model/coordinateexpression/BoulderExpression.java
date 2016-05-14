@@ -4,6 +4,13 @@ import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
 import hillbillies.model.expression.PositionExpression;
 
+/**
+*
+*
+* @author Lukas Van Riel
+* @version 1.0
+*
+*/
 public class BoulderExpression extends PositionExpression<Coordinate> {
 
 	public BoulderExpression(Unit unit) {
