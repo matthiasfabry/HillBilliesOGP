@@ -3,7 +3,7 @@ package hillbillies.model.coordinateexpression;
 import hillbillies.model.Coordinate;
 import hillbillies.model.expression.PositionExpression;
 
-public class Next_toExpression extends PositionExpression {
+public class Next_toExpression extends PositionExpression<Coordinate> {
 
 	@Override
 	public Coordinate evaluate() {

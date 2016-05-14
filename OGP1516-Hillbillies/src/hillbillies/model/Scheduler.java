@@ -16,7 +16,7 @@ import ogp.framework.util.ModelException;
  * @invar   Each Scheduler must have proper Tasks.
  *        | hasProperTasks()
  *       
- * @author Matthias Fabry
+ * @author Matthias Fabry and lukas Van Riel
  * @version 1.0
  *
  */

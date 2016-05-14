@@ -10,9 +10,9 @@ import hillbillies.model.Expression;
  * @param <T>
 *
 */
-public abstract class PositionExpression<T> extends Expression<T> {
+public abstract class PositionExpression<T> extends Expression<Coordinate> {
 
-	public abstract T evaluate();
+	public abstract Coordinate evaluate();
 	
 }
 

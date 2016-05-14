@@ -10,7 +10,7 @@ import hillbillies.model.Unit;
  * @param <T>
 *
 */
-public abstract class UnitExpression<T> extends Expression<T> {
+public abstract class UnitExpression<T> extends Expression<Unit> {
 
-	public abstract T evaluate();
+	public abstract Unit evaluate();
 }

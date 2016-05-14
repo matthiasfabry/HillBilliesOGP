@@ -23,7 +23,7 @@ import ogp.framework.util.ModelException;
  * @invar  Each Task can have its Activities as Activities.
  *       | canHaveAsActivities(this.getActivities())
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
  *
  */
