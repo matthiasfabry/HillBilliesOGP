@@ -23,7 +23,7 @@ public class PrintStatement<T> implements Statement {
 
 	@Override
 	public void execute() {
-		System.out.println(this.printBody.evaluate().toString());
+		System.out.println(printBody.evaluate().toString());
 		
 	}
 

@@ -5,6 +5,7 @@ package hillbillies.model.statement;
 
 import hillbillies.model.Expression;
 import hillbillies.model.Statement;
+import ogp.framework.util.ModelException;
 
 /**
  *
@@ -26,10 +27,13 @@ public class IfThenElse implements Statement {
 	private final Expression<Boolean> condition;
 	
 	@Override
-	public void execute() {
+	public void execute() throws ModelException {
 		if (condition.evaluate())
 			thenBody.execute();
-		else
-			elseBody.execute();	
+		else {
+			if (elseBody != null) {
+				elseBody.execute();
+			}
+		}	
 	}
 }

@@ -5,8 +5,9 @@ package hillbillies.model;
 
 import java.util.List;
 
-import hillbillies.model.statement.PrintStatement;
-import hillbillies.model.statement.SequenceStatement;
+import hillbillies.model.actionstatement.MoveAction;
+import hillbillies.model.expression.*;
+import hillbillies.model.statement.*;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
 
@@ -18,7 +19,7 @@ import hillbillies.part3.programs.SourceLocation;
  * @version 1.0
  *
  */
-public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
+public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
@@ -27,37 +28,37 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	public List<Task> createTasks(String name, int priority, Statement activity,
 			List<int[]> selectedCubes) {
 		// TODO Auto-generated method stub
-		return null;
+		return new TaskList();
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createAssignment(java.lang.String, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createAssignment(String variableName, Expression value,
+	public Statement createAssignment(String variableName, Expression<?> value,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new VarAssignment<>(variableName, value);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createWhile(java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createWhile(Expression condition, Statement body,
+	public Statement createWhile(Expression<Boolean> condition, Statement body,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new WhileLoop(condition, body);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIf(java.lang.Object, java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createIf(Expression condition, Statement ifBody,
+	public Statement createIf(Expression<Boolean> condition, Statement ifBody,
 			Statement elseBody, SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new IfThenElse(condition, ifBody, elseBody);
 	}
 
 	/* (non-Javadoc)
@@ -96,7 +97,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	public Statement createMoveTo(Expression<Coordinate> position,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return null;
+		return new MoveAction(unit, position);
 	}
 
 	/* (non-Javadoc)

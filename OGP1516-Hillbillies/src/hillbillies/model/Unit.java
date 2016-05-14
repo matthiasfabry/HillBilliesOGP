@@ -266,7 +266,7 @@ public class Unit {
 	 +	 * 		|		return false
 	 +	 * 		
 	 +	 */
-	private boolean isValidPosition(Coordinate coordinate) {
+	public boolean isValidPosition(Coordinate coordinate) {
 		return this.getWorld().isValidPosition(coordinate);
 	}
 

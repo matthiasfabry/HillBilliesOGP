@@ -15,10 +15,12 @@ import hillbillies.model.Statement;
  */
 public class VarAssignment<T> implements Statement {
 
-	public VarAssignment(Expression<T> variable){
+	public VarAssignment(String name, Expression<T> variable){
 		this.variable = variable;
+		this.name = name;
 	}
 	private final Expression<T> variable;
+	private final String name;
 	
 	@Override
 	public void execute(){

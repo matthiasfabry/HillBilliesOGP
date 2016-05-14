@@ -6,6 +6,7 @@ package hillbillies.model.actionstatement;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Expression;
 import hillbillies.model.statement.ActionStatement;
+import ogp.framework.util.ModelException;
 import hillbillies.model.Unit;
 
 /**
@@ -28,7 +29,7 @@ public class MoveAction implements ActionStatement {
 	 * @see hillbillies.model.statement.ActionStatement#execute()
 	 */
 	@Override
-	public void execute() {
+	public void execute() throws ModelException {
 		if (unit.evaluate().isValidPosition(position.evaluate())){
 			unit.evaluate().moveTo((int) position.evaluate().getX(), (int) position.evaluate().getY(),
 					(int) position.evaluate().getZ());

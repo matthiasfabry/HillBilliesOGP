@@ -5,6 +5,7 @@ package hillbillies.model.statement;
 
 import hillbillies.model.Expression;
 import hillbillies.model.Statement;
+import ogp.framework.util.ModelException;
 
 /**
  *
@@ -22,11 +23,9 @@ public class WhileLoop implements Statement {
 	private final Expression<Boolean> condition;
 	private final Statement whileBody;
 	
-	/* (non-Javadoc)
-	 * @see hillbillies.model.Statement#execute()
-	 */
+
 	@Override
-	public void execute() {
+	public void execute() throws ModelException {
 		while(condition.evaluate())
 			whileBody.execute();
 		

@@ -3,6 +3,8 @@
  */
 package hillbillies.model;
 
+import ogp.framework.util.ModelException;
+
 /**
  *
  *
@@ -12,5 +14,5 @@ package hillbillies.model;
  */
 public interface Statement {
 
-	void execute();
+	void execute() throws ModelException;
 }

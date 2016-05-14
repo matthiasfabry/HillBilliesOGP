@@ -4,6 +4,7 @@
 package hillbillies.model.statement;
 
 import hillbillies.model.Statement;
+import ogp.framework.util.ModelException;
 
 /**
  *
@@ -16,5 +17,5 @@ public interface ActionStatement extends Statement {
 
 	
 	@Override
-	public void execute();
+	public void execute() throws ModelException;
 }
