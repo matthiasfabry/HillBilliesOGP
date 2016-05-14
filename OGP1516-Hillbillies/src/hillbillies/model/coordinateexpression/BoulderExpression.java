@@ -1,13 +1,24 @@
 package hillbillies.model.coordinateexpression;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Unit;
 import hillbillies.model.expression.PositionExpression;
 
 public class BoulderExpression extends PositionExpression<Coordinate> {
 
+	public BoulderExpression(Unit unit) {
+		this.position = unit.getInWorldPosition();
+		this.boulderPosition = determineBoulderPosition();
+	}
+	private final Coordinate position;
+	private final Coordinate boulderPosition;
+	
 	@Override
 	public Coordinate evaluate() {
-		// TODO Auto-generated method stub
+		return this.boulderPosition;
+	}
+
+	public Coordinate determineBoulderPosition(){
 		return null;
 	}
 

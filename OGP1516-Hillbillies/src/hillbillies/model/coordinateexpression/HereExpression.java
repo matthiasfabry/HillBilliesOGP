@@ -11,16 +11,16 @@ import hillbillies.model.expression.PositionExpression;
 * @version 1.0
 *
 */
-public class HereExpression<T> extends PositionExpression<Coordinate> {
+public class HereExpression extends PositionExpression<Coordinate> {
 
-	public HereExpression(T unit) {
-		this.position = unit;
+	public HereExpression(Unit unit) {
+		this.position = unit.getInWorldPosition();
 	}
+	private final Coordinate position;
 	
 	@Override
 	public Coordinate evaluate() {
-		return (Coordinate) this.position;
+		return this.position;
 	}
 
-	private final T position;
 }
