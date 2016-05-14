@@ -35,7 +35,7 @@ public class AnyExpression extends UnitExpression<Unit> {
 			for (Unit worldUnit: world.getUnitSet()){
 				if (coordinateSet.contains(worldUnit.getInWorldPosition()))
 					someUnit = worldUnit;
-			}
+			} 
 			for (Coordinate cc: coordinateSet){
 				Coordinate[] clist = cc.adjacentCoordinates();
 				for (Coordinate ccc: clist){
