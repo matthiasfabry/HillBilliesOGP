@@ -20,5 +20,6 @@ public class NotExpression<T> extends Expression<T> {
 	public T evaluate() {
 		return (value.evaluate());
 	}
+	public int a;
 
 }

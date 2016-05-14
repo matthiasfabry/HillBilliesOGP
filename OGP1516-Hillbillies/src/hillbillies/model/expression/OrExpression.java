@@ -23,6 +23,6 @@ public class OrExpression<T> extends Expression<T> {
 	
 	private final Expression<T> first;
 	private final Expression<T> second;
-	
 
+	
 }

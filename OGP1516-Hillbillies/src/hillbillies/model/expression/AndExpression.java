@@ -21,7 +21,6 @@ public class AndExpression<T> extends Expression<T> {
 	public T evaluate() {
 		return first.evaluate();
 	}
-	
 	private final Expression<T> first;
 	private final Expression<T> second;
 
