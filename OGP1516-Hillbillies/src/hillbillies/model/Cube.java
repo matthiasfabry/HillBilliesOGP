@@ -23,7 +23,7 @@ import ogp.framework.util.ModelException;
  * @version 1.0
  *
  */
-class Cube {
+public class Cube {
 
 	// Constructor //
 

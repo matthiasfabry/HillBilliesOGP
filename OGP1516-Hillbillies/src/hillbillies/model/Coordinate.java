@@ -176,6 +176,23 @@ public class Coordinate {
 
 	}
 	
+	/**
+	 * Method that lists all Coordinate that are 
+	 *	directly adjacent to this coordinate
+	 * @return	a list of Coordinates that are directly adjacent this coordinate
+	 * 			
+	 */
+	public Coordinate[] DirectlyAdjacentCoordinates() {
+		Coordinate[] result = new Coordinate[6];
+		result[0]  = this.sum(new Coordinate(1, 0, 0));
+		result[1]  = this.difference(new Coordinate(1, 0, 0));
+		result[2]  = this.sum(new Coordinate(0, 1, 0));
+		result[3]  = this.difference(new Coordinate(0, 1, 0));
+		result[4]  = this.sum(new Coordinate(0, 0, 1));
+		result[5]  = this.difference(new Coordinate(0, 0, 1));
+		return result;
+	}
+	
 	// Fields //
 	
 	/**

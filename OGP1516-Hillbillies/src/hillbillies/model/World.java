@@ -196,7 +196,7 @@ public class World {
 	 * 			the coordinate of the cube required
 	 * @return the cube at given coordinate
 	 */
-	Cube getCubeAt(Coordinate coordinate) {
+	public Cube getCubeAt(Coordinate coordinate) {
 		return this.getGrid().getMapAt(coordinate);
 	}
 

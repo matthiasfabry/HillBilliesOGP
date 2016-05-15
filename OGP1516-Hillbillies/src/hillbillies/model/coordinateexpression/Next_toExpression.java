@@ -1,6 +1,11 @@
 package hillbillies.model.coordinateexpression;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import hillbillies.model.Coordinate;
+import hillbillies.model.Cube;
+import hillbillies.model.World;
 import hillbillies.model.expression.PositionExpression;
 
 /**
@@ -12,12 +17,14 @@ import hillbillies.model.expression.PositionExpression;
 */
 public class Next_toExpression extends PositionExpression<Coordinate> {
 
-	public Next_toExpression(Coordinate place){
+	public Next_toExpression(Coordinate place, World worldd){
 		this.position = place;
+		this.world = worldd;
 		this.nexttoposition = determineNext_toPosition();
 	}
 	private final Coordinate position;
 	private final Coordinate nexttoposition;
+	private final World world;
 	
 	@Override
 	public Coordinate evaluate() {
@@ -25,7 +32,16 @@ public class Next_toExpression extends PositionExpression<Coordinate> {
 	}
 	
 	public Coordinate determineNext_toPosition(){
-		return null;
+		Coordinate pos = null;
+		Coordinate[] coordinatelist = position.DirectlyAdjacentCoordinates();
+		for (Coordinate coordinate: coordinatelist){
+			if (world.getTerrainAt(coordinate).isPassable() && 
+					(world.getTerrainAt(coordinate.difference(new Coordinate (0,0,1))).isImpassable() ||
+							coordinate.getZ() == 0))
+				pos = coordinate;
+		}
+		return pos;
+		
 	}
 
 }

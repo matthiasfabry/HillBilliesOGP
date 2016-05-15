@@ -1,7 +1,13 @@
 package hillbillies.model.coordinateexpression;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import hillbillies.model.Boulder;
 import hillbillies.model.Coordinate;
+import hillbillies.model.Log;
 import hillbillies.model.Unit;
+import hillbillies.model.World;
 import hillbillies.model.expression.PositionExpression;
 
 /**
@@ -14,10 +20,10 @@ import hillbillies.model.expression.PositionExpression;
 public class LogExpression extends PositionExpression<Coordinate> {
 
 	public LogExpression(Unit unit) {
-		this.position = unit.getInWorldPosition();
+		this.thisUnit = unit;
 		this.logPosition = determineLogPosition();
 	}
-	private final Coordinate position;
+	private final Unit thisUnit;
 	private final Coordinate logPosition;
 	
 	@Override
@@ -26,7 +32,29 @@ public class LogExpression extends PositionExpression<Coordinate> {
 	}
 
 	public Coordinate determineLogPosition(){
-		return null;
+		Coordinate position = thisUnit.getInWorldPosition();
+		World world = thisUnit.getWorld();
+		Log someLog = null;
+		Coordinate[] coordinatelist = position.adjacentCoordinates();
+		Set<Coordinate> coordinateSet = new HashSet<Coordinate>();
+		for (Coordinate c: coordinatelist){
+			coordinateSet.add(c);
+		}
+		while (someLog == null){
+			for (Log worldLog: world.getLogSet()){
+				if (coordinateSet.contains(worldLog.getPosition()))
+					someLog = worldLog;
+			} 
+			for (Coordinate cc: coordinateSet){
+				Coordinate[] clist = cc.adjacentCoordinates();
+				for (Coordinate ccc: clist){
+					if (! coordinateSet.contains(ccc))
+						coordinateSet.add(ccc);
+				}
+			}	
+		}	
+		Coordinate place = someLog.getPosition();
+		return place;
 	}
 
 }
