@@ -28,14 +28,14 @@ public class AttackAction implements Statement {
 	 */
 	@Override
 	public Method execute(){
-		Method theMethod;
+		Method theMethod = null;
 		try {
 			theMethod = Unit.class.getMethod("attack", new Class[]{Unit.class});
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
+			// shouldn't happen
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
+			// shoudn't happen
 			e.printStackTrace();
 		}
 		return theMethod;

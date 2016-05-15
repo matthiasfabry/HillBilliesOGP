@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.*;
 import hillbillies.model.expression.Expression;
+import hillbillies.model.statement.Statement;
 import ogp.framework.util.ModelException;
 
 /**
@@ -53,7 +54,7 @@ public class Task {
 	 *       |   else new.getName() == "task"
 	 *       
 	 */
-	public Task(String name, int priority, Expression activity) {
+	public Task(String name, int priority, Statement activity, int[] cube) {
 		if (!canHaveAsName(name))
 			name = "task";
 		this.name = name;
@@ -61,6 +62,7 @@ public class Task {
 			priority = 0;
 		this.priority = priority;
 		this.addActivity(activity);
+		location = new Coordinate(cube[1],cube[2],cube[3]);
 	}
 
 	// Scheduler //
@@ -287,11 +289,10 @@ public class Task {
 	 */
 	private Unit unit;
 
-	// Overrides of Object //
 
 	// Activities //
 	
-	void addActivity(Expression activity){
+	void addActivity(Statement activity){
 		activities.add(activity);
 	}
 
@@ -301,7 +302,7 @@ public class Task {
 	@Basic
 	@Raw
 	@Immutable
-	public ArrayList<Expression> getActivities() {
+	public ArrayList<Statement> getActivities() {
 		return this.activities;
 	}
 
@@ -314,15 +315,23 @@ public class Task {
 	 *       | result == activities.size()>0
 	*/
 	@Raw
-	public boolean canHaveAsActivities(ArrayList<Expression> activities) {
+	public boolean canHaveAsActivities(ArrayList<Statement> activities) {
 		return activities.size()>0;
 	}
 
 	/**
 	 * Variable registering the Activities of this Task.
 	 */
-	private ArrayList<Expression> activities = new ArrayList<>();
+	private ArrayList<Statement> activities = new ArrayList<>();
 
+	// Location //
+	
+	public Coordinate getLocation(){
+		return this.location;
+	}
+	
+	private final Coordinate location;
+	
 	// Overrides from object //
 
 	@Override

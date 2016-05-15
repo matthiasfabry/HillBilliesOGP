@@ -5,6 +5,8 @@ package hillbillies.model;
 
 import java.util.List;
 
+import hillbillies.model.statement.Statement;
+
 /**
  *
  *
@@ -14,10 +16,15 @@ import java.util.List;
  */
 public class TaskList {
 
-	public TaskList(List<Task> tasks){
-		for (Task task : tasks)
-			tasks.add(task);
+	public TaskList(String name, int priority, Statement activity, List<int[]> cubes){
+		for (int[] cube : cubes){
+			Task theTask = new Task(name, priority, activity, cube);
+			tasks.add(theTask);		
+		}	
 	}
 	
+	public List<Task> getTasks(){
+		return this.tasks;
+	}
 	private List<Task> tasks;
 }

@@ -41,9 +41,9 @@ public class Cube {
 	 *         This new Cube cannot have the given World as its World.
 	 *       | ! canHaveAsWorld(this.getWorld())
 	 */
-	Cube(Coordinate coordinate, World world) {
+	Cube(Coordinate coordinate, Grid grid) {
 		this.position = coordinate;
-		this.world = world;
+		this.grid = grid;
 	}
 
 	// Terrain //
@@ -159,18 +159,18 @@ public class Cube {
 		if (oldTerrain != Terrain.ROCK || oldTerrain != Terrain.TREE)
 			throw new ModelException("This terrain can't cave in!");
 		this.setTerrain(Terrain.AIR);
-		this.getWorld().getListener().notify();
+		this.getGrid().getWorld().getListener().notify();
 		double random = Math.random();
 		if (random < 0.25) {
 			if (oldTerrain == Terrain.TREE)
 				try {
-					this.addGameObject(new Log(this.getPlaceInGrid(), this.getWorld()));
+					this.addGameObject(new Log(this.getPlaceInGrid(), this.getGrid().getWorld()));
 				} catch (ModelException e) {
 					// shouldn't happen
 				}
 			else if (oldTerrain == Terrain.ROCK)
 				try {
-					this.addGameObject(new Boulder(this.getPlaceInGrid(), this.getWorld()));
+					this.addGameObject(new Boulder(this.getPlaceInGrid(), this.getGrid().getWorld()));
 				} catch (ModelException e1) {
 					// shouldn't happen
 				}
@@ -217,7 +217,7 @@ public class Cube {
 	Boulder removeBoulder() {
 		Boulder theBoulder = this.getBoulders().poll();
 		gameObjects.remove(theBoulder);
-		this.getWorld().removeBoulderAt(getPlaceInGrid());
+		this.getGrid().getWorld().removeBoulderAt(getPlaceInGrid());
 		return theBoulder;
 	}
 
@@ -261,18 +261,18 @@ public class Cube {
 	// World //
 
 	/**
-	 * Return the World of this Cube.
+	 * Return the Grid of this Cube.
 	 */
 	@Basic
 	@Raw
 	@Immutable
-	World getWorld() {
-		return this.world;
+	Grid getGrid() {
+		return this.grid;
 	}
 
 	/**
-	 * Variable registering the World of this Cube.
+	 * Variable registering the grid of this Cube.
 	 */
-	private final World world;
+	private final Grid grid;
 
 }

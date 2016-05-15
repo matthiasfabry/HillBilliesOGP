@@ -26,8 +26,8 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public List<Task> createTasks(String name, int priority, Statement activity,
 			List<int[]> selectedCubes) {
-		// TODO Auto-generated method stub
-		return new TaskList();
+		TaskList theTasks = new TaskList(name, priority, activity, selectedCubes);
+		return theTasks.getTasks();
 	}
 
 	/* (non-Javadoc)
@@ -44,10 +44,10 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createWhile(java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createWhile(Expression<Boolean> condition, Statement body,
+	public Statement createWhile(Expression<?> condition, Statement body,
 			SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return new WhileLoop(condition, body);
+		return new WhileLoop((Expression<Boolean>) condition, body);
 	}
 
 	/* (non-Javadoc)

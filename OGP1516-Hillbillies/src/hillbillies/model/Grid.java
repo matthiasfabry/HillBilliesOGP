@@ -33,7 +33,7 @@ class Grid {
 			for (int indexY = 0; indexY < features[indexX].length; indexY++) {
 				for (int indexZ = 0; indexZ < features[indexX][indexY].length; indexZ++) {
 					this.getMap()[indexX][indexY][indexZ] = new Cube(
-							new Coordinate(indexX, indexY, indexZ), world);
+							new Coordinate(indexX, indexY, indexZ), this);
 					try {
 						this.getMap()[indexX][indexY][indexZ]
 								.setTerrain(features[indexX][indexY][indexZ]);
