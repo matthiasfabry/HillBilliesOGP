@@ -19,5 +19,4 @@ public class Is_PassableExpression implements Expression<Boolean> {
 		else 
 			return false;
 	}
-
 }
