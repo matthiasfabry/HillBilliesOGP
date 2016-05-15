@@ -8,16 +8,19 @@ package hillbillies.model.expression;
  * @param <T>
 *
 */
-public class NotExpression<T> implements Expression<T> {
+public class NotExpression implements Expression<Boolean> {
 
-	public NotExpression(Expression<T> Value) {
+	public NotExpression(Expression<Boolean> Value) {
 		this.value = Value;
 	}
-	public final Expression<T> value;
+	public final Expression<Boolean> value;
 	
 	@Override
-	public T evaluate() {
-		return (value.evaluate());
+	public Boolean evaluate() {
+		if (value.evaluate())
+			return false;
+		else
+			return true;
 	}
 
 }
