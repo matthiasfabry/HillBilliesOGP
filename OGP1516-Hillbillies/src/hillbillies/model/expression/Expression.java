@@ -10,9 +10,9 @@ package hillbillies.model.expression;
  * @version 1.0
  *
  */
-public abstract class Expression<T> {
+public interface Expression<T> {
 	
-	public abstract T evaluate();
+	public T evaluate();
 
 	
 }

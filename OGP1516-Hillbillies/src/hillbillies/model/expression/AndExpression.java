@@ -8,7 +8,7 @@ package hillbillies.model.expression;
  * @param <T>
 *
 */
-public class AndExpression<T> extends Expression<T> {
+public class AndExpression<T> implements Expression<T> {
 
 	public AndExpression(Expression<T> firstExpression, Expression<T> secondExpression){
 		this.first = firstExpression;

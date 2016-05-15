@@ -9,7 +9,7 @@ package hillbillies.model.expression;
  * @param <T>
 *
 */
-public class Boolean_Expression extends Expression<Boolean> {
+public class Boolean_Expression implements Expression<Boolean> {
 
 	public Boolean_Expression(Boolean condition) {
 		this.value = condition;

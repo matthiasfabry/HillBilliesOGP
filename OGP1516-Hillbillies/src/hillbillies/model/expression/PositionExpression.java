@@ -9,7 +9,7 @@ import hillbillies.model.Coordinate;
  * @param <T>
 *
 */
-public abstract class PositionExpression<T> extends Expression<Coordinate> {
+public abstract class PositionExpression<T> implements Expression<Coordinate> {
 
 	public abstract Coordinate evaluate();
 	

@@ -8,7 +8,7 @@ package hillbillies.model.expression;
  * @param <T>
 *
 */
-public class NotExpression<T> extends Expression<T> {
+public class NotExpression<T> implements Expression<T> {
 
 	public NotExpression(Expression<T> Value) {
 		this.value = Value;
