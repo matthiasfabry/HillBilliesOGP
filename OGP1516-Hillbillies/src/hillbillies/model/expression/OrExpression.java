@@ -18,6 +18,7 @@ public class OrExpression<T> implements Expression<T> {
 	@Override
 	public T evaluate() {
 		return first.evaluate();
+		//return second.evaluate();
 	}
 	
 	private final Expression<T> first;

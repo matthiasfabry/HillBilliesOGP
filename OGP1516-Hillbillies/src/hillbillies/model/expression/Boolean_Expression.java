@@ -12,7 +12,7 @@ package hillbillies.model.expression;
 public class Boolean_Expression implements Expression<Boolean> {
 
 	public Boolean_Expression(Boolean condition) {
-		this.value = condition;
+		value = condition;
 	}
 	private final boolean value;
 	

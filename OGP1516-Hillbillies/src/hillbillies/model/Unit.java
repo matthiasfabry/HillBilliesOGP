@@ -169,6 +169,17 @@ public class Unit {
 		this.setWorld(null);
 		this.setFaction(null);
 	}
+	
+	/**
+	 * flag that keeps whether the unit is dead or not.
+	 * @return true when the this unit is dead.
+	 * 		|	return isDead
+
+	 */
+	public boolean isDead(){
+		return isDead;
+		
+	}
 	/**
 	 * flag that keeps whether the unit is dead or not.
 	 */
