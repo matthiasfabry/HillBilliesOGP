@@ -5,8 +5,19 @@ package hillbillies.model;
 
 import java.util.List;
 
+import hillbillies.model.coordinateexpression.BoulderExpression;
+import hillbillies.model.coordinateexpression.HereExpression;
+import hillbillies.model.coordinateexpression.LogExpression;
+import hillbillies.model.coordinateexpression.Next_toExpression;
+import hillbillies.model.coordinateexpression.Position_ofExpression;
+import hillbillies.model.coordinateexpression.SpecifiedExpression;
+import hillbillies.model.coordinateexpression.WorkshopExpression;
 import hillbillies.model.expression.*;
 import hillbillies.model.statement.*;
+import hillbillies.model.unitexpression.AnyExpression;
+import hillbillies.model.unitexpression.EnemyExpression;
+import hillbillies.model.unitexpression.FriendExpression;
+import hillbillies.model.unitexpression.ThisExpression;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
 
@@ -14,12 +25,12 @@ import hillbillies.part3.programs.SourceLocation;
 /**
  *
  *
- * @author Matthias Fabry
+ * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
  *
  */
 public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
-
+	
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
 	 */
@@ -143,20 +154,18 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsSolid(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsSolid(Expression position,
+	public Expression createIsSolid(Expression position, World world,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Is_SolidExpression((Coordinate) position.evaluate(), world);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsPassable(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsPassable(Expression position,
+	public Expression createIsPassable(Expression position, World world,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Is_PassableExpression((Coordinate) position.evaluate(), world);
 	}
 
 	/* (non-Javadoc)
@@ -175,7 +184,6 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression<Unit> createIsEnemy(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
 		return new Expression<Unit>() {
 
 			@Override
@@ -193,8 +201,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createIsAlive(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Is_AliveExpression((Unit) unit.evaluate());
 	}
 
 	/* (non-Javadoc)
@@ -203,8 +210,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createCarriesItem(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Carries_Item((Unit) unit.evaluate());
 	}
 
 	/* (non-Javadoc)
@@ -213,8 +219,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createNot(Expression expression,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new NotExpression((Expression<Boolean>) expression.evaluate());
 	}
 
 	/* (non-Javadoc)
@@ -241,36 +246,32 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createHerePosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createHerePosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createHerePosition(Unit unit, SourceLocation sourceLocation) {
+		return new HereExpression(unit);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createLogPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createLogPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createLogPosition(Unit unit, SourceLocation sourceLocation) {
+		return new LogExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createBoulderPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createBoulderPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createBoulderPosition(Unit unit, SourceLocation sourceLocation) {
+		return new BoulderExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createWorkshopPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createWorkshopPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createWorkshopPosition(Unit unit, SourceLocation sourceLocation) {
+		return new WorkshopExpression(unit);
 	}
 
 	/* (non-Javadoc)
@@ -286,10 +287,9 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createNextToPosition(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createNextToPosition(Expression position,
+	public Expression createNextToPosition(Expression position, World world,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Next_toExpression((Coordinate) position.evaluate(), world);
 	}
 
 	/* (non-Javadoc)
@@ -298,44 +298,39 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createLiteralPosition(int x, int y, int z,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new SpecifiedExpression(x,y,z);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createThis(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createThis(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createThis(Unit unit,SourceLocation sourceLocation) {
+		return new ThisExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createFriend(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createFriend(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createFriend(Unit unit,SourceLocation sourceLocation) {
+		return new FriendExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createEnemy(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createEnemy(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createEnemy(Unit unit,SourceLocation sourceLocation) {
+		return new EnemyExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createAny(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createAny(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createAny(Unit unit,SourceLocation sourceLocation) {
+		return new AnyExpression(unit);
 	}
 
 	/* (non-Javadoc)
@@ -343,8 +338,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 */
 	@Override
 	public Expression createTrue(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Boolean_Expression(true);
 	}
 
 	/* (non-Javadoc)
@@ -352,8 +346,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 */
 	@Override
 	public Expression createFalse(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Boolean_Expression(false);
 	}
 
 	/* (non-Javadoc)
@@ -362,8 +355,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createPositionOf(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Position_ofExpression((Unit) unit.evaluate());
 	}
 
 }
