@@ -3,6 +3,7 @@
  */
 package hillbillies.model.statement;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 import ogp.framework.util.ModelException;
 
@@ -26,12 +27,12 @@ public class IfThenElse implements Statement {
 	private final Expression<Boolean> condition;
 	
 	@Override
-	public void execute() throws ModelException {
+	public void execute(Unit unit) throws ModelException {
 		if (condition.evaluate())
-			thenBody.execute();
+			thenBody.execute(unit);
 		else {
 			if (elseBody != null) {
-				elseBody.execute();
+				elseBody.execute(unit);
 			}
 		}	
 	}

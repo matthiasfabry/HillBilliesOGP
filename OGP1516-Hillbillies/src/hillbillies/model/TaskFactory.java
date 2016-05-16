@@ -5,19 +5,10 @@ package hillbillies.model;
 
 import java.util.List;
 
-import hillbillies.model.coordinateexpression.BoulderExpression;
-import hillbillies.model.coordinateexpression.HereExpression;
-import hillbillies.model.coordinateexpression.LogExpression;
-import hillbillies.model.coordinateexpression.Next_toExpression;
-import hillbillies.model.coordinateexpression.Position_ofExpression;
-import hillbillies.model.coordinateexpression.SpecifiedExpression;
-import hillbillies.model.coordinateexpression.WorkshopExpression;
+import hillbillies.model.coordinateexpression.*;
 import hillbillies.model.expression.*;
 import hillbillies.model.statement.*;
-import hillbillies.model.unitexpression.AnyExpression;
-import hillbillies.model.unitexpression.EnemyExpression;
-import hillbillies.model.unitexpression.FriendExpression;
-import hillbillies.model.unitexpression.ThisExpression;
+import hillbillies.model.unitexpression.*;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
 
@@ -47,7 +38,6 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Statement createAssignment(String variableName, Expression<?> value,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
 		return new VarAssignment<>(variableName, value);
 	}
 
@@ -55,19 +45,17 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createWhile(java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createWhile(Expression<?> condition, Statement body,
+	public Statement createWhile(Expression condition, Statement body,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return new WhileLoop((Expression<Boolean>) condition, body);
+		return new WhileLoop(condition, body);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIf(java.lang.Object, java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createIf(Expression<Boolean> condition, Statement ifBody,
+	public Statement createIf(Expression condition, Statement ifBody,
 			Statement elseBody, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
 		return new IfThenElse(condition, ifBody, elseBody);
 	}
 
@@ -76,8 +64,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 */
 	@Override
 	public Statement createBreak(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new BreakStatement();
 	}
 
 	/* (non-Javadoc)
@@ -86,7 +73,6 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Statement createPrint(Expression<?> value,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
 		return new PrintStatement<>(value);
 	}
 
@@ -96,7 +82,6 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Statement createSequence(List<Statement> statements,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
 		return new SequenceStatement(statements);
 	}
 
@@ -104,10 +89,9 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createMoveTo(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createMoveTo(Expression<Coordinate> position,
+	public Statement createMoveTo(Expression position,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return new MoveAction(unit, position);
+		return new MoveAction(position);
 	}
 
 	/* (non-Javadoc)
@@ -116,8 +100,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Statement createWork(Expression position,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new WorkAction(position);
 	}
 
 	/* (non-Javadoc)
@@ -126,17 +109,15 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Statement createFollow(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new FollowAction(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createAttack(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createAttack(Expression<Unit> unit,
+	public Statement createAttack(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
 		return new AttackAction(unit);
 	}
 

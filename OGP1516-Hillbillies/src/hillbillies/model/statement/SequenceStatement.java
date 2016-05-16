@@ -5,6 +5,7 @@ package hillbillies.model.statement;
 
 import java.util.List;
 
+import hillbillies.model.Unit;
 import ogp.framework.util.ModelException;
 
 /**
@@ -22,9 +23,17 @@ public class SequenceStatement implements Statement {
 	
 	private List<Statement> statements;
 	
-	public void execute() throws ModelException{
+	public VarTracker getTracker(){
+		return this.tracker;
+	}
+	
+	private VarTracker tracker = new VarTracker();
+	
+	
+	@Override
+	public void execute(Unit unit) throws ModelException{
 		for (Statement statement : statements){
-			statement.execute();
+			statement.execute(unit);
 		}
 	}
 }

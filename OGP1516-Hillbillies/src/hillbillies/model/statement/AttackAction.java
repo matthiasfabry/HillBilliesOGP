@@ -3,10 +3,10 @@
  */
 package hillbillies.model.statement;
 
-import java.lang.reflect.Method;
 
 import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
+import ogp.framework.util.ModelException;
 
 
 /**
@@ -27,18 +27,8 @@ public class AttackAction implements Statement {
 	 * @see hillbillies.model.statement.ActionStatement#execute()
 	 */
 	@Override
-	public Method execute(){
-		Method theMethod = null;
-		try {
-			theMethod = Unit.class.getMethod("attack", new Class[]{Unit.class});
-		} catch (NoSuchMethodException e) {
-			// shouldn't happen
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// shoudn't happen
-			e.printStackTrace();
-		}
-		return theMethod;
+	public void execute(Unit unit) throws ModelException {
+		unit.attack(victim.evaluate());
 	}
 
 }

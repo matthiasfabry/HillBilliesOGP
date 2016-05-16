@@ -3,8 +3,8 @@
  */
 package hillbillies.model.statement;
 
-import java.lang.reflect.Method;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 import ogp.framework.util.ModelException;
 
@@ -27,9 +27,9 @@ public class WhileLoop implements Statement {
 	private boolean buzy = true;
 
 	@Override
-	public Method execute() throws ModelException {
+	public void execute(Unit unit) throws ModelException {
 		while(condition.evaluate() && buzy)
-			return whileBody.execute();
+			whileBody.execute(unit);
 		
 	}
 

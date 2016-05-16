@@ -3,6 +3,7 @@
  */
 package hillbillies.model.statement;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 
 /**
@@ -22,7 +23,7 @@ public class VarAssignment<T> implements Statement {
 	private final String name;
 	
 	@Override
-	public void execute(){
+	public void execute(Unit unit){
 		
 	}
 	

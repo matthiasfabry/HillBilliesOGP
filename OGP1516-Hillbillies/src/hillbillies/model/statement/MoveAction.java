@@ -4,7 +4,6 @@
 package hillbillies.model.statement;
 
 import hillbillies.model.Coordinate;
-import hillbillies.model.statement.ActionStatement;
 import ogp.framework.util.ModelException;
 import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
@@ -16,22 +15,21 @@ import hillbillies.model.expression.Expression;
  * @version 1.0
  *
  */
-public class MoveAction implements ActionStatement {
+public class MoveAction implements Statement {
 
-	public MoveAction(Expression<Unit> unit, Expression<Coordinate> position){
+	public MoveAction(Expression<Coordinate> position){
 		this.position = position;
-		this.unit = unit;
 	}
 	private final Expression<Coordinate> position;
-	private final Expression<Unit> unit;
+
 	
 	/* (non-Javadoc)
 	 * @see hillbillies.model.statement.ActionStatement#execute()
 	 */
 	@Override
-	public void execute() throws ModelException {
-		if (unit.evaluate().isValidPosition(position.evaluate())){
-			unit.evaluate().moveTo((int) position.evaluate().getX(), (int) position.evaluate().getY(),
+	public void execute(Unit unit) throws ModelException {
+		if (unit.isValidPosition(position.evaluate())){
+			unit.moveTo((int) position.evaluate().getX(), (int) position.evaluate().getY(),
 					(int) position.evaluate().getZ());
 		}
 	}

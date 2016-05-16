@@ -4,8 +4,9 @@
 package hillbillies.model.statement;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
-import hillbillies.model.statement.ActionStatement;
+import ogp.framework.util.ModelException;
 
 /**
  *
@@ -14,7 +15,7 @@ import hillbillies.model.statement.ActionStatement;
  * @version 1.0
  *
  */
-public class WorkAction implements ActionStatement {
+public class WorkAction implements Statement {
 
 	public WorkAction(Expression<Coordinate> position){
 		this.position = position;
@@ -25,8 +26,8 @@ public class WorkAction implements ActionStatement {
 	 * @see hillbillies.model.statement.ActionStatement#execute()
 	 */
 	@Override
-	public void execute() {
-		// TODO Auto-generated method stub
+	public void execute(Unit unit) throws ModelException {
+		unit.workAt(position.evaluate());
 		
 	}
 

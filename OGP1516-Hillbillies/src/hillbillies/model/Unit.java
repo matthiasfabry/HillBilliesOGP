@@ -169,16 +169,16 @@ public class Unit {
 		this.setWorld(null);
 		this.setFaction(null);
 	}
-	
+
 	/**
 	 * flag that keeps whether the unit is dead or not.
 	 * @return true when the this unit is dead.
 	 * 		|	return isDead
-
+	
 	 */
-	public boolean isDead(){
+	public boolean isDead() {
 		return isDead;
-		
+
 	}
 	/**
 	 * flag that keeps whether the unit is dead or not.
@@ -885,6 +885,11 @@ public class Unit {
 			// nothing to do here
 		}
 		try {
+			this.following();
+		} catch (ModelException e) {
+			// nothing to do here
+		}
+		try {
 			this.updatePosition(deltaT);
 		} catch (ModelException e5) {
 			// nothing to do here
@@ -963,6 +968,76 @@ public class Unit {
 		} else
 			throw new ModelException("Not ready to move");
 	}
+	/**
+	 * Gives this unit the order to follow another unit
+	 * 
+	 * @param toFollow
+	 * 		the unit to follow
+	 * @throws ModelException
+	 * 		the unit is not a valid unit to follow
+	 */
+	public void follow(Unit toFollow) throws ModelException {
+		this.setToFollow(toFollow);
+		this.following = true;
+	}
+	/**
+	 * Terminates a follow command
+	 */
+	public void stopFollowing(){
+		try {
+			this.setToFollow(null);
+		} catch (ModelException e) {
+			// shoudn't happen
+		}
+		this.following = false;
+	}
+	/**
+	 * Carries through the follow action of a Unit by giving it the order
+	 * to move to the position of the unit to follow.
+	 * 
+	 * @throws ModelException
+	 * 		the unit can't move to the position of the unit to follow
+	 */
+	void following() throws ModelException {
+		if (following) {
+			this.moveTo((int) toFollow.getPosition().getX(),
+					(int) toFollow.getPosition().getY(),
+					(int) toFollow.getPosition().getZ());
+		}
+	}
+	/**
+	 * sets the unit to follow to the given unit
+	 * 
+	 * @param toFollow
+	 * 		the Unit to follow
+	 * @throws ModelException 
+	 * 		the given unit is this one itself.
+	 * @post if the given unit is not itself,
+	 * 			this unit will be following the given unit.
+	 */
+	void setToFollow(Unit toFollow) throws ModelException{
+		if (toFollow != null && toFollow != this)
+			this.toFollow = toFollow;
+		else
+			throw new ModelException();
+	}
+	/**
+	 * Returns the unit to follow
+	 */
+	@Basic
+	@Raw
+	public Unit getToFollow() {
+		return this.toFollow;
+	}
+	/**
+	 * Variable registering the unit to follow
+	 */
+	private Unit toFollow;
+	/**
+	 * Boolean flag to indicate whether the unit is following another unit
+	 */
+	private boolean following;
+
 	/**
 	 * Method that seeks the path for the Unit to move to its destination when in an empty world.
 	 *
@@ -1053,8 +1128,8 @@ public class Unit {
 			if (coordinateQueue.contains(this.getInWorldPosition())) {
 				searched.add(
 						new Tuple<Coordinate>(this.getInWorldPosition(), i));
-				while (! this.getPath().getLast().equals(this.getDestinationCube()
-						.sum(centerCube()))) {
+				while (!this.getPath().getLast()
+						.equals(this.getDestinationCube().sum(centerCube()))) {
 					int counter = 10000;
 
 					Coordinate next = new Coordinate(0, 0, 0);
@@ -1675,7 +1750,8 @@ public class Unit {
 		} else if (this.getWorld().getTerrainAt(workTarget) == Terrain.ROCK) {
 			this.getWorld().setTerrainAt(workTarget, Terrain.AIR);
 			this.getWorld().addGameObject(
-					new Boulder(getWorkTarget(), this.getWorld()), getWorkTarget());
+					new Boulder(getWorkTarget(), this.getWorld()),
+					getWorkTarget());
 		}
 		this.AwardExperience(10);
 		this.setActivity(Activity.IDLE);
@@ -2459,5 +2535,5 @@ public class Unit {
 	 * Variable registering the experience of the Unit.
 	 */
 	public int totalExperience;
-	
+
 }
