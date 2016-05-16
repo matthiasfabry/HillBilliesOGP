@@ -3,6 +3,13 @@ package hillbillies.model.expression;
 import hillbillies.model.Coordinate;
 import hillbillies.model.World;
 
+/**
+*
+*
+* @author Lukas Van Riel
+* @version 1.0
+*
+*/
 public class Is_SolidExpression implements Expression<Boolean> {
 
 	public Is_SolidExpression(Coordinate thiscoordinate, World thisworld){

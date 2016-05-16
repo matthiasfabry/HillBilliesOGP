@@ -3,6 +3,13 @@ package hillbillies.model.expression;
 import hillbillies.model.Coordinate;
 import hillbillies.model.World;
 
+/**
+*
+*
+* @author Lukas Van Riel
+* @version 1.0
+*
+*/
 public class Is_PassableExpression implements Expression<Boolean> {
 
 	public Is_PassableExpression(Coordinate thiscoordinate, World thisworld){
