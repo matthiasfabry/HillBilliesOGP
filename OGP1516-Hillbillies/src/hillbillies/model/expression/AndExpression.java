@@ -8,21 +8,18 @@ package hillbillies.model.expression;
  * @param <T>
 *
 */
-public class AndExpression<T> implements Expression<Expression[]> {
+public class AndExpression<T> implements Expression<Boolean> {
 
-	public AndExpression(Expression<T> firstExpression, Expression<T> secondExpression){
+	public AndExpression(Expression<Boolean> firstExpression, Expression<Boolean> secondExpression){
 		this.first = firstExpression;
 		this.second = secondExpression;
 	}
 	
 	@Override
-	public Expression[] evaluate() {
-		Expression[] list = Expression[2];
-		list[0] = first;
-		list[1] = second;
-		return list;
+	public Boolean evaluate() {
+		return (first.evaluate() && second.evaluate());
 	}
-	private final Expression<T> first;
-	private final Expression<T> second;
+	private final Expression<Boolean> first;
+	private final Expression<Boolean> second;
 
 }

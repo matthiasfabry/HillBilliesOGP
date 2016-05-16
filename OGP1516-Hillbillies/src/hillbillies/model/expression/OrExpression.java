@@ -8,21 +8,18 @@ package hillbillies.model.expression;
  * @param <T>
 *
 */
-public class OrExpression<T> implements Expression<T> {
+public class OrExpression<T> implements Expression<Boolean> {
 
-	public OrExpression(Expression<T> firstExpression, Expression<T> secondExpression){
+	public OrExpression(Expression<Boolean> firstExpression, Expression<Boolean> secondExpression){
 		this.first = firstExpression;
 		this.second = secondExpression;
 	}
 	
 	@Override
-	public T evaluate() {
-		return first.evaluate();
-		//return second.evaluate();
+	public Boolean evaluate() {
+		return (first.evaluate() || second.evaluate());
 	}
-	
-	private final Expression<T> first;
-	private final Expression<T> second;
+	private final Expression<Boolean> first;
+	private final Expression<Boolean> second;
 
-	
 }

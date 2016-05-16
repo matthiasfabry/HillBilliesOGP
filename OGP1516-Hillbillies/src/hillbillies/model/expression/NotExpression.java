@@ -17,10 +17,7 @@ public class NotExpression implements Expression<Boolean> {
 	
 	@Override
 	public Boolean evaluate() {
-		if (value.evaluate())
-			return false;
-		else
-			return true;
+		return (! value.evaluate());
 	}
 
 }
