@@ -174,8 +174,15 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createIsFriend(Expression unit,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Expression<Unit>() {
+
+			@Override
+			public Unit evaluate() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 	}
 
 	/* (non-Javadoc)
@@ -228,8 +235,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createAnd(Expression left, Expression right,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new AndExpression(left, right);
 	}
 
 	/* (non-Javadoc)
@@ -238,8 +244,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createOr(Expression left, Expression right,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new OrExpression(left, right);
 	}
 
 	/* (non-Javadoc)
