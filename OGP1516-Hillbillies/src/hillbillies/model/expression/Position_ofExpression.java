@@ -1,8 +1,7 @@
-package hillbillies.model.coordinateexpression;
+package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
-import hillbillies.model.expression.PositionExpression;
 
 /**
 *
@@ -11,9 +10,10 @@ import hillbillies.model.expression.PositionExpression;
 * @version 1.0
 *
 */
-public class HereExpression extends PositionExpression<Coordinate> {
+public class Position_ofExpression extends PositionExpression<Coordinate> {
 
-	public HereExpression(Unit unit) {
+
+	public Position_ofExpression(Unit unit) {
 		this.position = unit.getInWorldPosition();
 	}
 	private final Coordinate position;
@@ -22,5 +22,4 @@ public class HereExpression extends PositionExpression<Coordinate> {
 	public Coordinate evaluate() {
 		return this.position;
 	}
-
 }

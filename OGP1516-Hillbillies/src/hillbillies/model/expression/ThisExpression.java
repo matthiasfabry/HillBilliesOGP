@@ -1,7 +1,6 @@
-package hillbillies.model.unitexpression;
+package hillbillies.model.expression;
 
 import hillbillies.model.Unit;
-import hillbillies.model.expression.UnitExpression;
 
 /**
 *

@@ -1,11 +1,10 @@
-package hillbillies.model.unitexpression;
+package hillbillies.model.expression;
 
 import java.util.HashSet;
 import java.util.Set;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
-import hillbillies.model.expression.UnitExpression;
 
 /**
 *
@@ -32,24 +31,21 @@ public class FriendExpression extends UnitExpression<Unit> {
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Unit someUnit = null;
-		Coordinate[] coordinatelist = position.adjacentCoordinates();
 		Set<Coordinate> coordinateSet = new HashSet<Coordinate>();
-		for (Coordinate c: coordinatelist){
-			coordinateSet.add(c);
-		}
+		coordinateSet.add(position);
 		while (someUnit == null){
+			for (Coordinate c: coordinateSet){
+				Coordinate[] clist = c.adjacentCoordinates();
+				for (Coordinate cc: clist){
+					if (! coordinateSet.contains(cc))
+						coordinateSet.add(cc);
+				}
+			}
 			for (Unit worldUnit: world.getUnitSet()){
 				if (coordinateSet.contains(worldUnit.getInWorldPosition()) && 
 						worldUnit.getFaction().equals(thisUnit.getFaction()))
 					someUnit = worldUnit;
-			} 
-			for (Coordinate cc: coordinateSet){
-				Coordinate[] clist = cc.adjacentCoordinates();
-				for (Coordinate ccc: clist){
-					if (! coordinateSet.contains(ccc))
-						coordinateSet.add(ccc);
-				}
-			}	
+			} 	
 		}	
 		return someUnit;
 	}

@@ -6,19 +6,26 @@ import java.util.Set;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 
-public class BracketExpression<T> implements Expression<Unit> {
+/**
+*
+*
+* @author Lukas Van Riel
+* @version 1.0
+*
+*/
+public class BracketExpression implements Expression<Unit> {
 
-	public BracketExpression(Unit thisUnit, String NameToMatch){
+	public BracketExpression(Unit unit, String NameToMatch){
 		this.name = NameToMatch;
-		this.unit = thisUnit;
+		this.thisUnit = unit;
 	}
 	private final String name;
-	private final Unit unit;
+	private final Unit thisUnit;
 	
 	@Override
 	public Unit evaluate() {
 		Unit searchedUnit = null;
-		World world = unit.getWorld();
+		World world = thisUnit.getWorld();
 		Set<Unit> unitSet = world.getUnitSet();
 		for (Unit u: unitSet)
 			if (u.getName().equals(name))

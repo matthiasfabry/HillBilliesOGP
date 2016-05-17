@@ -1,7 +1,6 @@
-package hillbillies.model.coordinateexpression;
+package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
-import hillbillies.model.expression.PositionExpression;
 
 /**
 *

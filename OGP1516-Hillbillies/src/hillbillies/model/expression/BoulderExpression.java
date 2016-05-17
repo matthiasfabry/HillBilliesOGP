@@ -1,4 +1,4 @@
-package hillbillies.model.coordinateexpression;
+package hillbillies.model.expression;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,7 +7,6 @@ import hillbillies.model.Boulder;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
-import hillbillies.model.expression.PositionExpression;
 
 /**
 *
@@ -34,23 +33,20 @@ public class BoulderExpression extends PositionExpression<Coordinate> {
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Boulder someBoulder = null;
-		Coordinate[] coordinatelist = position.adjacentCoordinates();
 		Set<Coordinate> coordinateSet = new HashSet<Coordinate>();
-		for (Coordinate c: coordinatelist){
-			coordinateSet.add(c);
-		}
+		coordinateSet.add(position);
 		while (someBoulder == null){
+			for (Coordinate c: coordinateSet){
+				Coordinate[] clist = c.adjacentCoordinates();
+				for (Coordinate cc: clist){
+					if (! coordinateSet.contains(cc))
+						coordinateSet.add(cc);
+				}
+			}
 			for (Boulder worldBoulder: world.getBoulderSet()){
 				if (coordinateSet.contains(worldBoulder.getPosition()))
 					someBoulder = worldBoulder;
-			} 
-			for (Coordinate cc: coordinateSet){
-				Coordinate[] clist = cc.adjacentCoordinates();
-				for (Coordinate ccc: clist){
-					if (! coordinateSet.contains(ccc))
-						coordinateSet.add(ccc);
-				}
-			}	
+			} 	
 		}	
 		Coordinate place = someBoulder.getPosition();
 		return place;

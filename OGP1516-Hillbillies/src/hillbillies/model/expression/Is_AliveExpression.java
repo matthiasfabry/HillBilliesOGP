@@ -18,10 +18,7 @@ public class Is_AliveExpression implements Expression<Boolean> {
 	private final Unit thisUnit;
 	@Override
 	public Boolean evaluate() {
-		if(thisUnit.isDead())
-			return false;
-		else
-			return true;
+		return (thisUnit.isDead());
 	}
 
 }

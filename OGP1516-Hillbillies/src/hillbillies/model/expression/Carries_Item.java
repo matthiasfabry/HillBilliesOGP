@@ -18,10 +18,7 @@ public class Carries_Item implements Expression<Boolean> {
 	
 	@Override
 	public Boolean evaluate() {
-		if (thisUnit.isCarrying())
-			return true;
-		else 
-			return false;
+		return (thisUnit.isCarrying());
 	}
 
 }

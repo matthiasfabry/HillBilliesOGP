@@ -6,7 +6,6 @@ package hillbillies.model.expression;
 *
 * @author Lukas Van Riel
 * @version 1.0
- * @param <T>
 *
 */
 public class Boolean_Expression implements Expression<Boolean> {

@@ -186,7 +186,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param position
 	 *            The position expression
 	 */
-	public E createIsSolid(E position, E unit, SourceLocation sourceLocation);
+	public E createIsSolid(E unit, E position, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given position
@@ -195,7 +195,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param position
 	 *            The position expression
 	 */
-	public E createIsPassable(E position, E unit, SourceLocation sourceLocation);
+	public E createIsPassable(E unit, E position, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates

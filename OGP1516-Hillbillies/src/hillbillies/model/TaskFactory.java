@@ -5,10 +5,8 @@ package hillbillies.model;
 
 import java.util.List;
 
-import hillbillies.model.coordinateexpression.*;
 import hillbillies.model.expression.*;
 import hillbillies.model.statement.*;
-import hillbillies.model.unitexpression.*;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
 
@@ -136,8 +134,8 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	@Override
 	public Expression createIsSolid(Expression position, Expression unit,
 			SourceLocation sourceLocation) {
-		return new Is_SolidExpression((Coordinate) position.evaluate(), 
-				((Unit) unit.evaluate()).getWorld());
+		return new Is_SolidExpression((Unit) unit.evaluate(),
+				(Coordinate) position.evaluate());
 	}
 
 	/* (non-Javadoc)
@@ -146,8 +144,8 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	@Override
 	public Expression createIsPassable(Expression position, Expression unit,
 			SourceLocation sourceLocation) {
-		return new Is_PassableExpression((Coordinate) position.evaluate(), 
-				((Unit) unit.evaluate()).getWorld());
+		return new Is_PassableExpression((Unit) unit.evaluate(),
+				(Coordinate) position.evaluate());
 	}
 
 	/* (non-Javadoc)

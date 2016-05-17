@@ -1,4 +1,4 @@
-package hillbillies.model.coordinateexpression;
+package hillbillies.model.expression;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +8,6 @@ import hillbillies.model.Coordinate;
 import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
-import hillbillies.model.expression.PositionExpression;
 
 /**
 *

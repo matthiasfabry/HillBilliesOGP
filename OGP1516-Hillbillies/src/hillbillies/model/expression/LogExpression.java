@@ -1,4 +1,4 @@
-package hillbillies.model.coordinateexpression;
+package hillbillies.model.expression;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +8,6 @@ import hillbillies.model.Coordinate;
 import hillbillies.model.Log;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
-import hillbillies.model.expression.PositionExpression;
 
 /**
 *
@@ -35,23 +34,20 @@ public class LogExpression extends PositionExpression<Coordinate> {
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Log someLog = null;
-		Coordinate[] coordinatelist = position.adjacentCoordinates();
 		Set<Coordinate> coordinateSet = new HashSet<Coordinate>();
-		for (Coordinate c: coordinatelist){
-			coordinateSet.add(c);
-		}
+		coordinateSet.add(position);
 		while (someLog == null){
+			for (Coordinate c: coordinateSet){
+				Coordinate[] clist = c.adjacentCoordinates();
+				for (Coordinate cc: clist){
+					if (! coordinateSet.contains(cc))
+						coordinateSet.add(cc);
+				}
+			}
 			for (Log worldLog: world.getLogSet()){
 				if (coordinateSet.contains(worldLog.getPosition()))
 					someLog = worldLog;
 			} 
-			for (Coordinate cc: coordinateSet){
-				Coordinate[] clist = cc.adjacentCoordinates();
-				for (Coordinate ccc: clist){
-					if (! coordinateSet.contains(ccc))
-						coordinateSet.add(ccc);
-				}
-			}	
 		}	
 		Coordinate place = someLog.getPosition();
 		return place;
