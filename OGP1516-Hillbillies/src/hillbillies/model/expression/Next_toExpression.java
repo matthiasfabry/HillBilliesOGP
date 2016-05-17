@@ -5,6 +5,7 @@ import java.util.Set;
 
 import hillbillies.model.Coordinate;
 import hillbillies.model.Cube;
+import hillbillies.model.Unit;
 import hillbillies.model.World;
 
 /**
@@ -16,9 +17,9 @@ import hillbillies.model.World;
 */
 public class Next_toExpression extends PositionExpression<Coordinate> {
 
-	public Next_toExpression(Coordinate place, World worldd){
+	public Next_toExpression(Unit unit, Coordinate place){
 		this.position = place;
-		this.world = worldd;
+		this.world = unit.getWorld();
 		this.nexttoposition = determineNext_toPosition();
 	}
 	private final Coordinate position;

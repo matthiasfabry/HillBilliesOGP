@@ -34,23 +34,20 @@ public class WorkshopExpression extends PositionExpression<Coordinate> {
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Coordinate someWorkshop = null;
-		Coordinate[] coordinatelist = position.adjacentCoordinates();
 		Set<Coordinate> coordinateSet = new HashSet<Coordinate>();
-		for (Coordinate c: coordinatelist){
-			coordinateSet.add(c);
-		}
+		coordinateSet.add(position);
 		while (someWorkshop == null){
+			for (Coordinate c: coordinateSet){
+				Coordinate[] clist = c.adjacentCoordinates();
+				for (Coordinate cc: clist){
+					if (! coordinateSet.contains(cc))
+						coordinateSet.add(cc);
+				}
+			}
 			for (Coordinate coordinate : coordinateSet){
 				if (world.getTerrainAt(coordinate) == Terrain.WORKSHOP)
 					someWorkshop = coordinate;
-			} 
-			for (Coordinate cc: coordinateSet){
-				Coordinate[] clist = cc.adjacentCoordinates();
-				for (Coordinate ccc: clist){
-					if (! coordinateSet.contains(ccc))
-						coordinateSet.add(ccc);
-				}
-			}	
+			} 	
 		}	
 		return someWorkshop;
 	}

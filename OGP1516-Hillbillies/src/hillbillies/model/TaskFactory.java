@@ -271,8 +271,8 @@ public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	@Override
 	public Expression createNextToPosition(Expression unit, Expression position,
 			SourceLocation sourceLocation) {
-		return new Next_toExpression((Coordinate) position.evaluate(), 
-				((Unit) unit.evaluate()).getWorld());
+		return new Next_toExpression( (Unit) unit.evaluate(), 
+				(Coordinate) position.evaluate());
 	}
 
 	/* (non-Javadoc)
