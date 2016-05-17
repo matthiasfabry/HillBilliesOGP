@@ -36,7 +36,7 @@ public class Faction {
 	 * 			the world where the faction needs to be created.
 	 * @throws ModelException 
 	 */
-	public Faction(String name, World world){
+	public Faction(String name, World world) {
 		this.world = world;
 		this.name = name;
 		try {
@@ -249,12 +249,12 @@ public class Faction {
 	private final Set<Unit> Units = new HashSet<Unit>();
 
 	// Scheduler //
-	
-	void setScheduler(Scheduler scheduler){
+
+	void setScheduler(Scheduler scheduler) {
 		if (canHaveAsScheduler(scheduler))
 			this.scheduler = scheduler;
 	}
-	
+
 	/**
 	 * Return the Scheduler of this Faction.
 	 */
@@ -282,4 +282,11 @@ public class Faction {
 	 * Variable registering the Scheduler of this Faction.
 	 */
 	private Scheduler scheduler;
+
+	// Overrides from Object //
+
+	@Override
+	public String toString() {
+		return ("Name: " + this.getName() + "Members: " + this.getNbUnits());
+	}
 }

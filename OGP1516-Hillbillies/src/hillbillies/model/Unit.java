@@ -983,7 +983,7 @@ public class Unit {
 	/**
 	 * Terminates a follow command
 	 */
-	public void stopFollowing(){
+	public void stopFollowing() {
 		try {
 			this.setToFollow(null);
 		} catch (ModelException e) {
@@ -1015,7 +1015,7 @@ public class Unit {
 	 * @post if the given unit is not itself,
 	 * 			this unit will be following the given unit.
 	 */
-	void setToFollow(Unit toFollow) throws ModelException{
+	void setToFollow(Unit toFollow) throws ModelException {
 		if (toFollow != null && toFollow != this)
 			this.toFollow = toFollow;
 		else
@@ -2449,6 +2449,7 @@ public class Unit {
 	private boolean defaultBehavior = false;
 
 	// Experience //
+
 	/**
 	 * Adds the given amount of experience to both the totalExperience
 	 * and the countExp
@@ -2535,5 +2536,14 @@ public class Unit {
 	 * Variable registering the experience of the Unit.
 	 */
 	public int totalExperience;
+
+	// Overrides from Object //
+
+	@Override
+	public String toString() {
+		return ("Name: " + this.getName() + "Faction: "
+				+ this.getFaction().toString() + "Experience: "
+				+ this.getTotalExperience());
+	}
 
 }

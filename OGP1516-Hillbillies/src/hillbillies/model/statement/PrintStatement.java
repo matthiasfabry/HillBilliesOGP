@@ -3,6 +3,7 @@
  */
 package hillbillies.model.statement;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 
 /**
@@ -21,7 +22,7 @@ public class PrintStatement<T> implements Statement {
 	private final Expression<T> printBody;
 
 	@Override
-	public void execute() {
+	public void execute(Unit unit, VarTracker tracker) {
 		System.out.println(printBody.evaluate().toString());
 		
 	}

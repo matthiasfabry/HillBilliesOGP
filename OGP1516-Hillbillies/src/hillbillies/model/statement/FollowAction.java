@@ -5,6 +5,7 @@ package hillbillies.model.statement;
 
 import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
+import ogp.framework.util.ModelException;
 
 /**
  *
@@ -24,7 +25,7 @@ public class FollowAction implements Statement {
 	 * @see hillbillies.model.statement.ActionStatement#execute()
 	 */
 	@Override
-	public void execute(Unit unit) {
+	public void execute(Unit unit, VarTracker tracker) throws ModelException {
 		unit.follow(toFollow.evaluate());
 		
 	}

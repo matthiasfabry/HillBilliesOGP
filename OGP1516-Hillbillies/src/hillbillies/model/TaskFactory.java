@@ -20,7 +20,7 @@ import hillbillies.part3.programs.SourceLocation;
  * @version 1.0
  *
  */
-public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
+public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
 	
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
@@ -36,7 +36,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createAssignment(java.lang.String, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createAssignment(String variableName, Expression<?> value,
+	public Statement createAssignment(String variableName, Expression value,
 			SourceLocation sourceLocation) {
 		return new VarAssignment<>(variableName, value);
 	}
@@ -71,9 +71,9 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createPrint(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Statement createPrint(Expression<?> value,
+	public Statement createPrint(Expression value,
 			SourceLocation sourceLocation) {
-		return new PrintStatement<>(value);
+		return new PrintStatement(value);
 	}
 
 	/* (non-Javadoc)

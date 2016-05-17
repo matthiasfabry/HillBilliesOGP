@@ -21,7 +21,7 @@ public class SequenceStatement implements Statement {
 		this.statements = statements;
 	}
 	
-	private List<Statement> statements;
+	private final List<Statement> statements;
 	
 	public VarTracker getTracker(){
 		return this.tracker;
@@ -31,9 +31,27 @@ public class SequenceStatement implements Statement {
 	
 	
 	@Override
-	public void execute(Unit unit) throws ModelException{
+	public void execute(Unit unit, VarTracker tracker){
 		for (Statement statement : statements){
-			statement.execute(unit);
+			try {
+				statement.execute(unit, tracker);
+			} catch (BreakException e) {
+				// shoudn't happen
+			}
 		}
+	}
+
+	@Override
+	public boolean check(Unit unit, VarTracker tracker, Statement parent) {
+		for (Statement statement : statements){
+			try {
+				statement.check(unit, tracker, (SequenceStatement) this);
+			} catch (BreakException | ModelException e) {
+				return false;
+			}
+		}
+		return true;
+			
+			
 	}
 }

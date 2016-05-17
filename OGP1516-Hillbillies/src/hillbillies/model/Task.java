@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.*;
-import hillbillies.model.expression.Expression;
+import hillbillies.model.statement.BreakException;
 import hillbillies.model.statement.Statement;
+import hillbillies.model.statement.VarTracker;
 import ogp.framework.util.ModelException;
 
 /**
@@ -61,7 +62,7 @@ public class Task {
 		if (!canHaveAsPriority(priority))
 			priority = 0;
 		this.priority = priority;
-		this.addActivity(activity);
+		this.activities = activity;
 		location = new Coordinate(cube[1],cube[2],cube[3]);
 	}
 
@@ -291,10 +292,6 @@ public class Task {
 
 
 	// Activities //
-	
-	void addActivity(Statement activity){
-		activities.add(activity);
-	}
 
 	/**
 	 * Return the Activities of this Task.
@@ -302,7 +299,7 @@ public class Task {
 	@Basic
 	@Raw
 	@Immutable
-	public ArrayList<Statement> getActivities() {
+	public Statement getActivities() {
 		return this.activities;
 	}
 
@@ -322,7 +319,7 @@ public class Task {
 	/**
 	 * Variable registering the Activities of this Task.
 	 */
-	private ArrayList<Statement> activities = new ArrayList<>();
+	private Statement activities;
 
 	// Location //
 	
@@ -331,6 +328,29 @@ public class Task {
 	}
 	
 	private final Coordinate location;
+	
+	// Executing //
+	
+	public boolean check(){
+		try {
+			getActivities().check(getUnit(), new VarTracker(), null);
+		} catch (ModelException e) {
+			return false;
+		} catch (BreakException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void run(){
+		if (this.check()) {
+			try {
+				getActivities().execute(getUnit(), new VarTracker());
+			} catch (BreakException e) {
+				// shoudn't happen
+			} 
+		}
+	}
 	
 	// Overrides from object //
 

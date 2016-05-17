@@ -16,24 +16,40 @@ import ogp.framework.util.ModelException;
  */
 public class IfThenElse implements Statement {
 
-	public IfThenElse(Expression<Boolean> condition, Statement thenBody, Statement elseBody){
+	public IfThenElse(Expression<Boolean> condition, Statement thenBody,
+			Statement elseBody) {
 		this.condition = condition;
 		this.thenBody = thenBody;
 		this.elseBody = elseBody;
 	}
-	
+
 	private final Statement thenBody;
 	private final Statement elseBody;
 	private final Expression<Boolean> condition;
-	
+
 	@Override
-	public void execute(Unit unit) throws ModelException {
+	public void execute(Unit unit, VarTracker tracker) {
 		if (condition.evaluate())
-			thenBody.execute(unit);
+			try {
+				thenBody.execute(unit, tracker);
+			} catch (BreakException e) {
+				// shoudn't happen
+			}
 		else {
 			if (elseBody != null) {
-				elseBody.execute(unit);
+				try {
+					elseBody.execute(unit, tracker);
+				} catch (BreakException e) {
+					// shoudn't happen
+				}
 			}
-		}	
+		}
 	}
+
+	@Override
+	public boolean check(Unit unit, VarTracker tracker) {
+		return condition.check() && thenBody.check(unit, tracker)
+				&& elseBody.check(unit, tracker);
+	}
+
 }

@@ -24,13 +24,15 @@ public class WhileLoop implements Statement {
 	private final Expression<Boolean> condition;
 	private final Statement whileBody;
 	
-	private boolean buzy = true;
 
 	@Override
-	public void execute(Unit unit) throws ModelException {
-		while(condition.evaluate() && buzy)
-			whileBody.execute(unit);
-		
+	public void execute(Unit unit, VarTracker tracker) throws ModelException {
+		while(condition.evaluate())
+			try {
+				whileBody.execute(unit, tracker);
+			} catch (BreakException e) {
+				break;
+			}
 	}
 
 }

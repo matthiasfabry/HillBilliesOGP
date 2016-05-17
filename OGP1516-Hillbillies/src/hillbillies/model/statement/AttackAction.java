@@ -27,8 +27,22 @@ public class AttackAction implements Statement {
 	 * @see hillbillies.model.statement.ActionStatement#execute()
 	 */
 	@Override
-	public void execute(Unit unit) throws ModelException {
-		unit.attack(victim.evaluate());
+	public void execute(Unit unit, VarTracker tracker) {
+		try {
+			unit.attack(victim.evaluate());
+		} catch (ModelException e) {
+			// shoudn't happen
+		}
 	}
+
+	/* (non-Javadoc)
+	 * @see hillbillies.model.statement.Statement#check(hillbillies.model.Unit, hillbillies.model.statement.VarTracker)
+	 */
+	@Override
+	public boolean check(Unit unit, VarTracker tracker, Statement parent){
+		return unit.getFaction() != victim.evaluate().getFaction();
+	}
+	
+	
 
 }
