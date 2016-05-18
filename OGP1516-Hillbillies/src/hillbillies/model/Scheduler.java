@@ -44,6 +44,8 @@ public class Scheduler {
 	
 	/**
 	 * Return the Faction of this Scheduler.
+	 * 
+	 * @return | result = this.faction
 	 */
 	@Basic
 	@Raw

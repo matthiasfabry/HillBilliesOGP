@@ -18,7 +18,7 @@ import hillbillies.part3.programs.SourceLocation;
  * @version 1.0
  *
  */
-public class TaskFactory implements ITaskFactory<Expression, Statement, Task> {
+public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
 	
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
