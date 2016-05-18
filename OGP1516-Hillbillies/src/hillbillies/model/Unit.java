@@ -1108,26 +1108,27 @@ public class Unit {
 	 * 			the destination can't be reached
 	 * 		| ! this.getCoordinateQueue().contains(this.getInWorldPosition()))
 	 */
+
 	void findPath() throws ModelException {
 		if (this.getDestinationCube() != null) {
 			q.add(new Tuple<Coordinate>(this.getDestinationCube(), 0));
 			Queue<Tuple<Coordinate>> searched = new PriorityQueue<>();
 			LinkedList<Coordinate> coordinateQueue = new LinkedList<>();
 			int i = 0;
-			while (!coordinateQueue.contains(this.getInWorldPosition())
+			while (! coordinateQueue.contains(this.getInWorldPosition())
 					&& q.size() != 0) {
-				Tuple<Coordinate> next = q.poll();
+			Tuple<Coordinate> next = q.poll();
 				search(next);
 				searched.add(next);
-				if (!coordinateQueue.contains(next.getC())) {
-					coordinateQueue.add(next.getC());
+				if (!coordinateQueue.contains(next.getC().floor())) {
+					coordinateQueue.add(next.getC().floor());
 				}
 				System.out.println(i + "search");
 				i++;
 			}
 			if (coordinateQueue.contains(this.getInWorldPosition())) {
 				searched.add(
-						new Tuple<Coordinate>(this.getInWorldPosition(), i));
+						new Tuple<Coordinate>(this.getInWorldPosition(), i-1));
 				while (!this.getPath().getLast()
 						.equals(this.getDestinationCube().sum(centerCube()))) {
 					int counter = 10000;
@@ -1146,15 +1147,16 @@ public class Unit {
 							}
 						}
 					}
-					addToPath(next.sum(centerCube()));
+					pathExtension(next.sum(centerCube()));
 				}
 			} else
 				throw new ModelException("not able to reach destination!");
 		} else
 			throw new ModelException("No destination!");
 	}
+	
 	/**
-	 * Method that adds all accessible cubes together with a cost starting from 
+	 * Method that adds all accessible cubes to q, together with a cost starting from 
 	 * the given cube. 
 	 * @param coordinate
 	 * 			the coordinate from which the Unit wants to move to another coordinate.
@@ -1202,6 +1204,23 @@ public class Unit {
 		} while (decending.getV() >= 0 && !alreadyinQ);
 		return alreadyinQ;
 	}
+	
+	/**
+	 * Method that checks whether the given coordinate is already present in
+	 * a tuple in the Tuple queue q.
+	 * @param coordinate
+	 * 			the coordinate to check
+	 * @return
+	 */
+	boolean containsCoordinate(Coordinate coordinate){
+		boolean containsCoordinate = false;
+		for (Tuple<Coordinate> tuple: q){
+			if (tuple.getC().equals(coordinate))
+				containsCoordinate = true;
+		}
+		return containsCoordinate;
+	}
+	
 	/**
 	 * Checks if the given cube neighbours any solid cube.
 	 * @param cube

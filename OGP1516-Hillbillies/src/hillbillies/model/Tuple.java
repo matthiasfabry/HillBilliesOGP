@@ -32,7 +32,7 @@ public class Tuple<C> implements Comparable<Tuple<C>> {
 	public int getV() {
 		return this.v;
 	}
-
+	
 	// Overrides from Object //
 
 	@Override
