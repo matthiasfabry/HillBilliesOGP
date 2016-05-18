@@ -47,9 +47,10 @@ public class IfThenElse implements Statement {
 	}
 
 	@Override
-	public boolean check(Unit unit, VarTracker tracker) {
-		return condition.check() && thenBody.check(unit, tracker)
-				&& elseBody.check(unit, tracker);
+	public boolean check(Unit unit, VarTracker tracker, Statement parent)
+			throws ModelException, BreakException {
+		return condition.check() && thenBody.check(unit, tracker, parent)
+				&& elseBody.check(unit, tracker, parent);
 	}
 
 }

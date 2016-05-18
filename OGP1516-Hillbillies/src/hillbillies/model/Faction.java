@@ -39,11 +39,6 @@ public class Faction {
 	public Faction(String name, World world) {
 		this.world = world;
 		this.name = name;
-		try {
-			this.setScheduler(new Scheduler(this));
-		} catch (ModelException e) {
-			// shouldn't happen
-		}
 	}
 
 	// Name //
@@ -250,11 +245,6 @@ public class Faction {
 
 	// Scheduler //
 
-	void setScheduler(Scheduler scheduler) {
-		if (canHaveAsScheduler(scheduler))
-			this.scheduler = scheduler;
-	}
-
 	/**
 	 * Return the Scheduler of this Faction.
 	 */
@@ -266,22 +256,9 @@ public class Faction {
 	}
 
 	/**
-	 * Check whether this Faction can have the given Scheduler as its Scheduler.
-	 *  
-	 * @param  scheduler
-	 *         The Scheduler to check.
-	 * @return 
-	 *       | result == 
-	*/
-	@Raw
-	public boolean canHaveAsScheduler(Scheduler scheduler) {
-		return false;
-	}
-
-	/**
 	 * Variable registering the Scheduler of this Faction.
 	 */
-	private Scheduler scheduler;
+	private final Scheduler scheduler = new Scheduler(this);
 
 	// Overrides from Object //
 

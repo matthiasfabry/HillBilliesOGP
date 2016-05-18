@@ -22,16 +22,23 @@ public class MoveAction implements Statement {
 	}
 	private final Expression<Coordinate> position;
 
-	
-	/* (non-Javadoc)
-	 * @see hillbillies.model.statement.ActionStatement#execute()
-	 */
+
 	@Override
-	public void execute(Unit unit, VarTracker tracker) throws ModelException {
+	public void execute(Unit unit, VarTracker tracker) {
 		if (unit.isValidPosition(position.evaluate())){
-			unit.moveTo((int) position.evaluate().getX(), (int) position.evaluate().getY(),
-					(int) position.evaluate().getZ());
+			try {
+				unit.moveTo((int) position.evaluate().getX(), (int) position.evaluate().getY(),
+						(int) position.evaluate().getZ());
+			} catch (ModelException e) {
+				// shoudn't happen
+			}
 		}
 	}
 
+	@Override
+	public boolean check(Unit unit, VarTracker tracker, Statement parent)
+			throws ModelException, BreakException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

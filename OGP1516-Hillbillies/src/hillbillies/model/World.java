@@ -282,6 +282,20 @@ public class World {
 	private final Grid grid;
 
 	// Faction //
+	
+	/**
+	 * method that chooses a name for a new faction
+	 * 
+	 * @param i
+	 * @return names[i]
+	 */
+	public static String choose(int i){
+		return names[i];
+	}
+	/**
+	 * Possible names for Hilbillie Factions
+	 */
+	private static String[] names = {"Dwarves","Elves","Men","Wizards","Orcs"};
 
 	/**
 	 * Return the set of Factions of this World.
@@ -299,8 +313,8 @@ public class World {
 	 * @throws ModelException 
 	 */
 	public Faction getFactiontoJoin() {
-		if (this.getFactionList().size() < 5) {
-			Faction theNew = new Faction("Dwarfs", this);
+		if (this.getNbFactions() < 5) {
+			Faction theNew = new Faction(World.choose(this.getNbFactions()+1), this);
 			this.addFaction(theNew);
 			return theNew;
 		} else {

@@ -34,9 +34,7 @@ public class Scheduler {
 	 *         This new Scheduler cannot have the given Faction as its Faction.
 	 *       | ! canHaveAsFaction(this.getFaction())
 	 */
-	public Scheduler(Faction faction) throws ModelException {
-		if (!canHaveAsFaction(faction))
-			throw new ModelException();
+	Scheduler(Faction faction){
 		this.faction = faction;
 	}
 
@@ -52,19 +50,6 @@ public class Scheduler {
 	@Immutable
 	public Faction getFaction() {
 		return this.faction;
-	}
-
-	/**
-	 * Check whether this Scheduler can have the given Faction as its Faction.
-	 *  
-	 * @param  faction
-	 *         The Faction to check.
-	 * @return 
-	 *       | result == faction != null
-	*/
-	@Raw
-	public boolean canHaveAsFaction(Faction faction) {
-		return faction != null;
 	}
 
 	/**
@@ -88,7 +73,7 @@ public class Scheduler {
 	@Basic
 	@Raw
 	public Task getTaskAt(int index) throws IndexOutOfBoundsException {
-		return Tasks.get(index - 1);
+		return tasks.get(index - 1);
 	}
 
 	/**
@@ -97,7 +82,7 @@ public class Scheduler {
 	@Basic
 	@Raw
 	public int getNbTasks() {
-		return Tasks.size();
+		return tasks.size();
 	}
 
 	/**
@@ -183,7 +168,7 @@ public class Scheduler {
 	 *       |   getTaskAt(I) == Task
 	 */
 	public boolean hasAsTask(@Raw Task Task) {
-		return Tasks.contains(Task);
+		return tasks.contains(Task);
 	}
 
 	/**
@@ -205,7 +190,7 @@ public class Scheduler {
 	public void addTask(@Raw Task Task) {
 		assert (Task != null) && (Task.hasAsScheduler(this))
 				&& (!this.hasAsTask(Task));
-		Tasks.add(Task);
+		tasks.add(Task);
 	}
 
 	void addTasks(@Raw Task...tasks){
@@ -253,7 +238,7 @@ public class Scheduler {
 	public void removeTask(Task Task) {
 		assert (Task != null) && this.hasAsTask(Task)
 				&& (!Task.hasAsScheduler(this));
-		Tasks.remove(Task);
+		tasks.remove(Task);
 	}
 
 	/**
@@ -273,5 +258,5 @@ public class Scheduler {
 	 *       |   ( (I == J) ||
 	 *       |     (Tasks.get(I) != Tasks.get(J))
 	 */
-	private final ArrayList<Task> Tasks = new ArrayList<Task>();
+	private final ArrayList<Task> tasks = new ArrayList<Task>();
 }
