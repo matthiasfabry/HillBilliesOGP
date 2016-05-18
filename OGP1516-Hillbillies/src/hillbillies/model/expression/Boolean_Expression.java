@@ -10,14 +10,14 @@ package hillbillies.model.expression;
 */
 public class Boolean_Expression implements Expression<Boolean> {
 
-	public Boolean_Expression(Boolean condition) {
+	public Boolean_Expression(boolean condition) {
 		value = condition;
 	}
-	private final boolean value;
+	private final Boolean value;
 	
 	@Override
 	public Boolean evaluate() {
 		return this.value;
 	}
-	
+
 }
