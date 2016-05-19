@@ -21,8 +21,10 @@ public class NotExpression implements Expression<Boolean> {
 
 	@Override
 	public boolean check() throws FormException{
-		// TODO Auto-generated method stub
-		return false;
+		if (!(value.evaluate() instanceof Boolean))
+			throw new FormException();
+		else 
+			return true;
 	}
 
 }

@@ -25,7 +25,10 @@ public class AndExpression implements Expression<Boolean> {
 
 	@Override
 	public boolean check() throws FormException{
-		return false;
+		if (!(first.evaluate() instanceof Boolean) || (!(second.evaluate() instanceof Boolean)))
+			throw new FormException();
+		else 
+			return true;
 	}
 
 }

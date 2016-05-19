@@ -28,8 +28,10 @@ public class SelectedExpression extends PositionExpression<Coordinate> {
 
 	@Override
 	public boolean check() throws FormException{
-		// TODO Auto-generated method stub
-		return false;
+		if (!(coordinate instanceof Coordinate))
+			throw new FormException();
+		else
+			return true;
 	}
 	
 }

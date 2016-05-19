@@ -22,8 +22,10 @@ public class Boolean_Expression implements Expression<Boolean> {
 
 	@Override
 	public boolean check() throws FormException{
-		// TODO Auto-generated method stub
-		return false;
+		if (!(value instanceof Boolean))
+			throw new FormException();
+		else 
+			return true;
 	}
 
 }

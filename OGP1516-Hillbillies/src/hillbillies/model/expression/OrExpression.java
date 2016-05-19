@@ -25,8 +25,10 @@ public class OrExpression implements Expression<Boolean> {
 
 	@Override
 	public boolean check() throws FormException{
-		// TODO Auto-generated method stub
-		return false;
+		if (!(first.evaluate() instanceof Boolean) || (!(second.evaluate() instanceof Boolean)))
+			throw new FormException();
+		else 
+			return true;
 	}
 
 }

@@ -23,7 +23,6 @@ public class SpecifiedExpression extends PositionExpression<Coordinate> {
 
 	@Override
 	public boolean check() throws FormException{
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }
