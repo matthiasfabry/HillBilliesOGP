@@ -15,8 +15,10 @@ public class Position_ofExpression extends PositionExpression<Coordinate> {
 
 	public Position_ofExpression(Unit unit) {
 		this.position = unit.getInWorldPosition();
+		this.thisUnit = unit;
 	}
 	private final Coordinate position;
+	private final Unit thisUnit;
 	
 	@Override
 	public Coordinate evaluate() {
@@ -24,8 +26,10 @@ public class Position_ofExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean check() throws FormException{
+		if (! (thisUnit instanceof Unit))
+			throw new FormException();
+		else 
+			return true;
 	}
 }

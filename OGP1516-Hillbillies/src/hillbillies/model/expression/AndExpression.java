@@ -24,8 +24,7 @@ public class AndExpression implements Expression<Boolean> {
 
 
 	@Override
-	public boolean check() {
-		// TODO Auto-generated method stub
+	public boolean check() throws FormException{
 		return false;
 	}
 

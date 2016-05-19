@@ -14,7 +14,7 @@ public interface Expression<T> {
 	
 	public T evaluate();
 	
-	boolean check();
+	boolean check() throws FormException;
 
 	
 }

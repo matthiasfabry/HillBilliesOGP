@@ -13,5 +13,5 @@ public abstract class UnitExpression<T> implements Expression<Unit> {
 
 	public abstract Unit evaluate();
 	
-	public abstract boolean check();
+	public abstract boolean check() throws FormException;
 }

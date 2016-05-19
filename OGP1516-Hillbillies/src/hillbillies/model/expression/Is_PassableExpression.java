@@ -17,9 +17,11 @@ public class Is_PassableExpression implements Expression<Boolean> {
 	public Is_PassableExpression(Unit unit, Cube cube){
 		this.coordinate = cube.getPlaceInGrid();
 		this.world = unit.getWorld();
+		this.thisCube = cube;
 	}
 	private final Coordinate coordinate;
 	private final World world;
+	private final Cube thisCube;
 	
 	@Override
 	public Boolean evaluate() {
@@ -27,8 +29,10 @@ public class Is_PassableExpression implements Expression<Boolean> {
 	}
 
 	@Override
-	public boolean check() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean check() throws FormException{
+		if (! (thisCube instanceof Cube))
+			throw new FormException();
+		else 
+			return true;
 	}
 }

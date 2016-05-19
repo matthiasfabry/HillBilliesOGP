@@ -14,8 +14,10 @@ public class HereExpression extends PositionExpression<Coordinate> {
 
 	public HereExpression(Unit unit) {
 		this.position = unit.getInWorldPosition();
+		this.unit = unit;
 	}
 	private final Coordinate position;
+	private final Unit unit;
 	
 	@Override
 	public Coordinate evaluate() {
@@ -23,9 +25,11 @@ public class HereExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean check() throws FormException{
+		if (! (unit instanceof Unit))
+			throw new FormException();
+		else 
+			return true;
 	}
 
 }

@@ -53,7 +53,7 @@ public class BoulderExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() {
+	public boolean check() throws FormException{
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -27,8 +27,10 @@ public class Is_FriendExpression implements Expression<Boolean> {
 	}
 
 	@Override
-	public boolean check() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean check() throws FormException{
+		if (! (thisUnit instanceof Unit) || (! (otherUnit instanceof Unit)))
+			throw new FormException();
+		else 
+			return true;
 	}
 }
