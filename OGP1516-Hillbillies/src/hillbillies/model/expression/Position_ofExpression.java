@@ -22,4 +22,10 @@ public class Position_ofExpression extends PositionExpression<Coordinate> {
 	public Coordinate evaluate() {
 		return this.position;
 	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

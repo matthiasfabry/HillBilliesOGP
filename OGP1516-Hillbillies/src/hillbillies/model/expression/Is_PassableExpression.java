@@ -25,4 +25,10 @@ public class Is_PassableExpression implements Expression<Boolean> {
 	public Boolean evaluate() {
 		return (world.getTerrainAt(coordinate).isPassable());
 	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

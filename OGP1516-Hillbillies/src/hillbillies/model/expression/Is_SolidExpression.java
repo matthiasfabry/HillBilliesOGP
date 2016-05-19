@@ -26,4 +26,10 @@ public class Is_SolidExpression implements Expression<Boolean> {
 		return (world.getTerrainAt(coordinate).isImpassable());
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

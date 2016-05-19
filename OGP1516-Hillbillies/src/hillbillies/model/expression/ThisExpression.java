@@ -21,4 +21,10 @@ public class ThisExpression extends UnitExpression<Unit> {
 		return thisUnit;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

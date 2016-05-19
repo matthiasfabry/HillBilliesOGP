@@ -53,4 +53,10 @@ public class LogExpression extends PositionExpression<Coordinate> {
 		return place;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

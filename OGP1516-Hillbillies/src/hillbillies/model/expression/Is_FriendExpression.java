@@ -25,4 +25,10 @@ public class Is_FriendExpression implements Expression<Boolean> {
 		else 
 			return false;
 	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

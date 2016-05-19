@@ -12,4 +12,6 @@ import hillbillies.model.Unit;
 public abstract class UnitExpression<T> implements Expression<Unit> {
 
 	public abstract Unit evaluate();
+	
+	public abstract boolean check();
 }

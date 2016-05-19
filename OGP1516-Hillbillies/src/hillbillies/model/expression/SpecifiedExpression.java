@@ -20,4 +20,10 @@ public class SpecifiedExpression extends PositionExpression<Coordinate> {
 	public Coordinate evaluate() {
 		return specifiedPosition;
 	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

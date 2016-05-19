@@ -33,4 +33,10 @@ public class BracketExpression implements Expression<Unit> {
 		return searchedUnit;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

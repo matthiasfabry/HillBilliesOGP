@@ -20,5 +20,10 @@ public class Is_AliveExpression implements Expression<Boolean> {
 	public Boolean evaluate() {
 		return (thisUnit.isDead());
 	}
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

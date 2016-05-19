@@ -13,5 +13,7 @@ public abstract class PositionExpression<T> implements Expression<Coordinate> {
 
 	public abstract Coordinate evaluate();
 	
+	public abstract boolean check();
+	
 }
 

@@ -19,4 +19,10 @@ public class NotExpression implements Expression<Boolean> {
 		return (! value.evaluate());
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -22,4 +22,10 @@ public class HereExpression extends PositionExpression<Coordinate> {
 		return this.position;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

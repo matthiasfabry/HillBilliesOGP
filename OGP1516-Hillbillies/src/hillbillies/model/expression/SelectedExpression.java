@@ -25,5 +25,11 @@ public class SelectedExpression extends PositionExpression<Coordinate> {
 	public Coordinate evaluate() {
 		return coordinate;
 	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

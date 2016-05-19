@@ -44,4 +44,10 @@ public class Next_toExpression extends PositionExpression<Coordinate> {
 		
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

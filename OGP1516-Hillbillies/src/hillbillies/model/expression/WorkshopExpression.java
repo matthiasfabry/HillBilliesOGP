@@ -51,5 +51,11 @@ public class WorkshopExpression extends PositionExpression<Coordinate> {
 		}	
 		return someWorkshop;
 	}
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

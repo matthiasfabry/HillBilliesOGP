@@ -26,4 +26,10 @@ public class Is_EnemyExpression implements Expression<Boolean> {
 			return false;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

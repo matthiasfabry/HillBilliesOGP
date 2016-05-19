@@ -22,4 +22,11 @@ public class AndExpression implements Expression<Boolean> {
 		return (first.evaluate() && second.evaluate());
 	}
 
+
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

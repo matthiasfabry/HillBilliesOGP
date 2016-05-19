@@ -13,6 +13,8 @@ package hillbillies.model.expression;
 public interface Expression<T> {
 	
 	public T evaluate();
+	
+	boolean check();
 
 	
 }

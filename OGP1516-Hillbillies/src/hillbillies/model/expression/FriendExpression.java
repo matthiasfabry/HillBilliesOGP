@@ -50,4 +50,10 @@ public class FriendExpression extends UnitExpression<Unit> {
 		return someUnit;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

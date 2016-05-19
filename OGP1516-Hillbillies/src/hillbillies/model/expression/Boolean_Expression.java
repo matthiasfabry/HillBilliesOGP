@@ -20,4 +20,10 @@ public class Boolean_Expression implements Expression<Boolean> {
 		return this.value;
 	}
 
+	@Override
+	public boolean check() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
