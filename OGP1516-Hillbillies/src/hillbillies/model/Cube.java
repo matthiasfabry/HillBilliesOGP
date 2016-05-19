@@ -41,7 +41,7 @@ public class Cube {
 	 *         This new Cube cannot have the given World as its World.
 	 *       | ! canHaveAsWorld(this.getWorld())
 	 */
-	Cube(Coordinate coordinate, Grid grid) {
+	public Cube(Coordinate coordinate, Grid grid) {
 		this.position = coordinate;
 		this.grid = grid;
 	}
@@ -83,7 +83,7 @@ public class Cube {
 	 *       | ! isValidTerrain(getTerrain())
 	 */
 	@Raw
-	void setTerrain(Terrain terrain) throws ModelException {
+	public void setTerrain(Terrain terrain) throws ModelException {
 		if (!isValidTerrain(terrain))
 			throw new ModelException();
 		this.terrain = terrain;
@@ -226,7 +226,7 @@ public class Cube {
 	 * @param gameObject
 	 * 			the object that needs to be added
 	 */
-	void addGameObject(GameObject gameObject) {
+	public void addGameObject(GameObject gameObject) {
 		this.getGameObjects().offer(gameObject);
 	}
 

@@ -5,10 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import hillbillies.model.Boulder;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Cube;
 import hillbillies.model.Faction;
+import hillbillies.model.Grid;
+import hillbillies.model.Log;
 import hillbillies.model.TaskFactory;
+import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.model.expression.Boolean_Expression;
@@ -30,6 +34,11 @@ public class TaskFactoryTest {
 	private Coordinate theCoordinate;
 	private Cube cube1;
 	private Cube cube2;
+	private Cube cube3;
+	private Cube cube4;
+	private Log theLog;
+	private Boulder theBoulder;
+	
 	
 	/**
 	 * @throws ModelException 
@@ -48,6 +57,18 @@ public class TaskFactoryTest {
 		farfriendunit = new Unit("TestUnit4", new int[]{9, 3, 0}, 50, 50, 50, 50,
 				false, theWorld, theFaction1);
 		theCoordinate = new Coordinate(1,1,0);
+		cube1 = new Cube(new Coordinate(1,1,1), theWorld.getGrid());
+		cube2 = new Cube(new Coordinate(1,0,0), theWorld.getGrid());
+		cube3 = new Cube(new Coordinate(0,0,1), theWorld.getGrid());
+		cube4 = new Cube(new Coordinate(1,0,1), theWorld.getGrid());
+		cube1.setTerrain(Terrain.AIR);
+		cube2.setTerrain(Terrain.WORKSHOP);
+		cube3.setTerrain(Terrain.ROCK);
+		cube4.setTerrain(Terrain.TREE);
+		theLog =  new Log(new Coordinate(1,1,1), theWorld);
+		theBoulder = new Boulder(new Coordinate(1,0,0), theWorld);
+		cube1.addGameObject(theLog);
+		cube2.addGameObject(theBoulder);
 	}
 
 	
@@ -59,12 +80,18 @@ public class TaskFactoryTest {
 
 	@Test
 	public void testCreateIsSolid() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createIsSolid(unit, cube3, source).evaluate());
+		assertEquals(true, TaskFactory.createIsSolid(unit, cube4, source).evaluate());
+		assertEquals(false, TaskFactory.createIsSolid(unit, cube1, source).evaluate());
+		assertEquals(false, TaskFactory.createIsSolid(unit, cube2, source).evaluate());
 	}
 
 	@Test
 	public void testCreateIsPassable() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createIsPassable(unit, cube1, source).evaluate());
+		assertEquals(true, TaskFactory.createIsPassable(unit, cube2, source).evaluate());
+		assertEquals(false, TaskFactory.createIsPassable(unit, cube3, source).evaluate());
+		assertEquals(false, TaskFactory.createIsPassable(unit, cube4, source).evaluate());
 	}
 
 	@Test
@@ -122,21 +149,23 @@ public class TaskFactoryTest {
 	@Test
 	public void testCreateHerePosition() {
 		assertEquals(theCoordinate, TaskFactory.createHerePosition(unit, source).evaluate());
+		assertEquals(TaskFactory.createPositionOf(unit, source).evaluate(), 
+				TaskFactory.createHerePosition(unit,source).evaluate());
 	}
 
 	@Test
 	public void testCreateLogPosition() {
-		fail("Not yet implemented");
+		assertEquals(cube1.getPlaceInGrid(), TaskFactory.createLogPosition(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateBoulderPosition() {
-		fail("Not yet implemented");
+		assertEquals(cube2.getPlaceInGrid(), TaskFactory.createBoulderPosition(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateWorkshopPosition() {
-		fail("Not yet implemented");
+		assertEquals(cube2.getPlaceInGrid(), TaskFactory.createWorkshopPosition(unit, source).evaluate()); 
 	}
 
 	@Test
@@ -159,21 +188,26 @@ public class TaskFactoryTest {
 	@Test
 	public void testCreateThis() {
 		assertEquals(unit, TaskFactory.createThis(unit, source).evaluate());
+		assertEquals(farfriendunit, TaskFactory.createThis(farfriendunit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateFriend() {
 		assertEquals(closefriendunit, TaskFactory.createFriend(unit, source).evaluate());
+		assertEquals(unit, TaskFactory.createFriend(closefriendunit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateEnemy() {
 		assertEquals(closeenemyunit, TaskFactory.createEnemy(unit, source).evaluate());
+		assertEquals(unit, TaskFactory.createEnemy(closeenemyunit, source).evaluate());
+		
 	}
 
 	@Test
 	public void testCreateAny() {
 		assertEquals(closefriendunit, TaskFactory.createAny(unit, source).evaluate());
+		assertEquals(unit, TaskFactory.createAny(closefriendunit, source).evaluate());
 	}
 
 	@Test
@@ -188,7 +222,9 @@ public class TaskFactoryTest {
 
 	@Test
 	public void testCreatePositionOf() {
-		assertEquals(new Coordinate(1,1,0), TaskFactory.createPositionOf(unit, source).evaluate());
+		assertEquals(theCoordinate, TaskFactory.createPositionOf(unit, source).evaluate());
+		assertEquals(new Coordinate(9,3,0), TaskFactory.createPositionOf(farenemyunit, source).evaluate());
+	
 	}
 
 }
