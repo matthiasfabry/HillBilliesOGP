@@ -123,36 +123,34 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createReadVariable(java.lang.String, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createReadVariable(Expression unit, String variableName,
+	public Expression createReadVariable(Unit unit, String variableName,
 			SourceLocation sourceLocation) {
-		return new BracketExpression((Unit) unit.evaluate(), variableName);
+		return new BracketExpression(unit, variableName);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsSolid(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsSolid(Expression position, Expression unit,
+	public Expression createIsSolid(Unit unit, Cube cube,
 			SourceLocation sourceLocation) {
-		return new Is_SolidExpression((Unit) unit.evaluate(),
-				(Coordinate) position.evaluate());
+		return new Is_SolidExpression(unit, cube);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsPassable(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsPassable(Expression position, Expression unit,
+	public Expression createIsPassable(Unit unit, Cube cube,
 			SourceLocation sourceLocation) {
-		return new Is_PassableExpression((Unit) unit.evaluate(),
-				(Coordinate) position.evaluate());
+		return new Is_PassableExpression(unit, cube);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsFriend(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsFriend(Expression unit,
+	public Expression createIsFriend(Unit unit,
 			SourceLocation sourceLocation) {
 		return new Expression<Unit>() {
 
@@ -168,7 +166,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsEnemy(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression<Unit> createIsEnemy(Expression unit,
+	public Expression<Unit> createIsEnemy(Unit unit,
 			SourceLocation sourceLocation) {
 		return new Expression<Unit>() {
 
@@ -184,18 +182,18 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsAlive(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsAlive(Expression unit,
+	public Expression createIsAlive(Unit unit,
 			SourceLocation sourceLocation) {
-		return new Is_AliveExpression((Unit) unit.evaluate());
+		return new Is_AliveExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createCarriesItem(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createCarriesItem(Expression unit,
+	public Expression createCarriesItem(Unit unit,
 			SourceLocation sourceLocation) {
-		return new Carries_Item((Unit) unit.evaluate());
+		return new Carries_Item(unit);
 	}
 
 	/* (non-Javadoc)
@@ -229,50 +227,49 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createHerePosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createHerePosition(Expression unit, SourceLocation sourceLocation) {
-		return new HereExpression((Unit) unit.evaluate());
+	public Expression createHerePosition(Unit unit, SourceLocation sourceLocation) {
+		return new HereExpression(unit);
 	}
 	
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createLogPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createLogPosition(Expression unit, SourceLocation sourceLocation) {
-		return new LogExpression((Unit) unit.evaluate());
+	public Expression createLogPosition(Unit unit, SourceLocation sourceLocation) {
+		return new LogExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createBoulderPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createBoulderPosition(Expression unit, SourceLocation sourceLocation) {
-		return new BoulderExpression((Unit) unit);
+	public Expression createBoulderPosition(Unit unit, SourceLocation sourceLocation) {
+		return new BoulderExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createWorkshopPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createWorkshopPosition(Expression unit, SourceLocation sourceLocation) {
-		return new WorkshopExpression((Unit) unit.evaluate());
+	public Expression createWorkshopPosition(Unit unit, SourceLocation sourceLocation) {
+		return new WorkshopExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createSelectedPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createSelectedPosition(Expression unit, Expression coordinate, SourceLocation sourceLocation) {
-		return new SelectedExpression((Unit) unit.evaluate(), (Coordinate) coordinate.evaluate());
+	public Expression createSelectedPosition(Unit unit, Cube cube, SourceLocation sourceLocation) {
+		return new SelectedExpression(unit, cube);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createNextToPosition(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createNextToPosition(Expression unit, Expression position,
+	public Expression createNextToPosition(Unit unit, Cube cube,
 			SourceLocation sourceLocation) {
-		return new Next_toExpression( (Unit) unit.evaluate(), 
-				(Coordinate) position.evaluate());
+		return new Next_toExpression(unit, cube);
 	}
 
 	/* (non-Javadoc)
@@ -288,32 +285,32 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createThis(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createThis(Expression unit,SourceLocation sourceLocation) {
-		return new ThisExpression((Unit) unit.evaluate());
+	public Expression createThis(Unit unit,SourceLocation sourceLocation) {
+		return new ThisExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createFriend(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createFriend(Expression unit,SourceLocation sourceLocation) {
-		return new FriendExpression((Unit) unit.evaluate());
+	public Expression createFriend(Unit unit,SourceLocation sourceLocation) {
+		return new FriendExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createEnemy(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createEnemy(Expression unit,SourceLocation sourceLocation) {
-		return new EnemyExpression((Unit) unit.evaluate());
+	public Expression createEnemy(Unit unit,SourceLocation sourceLocation) {
+		return new EnemyExpression(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createAny(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createAny(Expression unit,SourceLocation sourceLocation) {
-		return new AnyExpression((Unit) unit.evaluate());
+	public Expression createAny(Unit unit,SourceLocation sourceLocation) {
+		return new AnyExpression(unit);
 	}
 
 	/* (non-Javadoc)
@@ -336,9 +333,9 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createPositionOf(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createPositionOf(Expression unit,
+	public Expression createPositionOf(Unit unit,
 			SourceLocation sourceLocation) {
-		return new Position_ofExpression((Unit) unit.evaluate());
+		return new Position_ofExpression(unit);
 	}
 
 }

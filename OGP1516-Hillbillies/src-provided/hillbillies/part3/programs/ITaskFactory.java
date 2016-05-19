@@ -2,6 +2,8 @@ package hillbillies.part3.programs;
 
 import java.util.List;
 
+import hillbillies.model.Cube;
+import hillbillies.model.Unit;
 import hillbillies.tests.facade.Part3TestPartial;
 
 /**
@@ -177,7 +179,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param variableName
 	 *            The name of the variable to read.
 	 */
-	public E createReadVariable(E unit, String variableName, SourceLocation sourceLocation);
+	public E createReadVariable(Unit unit, String variableName, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given position
@@ -186,7 +188,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param position
 	 *            The position expression
 	 */
-	public E createIsSolid(E unit, E position, SourceLocation sourceLocation);
+	public E createIsSolid(Unit unit, Cube position, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given position
@@ -195,7 +197,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param position
 	 *            The position expression
 	 */
-	public E createIsPassable(E unit, E position, SourceLocation sourceLocation);
+	public E createIsPassable(Unit unit, Cube position, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates
@@ -204,7 +206,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param unit
 	 *            The unit expression
 	 */
-	public E createIsFriend(E unit, SourceLocation sourceLocation);
+	public E createIsFriend(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates
@@ -213,7 +215,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param unit
 	 *            The unit expression
 	 */
-	public E createIsEnemy(E unit, SourceLocation sourceLocation);
+	public E createIsEnemy(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates
@@ -222,7 +224,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param unit
 	 *            The unit expression
 	 */
-	public E createIsAlive(E unit, SourceLocation sourceLocation);
+	public E createIsAlive(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates
@@ -231,7 +233,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param unit
 	 *            The unit expression
 	 */
-	public E createCarriesItem(E unit, SourceLocation sourceLocation);
+	public E createCarriesItem(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given expression
@@ -263,7 +265,7 @@ public interface ITaskFactory<E, S, T> {
 	 * Create an expression that evaluates to the current position of the unit
 	 * that is executing the task.
 	 */
-	public E createHerePosition(E unit, SourceLocation sourceLocation);
+	public E createHerePosition(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to the position of a log.
@@ -271,7 +273,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @note for groups of two students, this needs to be the log closest to the
 	 *       unit that is executing the task.
 	 */
-	public E createLogPosition(E unit, SourceLocation sourceLocation);
+	public E createLogPosition(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to the position of a boulder.
@@ -279,7 +281,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @note for groups of two students, this needs to be the boulder closest to
 	 *       the unit that is executing the task.
 	 */
-	public E createBoulderPosition(E unit, SourceLocation sourceLocation);
+	public E createBoulderPosition(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to the position of a workshop.
@@ -287,7 +289,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @note for groups of two students, this needs to be the workshop closest
 	 *       to the unit that is executing the task.
 	 */
-	public E createWorkshopPosition(E unit, SourceLocation sourceLocation);
+	public E createWorkshopPosition(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to the position selected by the user
@@ -295,7 +297,7 @@ public interface ITaskFactory<E, S, T> {
 	 * 
 	 * @note Students working alone may return null.
 	 */
-	public E createSelectedPosition(E unit, E coorinate, SourceLocation sourceLocation);
+	public E createSelectedPosition(Unit unit, Cube coorinate, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to a position next to the given
@@ -304,14 +306,14 @@ public interface ITaskFactory<E, S, T> {
 	 * @param position
 	 * 
 	 */
-	public E createNextToPosition(E unit, E position, SourceLocation sourceLocation);
+	public E createNextToPosition(Unit unit, Cube position, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to the position of the given unit.
 	 * 
 	 * @param unit
 	 */
-	public E createPositionOf(E unit, SourceLocation sourceLocation);
+	public E createPositionOf(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to a static position with a given
@@ -327,24 +329,24 @@ public interface ITaskFactory<E, S, T> {
 	 * Create an expression that evaluates to the unit that is currently
 	 * executing the task.
 	 */
-	public E createThis(E unit, SourceLocation sourceLocation);
+	public E createThis(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to a unit that is part of the same
 	 * faction as the unit currently executing the task.
 	 */
-	public E createFriend(E unit, SourceLocation sourceLocation);
+	public E createFriend(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to a unit that is not part of the
 	 * same faction as the unit currently executing the task.
 	 */
-	public E createEnemy(E unit, SourceLocation sourceLocation);
+	public E createEnemy(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to any unit (other than this).
 	 */
-	public E createAny(E unit, SourceLocation sourceLocation);
+	public E createAny(Unit unit, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true.

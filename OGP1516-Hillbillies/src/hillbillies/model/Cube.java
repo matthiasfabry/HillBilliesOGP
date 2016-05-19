@@ -250,7 +250,7 @@ public class Cube {
 	 * @return	the position
 	 * 		|	this.position
 	 */
-	Coordinate getPlaceInGrid() {
+	public Coordinate getPlaceInGrid() {
 		return this.position;
 	}
 	/**

@@ -1,6 +1,7 @@
 package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Cube;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 
@@ -13,9 +14,9 @@ import hillbillies.model.World;
 */
 public class SelectedExpression extends PositionExpression<Coordinate> {
 
-	public SelectedExpression(Unit unit, Coordinate thisCoordinate){
+	public SelectedExpression(Unit unit, Cube cube){
 		this.world = unit.getWorld();
-		this.coordinate = thisCoordinate;
+		this.coordinate = cube.getPlaceInGrid();
 	}
 	private final World world;
 	private final Coordinate coordinate;
