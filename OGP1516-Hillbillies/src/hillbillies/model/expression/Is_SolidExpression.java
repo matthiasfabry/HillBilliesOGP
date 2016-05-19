@@ -1,6 +1,7 @@
 package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Cube;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 
@@ -13,8 +14,8 @@ import hillbillies.model.World;
 */
 public class Is_SolidExpression implements Expression<Boolean> {
 
-	public Is_SolidExpression(Unit unit, Coordinate thiscoordinate){
-		this.coordinate = thiscoordinate;
+	public Is_SolidExpression(Unit unit, Cube cube){
+		this.coordinate = cube.getPlaceInGrid();
 		this.world = unit.getWorld();
 	}
 	private final Coordinate coordinate;
