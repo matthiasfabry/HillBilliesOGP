@@ -17,8 +17,8 @@ import hillbillies.model.World;
 */
 public class Next_toExpression extends PositionExpression<Coordinate> {
 
-	public Next_toExpression(Unit unit, Cube cube){
-		this.position = cube.getPlaceInGrid();
+	public Next_toExpression(Unit unit, Coordinate place){
+		this.position = place;
 		this.world = unit.getWorld();
 		this.nexttoposition = determineNext_toPosition();
 	}

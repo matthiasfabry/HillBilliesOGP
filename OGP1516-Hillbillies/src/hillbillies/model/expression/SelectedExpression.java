@@ -14,9 +14,9 @@ import hillbillies.model.World;
 */
 public class SelectedExpression extends PositionExpression<Coordinate> {
 
-	public SelectedExpression(Unit unit, Cube cube){
+	public SelectedExpression(Unit unit, Coordinate place){
 		this.world = unit.getWorld();
-		this.coordinate = cube.getPlaceInGrid();
+		this.coordinate = place;
 	}
 	private final World world;
 	private final Coordinate coordinate;

@@ -2,6 +2,7 @@ package hillbillies.part3.programs;
 
 import java.util.List;
 
+import hillbillies.model.Coordinate;
 import hillbillies.model.Cube;
 import hillbillies.model.Unit;
 import hillbillies.tests.facade.Part3TestPartial;
@@ -206,7 +207,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param unit
 	 *            The unit expression
 	 */
-	public E createIsFriend(Unit unit, SourceLocation sourceLocation);
+	public E createIsFriend(Unit unit, Unit unitt,  SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates
@@ -215,7 +216,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param unit
 	 *            The unit expression
 	 */
-	public E createIsEnemy(Unit unit, SourceLocation sourceLocation);
+	public E createIsEnemy(Unit unit, Unit unitt, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to true when the given unit evaluates
@@ -297,7 +298,7 @@ public interface ITaskFactory<E, S, T> {
 	 * 
 	 * @note Students working alone may return null.
 	 */
-	public E createSelectedPosition(Unit unit, Cube coorinate, SourceLocation sourceLocation);
+	public E createSelectedPosition(Unit unit, Coordinate coordinate, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to a position next to the given
@@ -306,7 +307,7 @@ public interface ITaskFactory<E, S, T> {
 	 * @param position
 	 * 
 	 */
-	public E createNextToPosition(Unit unit, Cube position, SourceLocation sourceLocation);
+	public E createNextToPosition(Unit unit, Coordinate position, SourceLocation sourceLocation);
 
 	/**
 	 * Create an expression that evaluates to the position of the given unit.

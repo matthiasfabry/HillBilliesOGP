@@ -150,32 +150,37 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsFriend(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsFriend(Unit unit,
+	public Expression createIsFriend(Unit unit, Unit unitt,
 			SourceLocation sourceLocation) {
-		return new Expression<Unit>() {
-
-			@Override
-			public Unit evaluate() {
-				// TODO Auto-generated method stub
-				return null;
-			}	
-		};
+		return new Is_FriendExpression(unit, unitt);
+//		return new Expression<Unit>() {
+//
+//			@Override
+//			public Unit evaluate() {
+//				// TODO Auto-generated method stub
+//				return null;
+//			}	
+//		};
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsEnemy(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression<Unit> createIsEnemy(Unit unit,
+	public Expression createIsEnemy(Unit unit, Unit unitt,
 			SourceLocation sourceLocation) {
-		return new Expression<Unit>() {
-
-			@Override
-			public Unit evaluate() {
+		return new Is_EnemyExpression(unit, unitt);
+		
+//		public Expression<Unit> createIsEnemy(Unit unit, Unit unitt,
+//				SourceLocation sourceLocation) 
+//		return new Expression<Unit>() {
+//
+//			@Override
+//			public Unit evaluate() {
 				// TODO Auto-generated method stub
-				return null;
-			}
-		};
+//				return null;
+//			}
+//		};
 	}
 
 	/* (non-Javadoc)
@@ -259,17 +264,17 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createSelectedPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createSelectedPosition(Unit unit, Cube cube, SourceLocation sourceLocation) {
-		return new SelectedExpression(unit, cube);
+	public Expression createSelectedPosition(Unit unit, Coordinate coordinate, SourceLocation sourceLocation) {
+		return new SelectedExpression(unit, coordinate);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createNextToPosition(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createNextToPosition(Unit unit, Cube cube,
+	public Expression createNextToPosition(Unit unit, Coordinate coordinate,
 			SourceLocation sourceLocation) {
-		return new Next_toExpression(unit, cube);
+		return new Next_toExpression(unit, coordinate);
 	}
 
 	/* (non-Javadoc)

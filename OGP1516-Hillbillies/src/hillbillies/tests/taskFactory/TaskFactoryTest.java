@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Cube;
 import hillbillies.model.Faction;
 import hillbillies.model.TaskFactory;
 import hillbillies.model.Unit;
@@ -18,13 +19,18 @@ import hillbillies.part3.programs.SourceLocation;
 public class TaskFactoryTest {
 
 	private Unit unit;
-	private Unit enemyunit;
-	private Unit friendunit;
+	private Unit closeenemyunit;
+	private Unit closefriendunit;
+	private Unit farenemyunit;
+	private Unit farfriendunit;
 	private static World theWorld;
 	private static Faction theFaction1;
 	private static Faction theFaction2;
 	private SourceLocation source;
 	private Coordinate theCoordinate;
+	private Cube cube1;
+	private Cube cube2;
+	
 	/**
 	 * @throws ModelException 
 	 * 			Should never happen, it is a legal unit
@@ -33,9 +39,13 @@ public class TaskFactoryTest {
 	public void setUp() throws ModelException {
 		unit = new Unit("TestUnit", new int[]{1, 1, 0}, 50, 50, 50, 50,
 				false, theWorld, theFaction1);
-		enemyunit = new Unit("TestUnit", new int[]{3, 1, 0}, 50, 50, 50, 50,
+		closeenemyunit = new Unit("TestUnit1", new int[]{3, 1, 0}, 50, 50, 50, 50,
 				false, theWorld, theFaction2);
-		friendunit = new Unit("TestUnit", new int[]{0, 1, 0}, 50, 50, 50, 50,
+		closefriendunit = new Unit("TestUnit2", new int[]{0, 1, 0}, 50, 50, 50, 50,
+				false, theWorld, theFaction1);
+		farenemyunit = new Unit("TestUnit3", new int[]{9, 3, 0}, 50, 50, 50, 50,
+				false, theWorld, theFaction2);
+		farfriendunit = new Unit("TestUnit4", new int[]{9, 3, 0}, 50, 50, 50, 50,
 				false, theWorld, theFaction1);
 		theCoordinate = new Coordinate(1,1,0);
 	}
@@ -43,7 +53,8 @@ public class TaskFactoryTest {
 	
 	@Test
 	public void testCreateReadVariable() {
-		fail("Not yet implemented");
+		assertEquals(unit, TaskFactory.createReadVariable(unit, "TestUnit", source).evaluate());
+		assertEquals(closeenemyunit, TaskFactory.createReadVariable(unit, "TestUnit1", source).evaluate());
 	}
 
 	@Test
@@ -58,42 +69,59 @@ public class TaskFactoryTest {
 
 	@Test
 	public void testCreateIsFriend() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createIsFriend(unit, closefriendunit, source).evaluate());
+		assertEquals(false, TaskFactory.createIsFriend(unit, closeenemyunit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateIsEnemy() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createIsEnemy(unit, closeenemyunit, source).evaluate());
+		assertEquals(false, TaskFactory.createIsEnemy(unit, closefriendunit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateIsAlive() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createIsAlive(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateCarriesItem() {
-		fail("Not yet implemented");
+		assertEquals(false, TaskFactory.createCarriesItem(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateNot() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createNot(new Boolean_Expression(false), source).evaluate());
+		assertEquals(false, TaskFactory.createNot(new Boolean_Expression(true), source).evaluate());
 	}
 
 	@Test
 	public void testCreateAnd() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createAnd(new Boolean_Expression(true), new Boolean_Expression(true),
+				source).evaluate());
+		assertEquals(false, TaskFactory.createAnd(new Boolean_Expression(true), new Boolean_Expression(false),
+				source).evaluate());
+		assertEquals(false, TaskFactory.createAnd(new Boolean_Expression(false), new Boolean_Expression(true),
+				source).evaluate());
+		assertEquals(false, TaskFactory.createAnd(new Boolean_Expression(false), new Boolean_Expression(false),
+				source).evaluate());
 	}
 
 	@Test
 	public void testCreateOr() {
-		fail("Not yet implemented");
+		assertEquals(true, TaskFactory.createOr(new Boolean_Expression(true), new Boolean_Expression(true),
+						source).evaluate());
+		assertEquals(true, TaskFactory.createOr(new Boolean_Expression(true), new Boolean_Expression(false),
+				source).evaluate());
+		assertEquals(true, TaskFactory.createOr(new Boolean_Expression(false), new Boolean_Expression(true),
+				source).evaluate());
+		assertEquals(false, TaskFactory.createOr(new Boolean_Expression(false), new Boolean_Expression(false),
+				source).evaluate());
 	}
 
 	@Test
 	public void testCreateHerePosition() {
-		fail("Not yet implemented");
+		assertEquals(theCoordinate, TaskFactory.createHerePosition(unit, source).evaluate());
 	}
 
 	@Test
@@ -113,37 +141,39 @@ public class TaskFactoryTest {
 
 	@Test
 	public void testCreateSelectedPosition() {
-		fail("Not yet implemented");
+		assertEquals(theCoordinate, TaskFactory.createSelectedPosition(unit, new Coordinate (1,1,0), source)
+						.evaluate());
 	}
 
 	@Test
 	public void testCreateNextToPosition() {
-		fail("Not yet implemented");
+		assertEquals(theCoordinate, TaskFactory.createNextToPosition(unit, closefriendunit.getInWorldPosition(),
+						source).evaluate());
 	}
 
 	@Test
 	public void testCreateLiteralPosition() {
-		AssertEquals(theCoordinate, TaskFactory.createLiteralPosition(1,1,0, source).evaluate);
+		assertEquals(theCoordinate, TaskFactory.createLiteralPosition(1, 1, 0, source).evaluate());
 	}
 
 	@Test
 	public void testCreateThis() {
-		fail("Not yet implemented");
+		assertEquals(unit, TaskFactory.createThis(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateFriend() {
-		fail("Not yet implemented");
+		assertEquals(closefriendunit, TaskFactory.createFriend(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateEnemy() {
-		fail("Not yet implemented");
+		assertEquals(closeenemyunit, TaskFactory.createEnemy(unit, source).evaluate());
 	}
 
 	@Test
 	public void testCreateAny() {
-		;
+		assertEquals(closefriendunit, TaskFactory.createAny(unit, source).evaluate());
 	}
 
 	@Test
@@ -158,7 +188,7 @@ public class TaskFactoryTest {
 
 	@Test
 	public void testCreatePositionOf() {
-		fail("Not yet implemented");
+		assertEquals(new Coordinate(1,1,0), TaskFactory.createPositionOf(unit, source).evaluate());
 	}
 
 }
