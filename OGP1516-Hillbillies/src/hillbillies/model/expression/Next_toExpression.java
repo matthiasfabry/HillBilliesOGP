@@ -17,10 +17,9 @@ import hillbillies.model.World;
 public class Next_toExpression extends PositionExpression<Coordinate> {
 
 	public Next_toExpression(Expression position){
-		this.position = position.evaluate();
+		this.position = position;
 	}
-	private final Coordinate position;
-	private final Coordinate nexttoposition;
+	private final Expression position;
 	
 	@Override
 	public Coordinate evaluate(Unit unit) {
@@ -30,7 +29,7 @@ public class Next_toExpression extends PositionExpression<Coordinate> {
 	public Coordinate determineNext_toPosition(Unit thisUnit){
 		World world = thisUnit.getWorld();
 		Coordinate pos = null;
-		Coordinate[] coordinatelist = position.DirectlyAdjacentCoordinates();
+		Coordinate[] coordinatelist = ((Coordinate) position.evaluate(thisUnit)).DirectlyAdjacentCoordinates();
 		for (Coordinate coordinate: coordinatelist){
 			if (world.getTerrainAt(coordinate).isPassable() && 
 					(world.getTerrainAt(coordinate.difference(new Coordinate (0,0,1))).isImpassable() ||

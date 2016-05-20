@@ -14,13 +14,13 @@ public class Position_ofExpression extends PositionExpression<Coordinate> {
 
 
 	public Position_ofExpression(Expression unit) {
-		this.otherUnit = unit.evaluate();
+		this.otherUnit = unit;
 	}
-	private final Unit otherUnit;
+	private final Expression otherUnit;
 	
 	@Override
 	public Coordinate evaluate(Unit unit) {
-		return this.otherUnit.getPosition();
+		return ((Unit) this.otherUnit.evaluate(unit)).getPosition();
 	}
 
 	@Override

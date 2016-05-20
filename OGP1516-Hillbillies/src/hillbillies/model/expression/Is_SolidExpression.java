@@ -15,14 +15,14 @@ import hillbillies.model.World;
 public class Is_SolidExpression implements Expression<Boolean> {
 
 	public Is_SolidExpression(Expression position){
-		this.coordinate = position.evaluate();
+		this.coordinate = position;
 	}
-	private final Coordinate coordinate;
+	private final Expression coordinate;
 	
 	@Override
 	public Boolean evaluate(Unit unit) {
 		World world = unit.getWorld();
-		return (world.getTerrainAt(coordinate).isImpassable());
+		return (world.getTerrainAt((Coordinate) coordinate.evaluate(unit)).isImpassable());
 	}
 
 	@Override

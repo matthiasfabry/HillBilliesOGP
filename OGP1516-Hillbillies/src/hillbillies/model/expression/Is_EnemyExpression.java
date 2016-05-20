@@ -12,13 +12,13 @@ import hillbillies.model.Unit;
 public class Is_EnemyExpression implements Expression<Boolean> {
 
 	public Is_EnemyExpression(Expression unit){
-		this.otherUnit = unit.evaluate();
+		this.otherUnit = unit;
 	}
-	private final Unit otherUnit;
+	private final Expression otherUnit;
 	
 	@Override
 	public Boolean evaluate(Unit thisUnit) {
-		if (thisUnit.getFaction() != otherUnit.getFaction())
+		if (thisUnit.getFaction() != ((Unit) otherUnit.evaluate(thisUnit)).getFaction())
 			return true;
 		else 
 			return false;

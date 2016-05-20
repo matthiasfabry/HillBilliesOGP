@@ -15,19 +15,19 @@ import hillbillies.model.World;
 public class Is_PassableExpression implements Expression<Boolean> {
 
 	public Is_PassableExpression(Expression position){
-		this.coordinate = position.evaluate();
+		this.coordinate = position;
 	}
-	private final Coordinate coordinate;
+	private final Expression coordinate;
 	
 	@Override
 	public Boolean evaluate(Unit unit) {
 		World world = unit.getWorld();
-		return (world.getTerrainAt(coordinate).isPassable());
+		return (world.getTerrainAt((Coordinate) coordinate.evaluate(unit)).isPassable());
 	}
 
 	@Override
 	public boolean check(Unit unit) throws FormException{
-		if (! (coordinate instanceof Coordinate))
+		if (! (coordinate.evaluate(unit) instanceof Coordinate))
 			throw new FormException();
 		else 
 			return true;

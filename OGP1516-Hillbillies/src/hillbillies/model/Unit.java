@@ -1209,22 +1209,6 @@ public class Unit {
 	}
 	
 	/**
-	 * Method that checks whether the given coordinate is already present in
-	 * a tuple in the Tuple queue q.
-	 * @param coordinate
-	 * 			the coordinate to check
-	 * @return
-	 */
-	boolean containsCoordinate(Coordinate coordinate){
-		boolean containsCoordinate = false;
-		for (Tuple<Coordinate> tuple: q){
-			if (tuple.getC().equals(coordinate))
-				containsCoordinate = true;
-		}
-		return containsCoordinate;
-	}
-	
-	/**
 	 * Checks if the given cube neighbours any solid cube.
 	 * @param cube
 	 * 			the cube that needs to be checked on solid neighbours
