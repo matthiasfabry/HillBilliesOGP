@@ -17,19 +17,15 @@ import hillbillies.model.World;
 */
 public class WorkshopExpression extends PositionExpression<Coordinate> {
 
-	public WorkshopExpression(Unit unit) {
-		this.thisUnit = unit;
-		this.workshopPosition = determineWorkshopPosition();
+	public WorkshopExpression() {
 	}
-	private final Unit thisUnit;
-	private final Coordinate workshopPosition;
 	
 	@Override
-	public Coordinate evaluate() {
-		return this.workshopPosition;
+	public Coordinate evaluate(Unit unit) {
+		return determineWorkshopPosition(unit);
 	}
 
-	public Coordinate determineWorkshopPosition(){
+	public Coordinate determineWorkshopPosition(Unit thisUnit){
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Coordinate someWorkshop = null;
@@ -52,7 +48,7 @@ public class WorkshopExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() {
+	public boolean check(Unit unit) {
 		return true;
 	}
 	

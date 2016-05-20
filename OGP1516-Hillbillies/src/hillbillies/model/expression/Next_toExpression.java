@@ -16,7 +16,7 @@ import hillbillies.model.World;
 */
 public class Next_toExpression extends PositionExpression<Coordinate> {
 
-	public Next_toExpression(Unit unit, Coordinate place){
+	public Next_toExpression(Expression expression){
 		this.position = place;
 		this.world = unit.getWorld();
 		this.nexttoposition = determineNext_toPosition();

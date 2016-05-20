@@ -17,19 +17,16 @@ import hillbillies.model.World;
 */
 public class BoulderExpression extends PositionExpression<Coordinate> {
 
-	public BoulderExpression(Unit unit) {
-		this.thisUnit = unit;
-		this.boulderPosition = determineBoulderPosition();
+	public BoulderExpression() {
+
 	}
-	private final Unit thisUnit;
-	private final Coordinate boulderPosition;
 	
 	@Override
-	public Coordinate evaluate() {
-		return this.boulderPosition;
+	public Coordinate evaluate(Unit unit) {
+		return determineBoulderPosition(unit);
 	}
 
-	public Coordinate determineBoulderPosition(){
+	public Coordinate determineBoulderPosition(Unit thisUnit){
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Boulder someBoulder = null;
@@ -53,7 +50,7 @@ public class BoulderExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		return true;
 	}
 

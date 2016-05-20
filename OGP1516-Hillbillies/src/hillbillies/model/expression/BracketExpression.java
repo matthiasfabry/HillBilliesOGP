@@ -14,7 +14,7 @@ import hillbillies.model.World;
 */
 public class BracketExpression implements Expression<Unit> {
 
-	public BracketExpression(Unit unit, String NameToMatch){
+	public BracketExpression(String NameToMatch){
 		this.name = NameToMatch;
 		this.thisUnit = unit;
 	}

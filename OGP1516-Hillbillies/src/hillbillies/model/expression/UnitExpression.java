@@ -11,7 +11,7 @@ import hillbillies.model.Unit;
 */
 public abstract class UnitExpression<T> implements Expression<Unit> {
 
-	public abstract Unit evaluate();
+	public abstract Unit evaluate(Unit unit);
 	
-	public abstract boolean check() throws FormException;
+	public abstract boolean check(Unit unit) throws FormException;
 }

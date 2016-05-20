@@ -1,5 +1,7 @@
 package hillbillies.model.expression;
 
+import hillbillies.model.Unit;
+
 /**
 *
 *
@@ -15,13 +17,13 @@ public class NotExpression implements Expression<Boolean> {
 	public final Expression<Boolean> value;
 	
 	@Override
-	public Boolean evaluate() {
-		return (! value.evaluate());
+	public Boolean evaluate(Unit unit) {
+		return (! value.evaluate(unit));
 	}
 
 	@Override
-	public boolean check() throws FormException{
-		if (!(value.evaluate() instanceof Boolean))
+	public boolean check(Unit unit) throws FormException{
+		if (!(value.evaluate(unit) instanceof Boolean))
 			throw new FormException();
 		else 
 			return true;

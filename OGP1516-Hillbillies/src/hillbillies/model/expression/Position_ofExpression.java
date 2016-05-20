@@ -13,9 +13,8 @@ import hillbillies.model.Unit;
 public class Position_ofExpression extends PositionExpression<Coordinate> {
 
 
-	public Position_ofExpression(Unit unit) {
-		this.position = unit.getInWorldPosition();
-		this.thisUnit = unit;
+	public Position_ofExpression(Expression expression) {
+		
 	}
 	private final Coordinate position;
 	private final Unit thisUnit;

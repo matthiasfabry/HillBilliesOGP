@@ -1,5 +1,7 @@
 package hillbillies.model.expression;
 
+import hillbillies.model.Unit;
+
 /**
 *
 *
@@ -18,14 +20,14 @@ public class AndExpression implements Expression<Boolean> {
 
 	
 	@Override
-	public Boolean evaluate() {
-		return (first.evaluate() && second.evaluate());
+	public Boolean evaluate(Unit unit) {
+		return (first.evaluate(unit) && second.evaluate(unit));
 	}
 
 
 	@Override
-	public boolean check() throws FormException{
-		if (!(first.evaluate() instanceof Boolean) || (!(second.evaluate() instanceof Boolean)))
+	public boolean check(Unit unit) throws FormException{
+		if (!(first.evaluate(unit) instanceof Boolean) || (!(second.evaluate(unit) instanceof Boolean)))
 			throw new FormException();
 		else 
 			return true;

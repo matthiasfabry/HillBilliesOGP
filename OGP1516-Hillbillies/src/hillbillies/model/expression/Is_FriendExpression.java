@@ -11,7 +11,7 @@ import hillbillies.model.Unit;
 */
 public class Is_FriendExpression implements Expression<Boolean> {
 
-	public Is_FriendExpression(Unit thisunit, Unit otherunit){
+	public Is_FriendExpression(Expression unit){
 		this.thisUnit = thisunit;
 		this.otherUnit = otherunit;
 	}

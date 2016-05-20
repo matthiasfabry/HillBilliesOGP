@@ -15,19 +15,15 @@ import hillbillies.model.World;
 */
 public class FriendExpression extends UnitExpression<Unit> {
 
-	public FriendExpression(Unit unit) {
-		this.thisUnit = unit;
-		this.friendUnit = determineFriendUnit();
+	public FriendExpression() {
 	}
-	private final Unit thisUnit;
-	private final Unit friendUnit;
 	
 	@Override
-	public Unit evaluate() {
-		return friendUnit;
+	public Unit evaluate(Unit unit) {
+		return determineFriendUnit(unit);
 	}
 
-	public Unit determineFriendUnit(){
+	public Unit determineFriendUnit(Unit thisUnit){
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Unit someUnit = null;
@@ -51,7 +47,7 @@ public class FriendExpression extends UnitExpression<Unit> {
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		if (! (thisUnit instanceof Unit))
 			throw new FormException();
 		else 

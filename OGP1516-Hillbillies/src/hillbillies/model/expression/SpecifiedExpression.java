@@ -1,6 +1,7 @@
 package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Unit;
 
 /**
 *
@@ -17,12 +18,12 @@ public class SpecifiedExpression extends PositionExpression<Coordinate> {
 	private final Coordinate specifiedPosition;
 	
 	@Override
-	public Coordinate evaluate() {
+	public Coordinate evaluate(Unit unit) {
 		return specifiedPosition;
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit unit) throws FormException{
 		return true;
 	}
 }

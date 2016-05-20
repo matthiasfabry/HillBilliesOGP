@@ -18,19 +18,15 @@ import hillbillies.model.World;
 */
 public class LogExpression extends PositionExpression<Coordinate> {
 
-	public LogExpression(Unit unit) {
-		this.thisUnit = unit;
-		this.logPosition = determineLogPosition();
+	public LogExpression() {
 	}
-	private final Unit thisUnit;
-	private final Coordinate logPosition;
 	
 	@Override
-	public Coordinate evaluate() {
-		return this.logPosition;
+	public Coordinate evaluate(Unit unit) {
+		return determineLogPosition(unit);
 	}
 
-	public Coordinate determineLogPosition(){
+	public Coordinate determineLogPosition(Unit thisUnit){
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Log someLog = null;
@@ -54,7 +50,7 @@ public class LogExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit unit) throws FormException{
 		return true;
 	}
 

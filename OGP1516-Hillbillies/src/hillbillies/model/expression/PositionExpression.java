@@ -1,6 +1,7 @@
 package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.Unit;
 /**
 *
 *
@@ -11,9 +12,9 @@ import hillbillies.model.Coordinate;
 */
 public abstract class PositionExpression<T> implements Expression<Coordinate> {
 
-	public abstract Coordinate evaluate();
+	public abstract Coordinate evaluate(Unit unit);
 	
-	public abstract boolean check() throws FormException;
+	public abstract boolean check(Unit unit) throws FormException;
 	
 }
 

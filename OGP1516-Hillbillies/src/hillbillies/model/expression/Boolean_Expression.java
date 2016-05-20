@@ -1,6 +1,8 @@
 
 package hillbillies.model.expression;
 
+import hillbillies.model.Unit;
+
 /**
 *
 *
@@ -16,12 +18,12 @@ public class Boolean_Expression implements Expression<Boolean> {
 	private final Boolean value;
 	
 	@Override
-	public Boolean evaluate() {
+	public Boolean evaluate(Unit unit) {
 		return this.value;
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit unit) throws FormException{
 		if (!(value instanceof Boolean))
 			throw new FormException();
 		else 

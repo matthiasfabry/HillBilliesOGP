@@ -14,7 +14,7 @@ import hillbillies.model.World;
 */
 public class Is_SolidExpression implements Expression<Boolean> {
 
-	public Is_SolidExpression(Unit unit, Cube cube){
+	public Is_SolidExpression(Expression cube){
 		this.coordinate = cube.getPlaceInGrid();
 		this.world = unit.getWorld();
 		this.thisCube = cube;

@@ -12,20 +12,16 @@ import hillbillies.model.Unit;
 */
 public class HereExpression extends PositionExpression<Coordinate> {
 
-	public HereExpression(Unit unit) {
-		this.position = unit.getInWorldPosition();
-		this.unit = unit;
+	public HereExpression() {
 	}
-	private final Coordinate position;
-	private final Unit unit;
 	
 	@Override
-	public Coordinate evaluate() {
-		return this.position;
+	public Coordinate evaluate(Unit unit) {
+		return unit.getPosition();
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit unit) throws FormException{
 		if (! (unit instanceof Unit))
 			throw new FormException();
 		else 

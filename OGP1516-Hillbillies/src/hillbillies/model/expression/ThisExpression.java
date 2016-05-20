@@ -11,18 +11,17 @@ import hillbillies.model.Unit;
 */
 public class ThisExpression extends UnitExpression<Unit> {
 
-	public ThisExpression(Unit unit) {
-		this.thisUnit = unit;
+	public ThisExpression() {
 	}
-	private final Unit thisUnit;
+
 	
 	@Override
-	public Unit evaluate() {
-		return thisUnit;
+	public Unit evaluate(Unit unit) {
+		return unit;
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		if (! (thisUnit instanceof Unit))
 			throw new FormException();
 		else 

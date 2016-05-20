@@ -11,18 +11,16 @@ import hillbillies.model.Unit;
 */
 public class Carries_Item implements Expression<Boolean> {
 
-	public Carries_Item(Unit unit){
-		this.thisUnit = unit;
+	public Carries_Item(Expression unit){
 	}
-	private final Unit thisUnit;
 	
 	@Override
-	public Boolean evaluate() {
+	public Boolean evaluate(Unit thisUnit) {
 		return (thisUnit.isCarrying());
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		if (! (thisUnit instanceof Unit))
 			throw new FormException();
 		else

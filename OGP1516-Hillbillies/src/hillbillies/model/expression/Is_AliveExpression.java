@@ -11,17 +11,15 @@ import hillbillies.model.Unit;
 */
 public class Is_AliveExpression implements Expression<Boolean> {
 
-	public Is_AliveExpression(Unit unit){
-		this.thisUnit = unit;
+	public Is_AliveExpression(Expression unit){
 	}
 	
-	private final Unit thisUnit;
 	@Override
-	public Boolean evaluate() {
+	public Boolean evaluate(Unit thisUnit) {
 		return (thisUnit.isDead());
 	}
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		if (! (thisUnit instanceof Unit))
 			throw new FormException();
 		else 

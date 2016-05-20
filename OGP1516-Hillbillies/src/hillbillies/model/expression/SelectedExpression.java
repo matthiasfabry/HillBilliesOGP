@@ -14,12 +14,10 @@ import hillbillies.model.World;
 */
 public class SelectedExpression extends PositionExpression<Coordinate> {
 
-	public SelectedExpression(Unit unit, Coordinate place){
+	public SelectedExpression(){
 		this.world = unit.getWorld();
 		this.coordinate = place;
 	}
-	private final World world;
-	private final Coordinate coordinate;
 	
 	@Override
 	public Coordinate evaluate() {
