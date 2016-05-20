@@ -16,21 +16,19 @@ import hillbillies.model.World;
 */
 public class Next_toExpression extends PositionExpression<Coordinate> {
 
-	public Next_toExpression(Expression expression){
-		this.position = place;
-		this.world = unit.getWorld();
-		this.nexttoposition = determineNext_toPosition();
+	public Next_toExpression(Expression position){
+		this.position = position.evaluate();
 	}
 	private final Coordinate position;
 	private final Coordinate nexttoposition;
-	private final World world;
 	
 	@Override
-	public Coordinate evaluate() {
-		return this.nexttoposition;
+	public Coordinate evaluate(Unit unit) {
+		return determineNext_toPosition(unit);
 	}
 	
-	public Coordinate determineNext_toPosition(){
+	public Coordinate determineNext_toPosition(Unit thisUnit){
+		World world = thisUnit.getWorld();
 		Coordinate pos = null;
 		Coordinate[] coordinatelist = position.DirectlyAdjacentCoordinates();
 		for (Coordinate coordinate: coordinatelist){
@@ -44,7 +42,7 @@ public class Next_toExpression extends PositionExpression<Coordinate> {
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit unit) throws FormException{
 		if (!(position instanceof Coordinate))
 			throw new FormException();
 		else

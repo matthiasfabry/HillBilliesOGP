@@ -15,17 +15,15 @@ import hillbillies.model.World;
 public class SelectedExpression extends PositionExpression<Coordinate> {
 
 	public SelectedExpression(){
-		this.world = unit.getWorld();
-		this.coordinate = place;
 	}
 	
 	@Override
-	public Coordinate evaluate() {
-		return coordinate;
+	public Coordinate evaluate(Unit unit) {
+		return 
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit unit) throws FormException{
 		if (!(coordinate instanceof Coordinate))
 			throw new FormException();
 		else

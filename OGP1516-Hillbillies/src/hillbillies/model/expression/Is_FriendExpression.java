@@ -12,14 +12,12 @@ import hillbillies.model.Unit;
 public class Is_FriendExpression implements Expression<Boolean> {
 
 	public Is_FriendExpression(Expression unit){
-		this.thisUnit = thisunit;
-		this.otherUnit = otherunit;
+		this.otherUnit = unit.evaluate();
 	}
-	private final Unit thisUnit;
 	private final Unit otherUnit;
 	
 	@Override
-	public Boolean evaluate() {
+	public Boolean evaluate(Unit thisUnit) {
 		if (thisUnit.getFaction() == otherUnit.getFaction())
 			return true;
 		else 
@@ -27,7 +25,7 @@ public class Is_FriendExpression implements Expression<Boolean> {
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		if (! (thisUnit instanceof Unit) || (! (otherUnit instanceof Unit)))
 			throw new FormException();
 		else 

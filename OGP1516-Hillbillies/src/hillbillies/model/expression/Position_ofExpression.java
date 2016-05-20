@@ -13,20 +13,19 @@ import hillbillies.model.Unit;
 public class Position_ofExpression extends PositionExpression<Coordinate> {
 
 
-	public Position_ofExpression(Expression expression) {
-		
+	public Position_ofExpression(Expression unit) {
+		this.otherUnit = unit.evaluate();
 	}
-	private final Coordinate position;
-	private final Unit thisUnit;
+	private final Unit otherUnit;
 	
 	@Override
-	public Coordinate evaluate() {
-		return this.position;
+	public Coordinate evaluate(Unit unit) {
+		return this.otherUnit.getPosition();
 	}
 
 	@Override
-	public boolean check() throws FormException{
-		if (! (thisUnit instanceof Unit))
+	public boolean check(Unit thisUnit) throws FormException{
+		if (! (otherUnit instanceof Unit))
 			throw new FormException();
 		else 
 			return true;

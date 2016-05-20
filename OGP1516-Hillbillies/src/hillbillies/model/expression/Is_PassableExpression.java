@@ -14,23 +14,20 @@ import hillbillies.model.World;
 */
 public class Is_PassableExpression implements Expression<Boolean> {
 
-	public Is_PassableExpression(Expression cube){
-		this.coordinate = cube.getPlaceInGrid();
-		this.world = unit.getWorld();
-		this.thisCube = cube;
+	public Is_PassableExpression(Expression position){
+		this.coordinate = position.evaluate();
 	}
 	private final Coordinate coordinate;
-	private final World world;
-	private final Cube thisCube;
 	
 	@Override
-	public Boolean evaluate() {
+	public Boolean evaluate(Unit unit) {
+		World world = unit.getWorld();
 		return (world.getTerrainAt(coordinate).isPassable());
 	}
 
 	@Override
-	public boolean check() throws FormException{
-		if (! (thisCube instanceof Cube))
+	public boolean check(Unit unit) throws FormException{
+		if (! (coordinate instanceof Coordinate))
 			throw new FormException();
 		else 
 			return true;
