@@ -16,13 +16,11 @@ public class BracketExpression implements Expression<Unit> {
 
 	public BracketExpression(String NameToMatch){
 		this.name = NameToMatch;
-		this.thisUnit = unit;
 	}
 	private final String name;
-	private final Unit thisUnit;
 	
 	@Override
-	public Unit evaluate() {
+	public Unit evaluate(Unit thisUnit) {
 		Unit searchedUnit = null;
 		World world = thisUnit.getWorld();
 		Set<Unit> unitSet = world.getUnitSet();
@@ -33,7 +31,7 @@ public class BracketExpression implements Expression<Unit> {
 	}
 
 	@Override
-	public boolean check() throws FormException{
+	public boolean check(Unit thisUnit) throws FormException{
 		return true;
 	}
 

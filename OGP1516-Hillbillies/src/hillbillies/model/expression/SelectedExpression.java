@@ -19,7 +19,7 @@ public class SelectedExpression extends PositionExpression<Coordinate> {
 	
 	@Override
 	public Coordinate evaluate(Unit unit) {
-		return 
+		return coordinate;
 	}
 
 	@Override
