@@ -28,7 +28,14 @@ public class GameObjectTest {
 	private static Coordinate theCoordinate2 = new Coordinate(1,1,0);
 	private Log log;
 	private Boulder boulder;
-	private static TerrainChangeListener thelistener;
+	private static TerrainChangeListener thelistener = new TerrainChangeListener() {
+		
+		@Override
+		public void notifyTerrainChanged(int x, int y, int z) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 	private static Terrain[][][] testTerrain = new Terrain[50][50][50];
 
 	
@@ -42,19 +49,18 @@ public class GameObjectTest {
 	}
 	
 	@Test
-	public void SetUp() throws ModelException{
+	public void SetUp() throws ModelException {
 		log = new Log(theCoordinate1, theWorld);
 		boulder = new Boulder(theCoordinate2, theWorld);
 	}
 	
-	
-	
-//	@Test(expected = ModelException.class)
-//	public void SetPostion_illegalCase() throws ModelException {
-//		log.setPosition(new Coordinate(20,30,74));
-//	}
 	// Constructor //
 	
+	@Test
+	public void ConstructorTest_Legal() throws ModelException {
+		GameObject newObject = new Log(new Coordinate(1,5,0),theWorld);
+		assertNotNull(newObject);
+	}
 	
 	
 	
