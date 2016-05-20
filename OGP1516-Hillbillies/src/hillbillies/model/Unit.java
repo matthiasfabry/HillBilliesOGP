@@ -3,7 +3,6 @@ package hillbillies.model;
 
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
@@ -2378,51 +2377,22 @@ public class Unit {
 	/**
 	 * Method that governs a Unit during default behavior
 	 * 
-	 * @effect If the unit is Idle, this method will choose an activity at random
-	 * 			and executes that activity for that unit
-	 * 		| this.work
-	 * 		| || this.rest
-	 * 		| || this.moveTo(random,random,random)
+	 * @effect If the unit is Idle, this method will choose the task with
+	 * 			the highest priority
+	 * 			and executes that activity
+	 * 		| this.choosePriorityTask()
+	 * @post
+	 * 		| new.getTask() == this.choosePriorityTask()
 	 * @throws ModelException
 	 * 			The Unit isn't executing default behavior
 	 * 		|	(! this.getDefaultBehavior())
 	 */
-	@SuppressWarnings("null")
 	void doDefaultBehavior() throws ModelException {
 		if (!this.getDefaultBehavior())
 			throw new ModelException("Unit isn't executing default behavior");
 		if (this.getActivity() == Activity.IDLE) {
-			Cube[] neighbours = this.getWorld().getGrid()
-					.adjacentCubes(this.getInWorldPosition());
-			List<Coordinate> neigbours = null;
-			for (Cube cube : neighbours)
-				neigbours.add(cube.getPlaceInGrid());
-			Unit possiblevictim = null;
-			for (Unit unit : this.getWorld().getUnitSet())
-				if (neigbours.contains(unit.getInWorldPosition()))
-					possiblevictim = unit;
-
-			Random random = new Random();
-			int decider = 0;
-			if (possiblevictim == null)
-				decider = random.nextInt(3);
-			else
-				decider = random.nextInt(4);
-			if (decider == 0) {
-				rest();
-			} else if (decider == 1) {
-				work();
-			} else if (decider == 2) {
-				int x = random.nextInt(15);
-				int y = random.nextInt(15);
-				int z = random.nextInt(15);
-				try {
-					moveTo(x, y, z);
-				} catch (Exception e) {
-					// shouldn't happen
-				}
-			} else
-				attack(possiblevictim);
+			this.choosePriorityTask();
+			this.execute();
 		}
 	}
 	/**
@@ -2544,7 +2514,10 @@ public class Unit {
 	public int totalExperience;
 	
 	// Task //
-
+	
+	public void choosePriorityTask(){
+		this.setTask(this.getFaction().getScheduler().getHighestPriority());
+	}
 	/**
 	 * Return the Task of this Unit.
 	 */
@@ -2559,11 +2532,11 @@ public class Unit {
 	 *  
 	 * @param  task
 	 *         The Task to check.
-	 * @return 
-	 *       | result == 
+	 * @return the task cannot be in execution.
+	 *       | result == ! task.inExecution
 	*/
 	public static boolean isValidTask(Task task) {
-		return true;
+		return ! task.inExecution;
 	}
 	
 	/**
@@ -2588,12 +2561,28 @@ public class Unit {
 	 */
 	private Task task;
 	
+	/**
+	 * Starts this unit with executing his selected task
+	 * 
+	 * @effect | this.getTask().run()
+	 * 
+	 * @post this unit will not be IDLE
+	 * 		| new.getActivity != Activity.IDLE
+	 */
 	public void execute(){
 		if (this.getTask() != null) {
 			this.getTask().run();
 		}
 	}
 
+	/**
+	 * Stops this unit from executing his task
+	 * 
+	 * @effect | this.getTask().stop()
+	 */
+	public void stopExecute(){
+		this.getTask().stop();
+	}
 
 	// Overrides from Object //
 

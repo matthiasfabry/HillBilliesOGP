@@ -57,15 +57,15 @@ public class ExpressionStatementTest {
 	private Log theLog;
 	private Boulder theBoulder;
 	private TaskFactory theFactory = new TaskFactory();
-	private Expression cube1E;
-	private Expression cube2E;
-	private Expression cube3E;
-	private Expression cube4E;
-	private Expression unitE;
-	private Expression closeenemyunitE;
-	private Expression closefriendunitE;
-	private Expression farenemyunitE;
-	private Expression farfriendunitE;
+	private Expression<Coordinate> cube1E;
+	private Expression<Coordinate> cube2E;
+	private Expression<Coordinate> cube3E;
+	private Expression<Coordinate> cube4E;
+	private Expression<Unit> unitE;
+	private Expression<Unit> closeenemyunitE;
+	private Expression<Unit> closefriendunitE;
+	private Expression<Unit> farenemyunitE;
+	private Expression<Unit> farfriendunitE;
 
 	/**
 	 * @throws ModelException 
@@ -447,11 +447,11 @@ public class ExpressionStatementTest {
 
 	@Test
 	public void testCreateFollow() {
-		stat = new FollowAction(null);
+		stat = new FollowAction(closefriendunitE);
 	}
 
 	@Test
 	public void testCreateAttack() {
-
+		stat = new AttackAction(closeenemyunitE);
 	}
 }

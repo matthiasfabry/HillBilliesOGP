@@ -310,6 +310,20 @@ public class Scheduler {
 	private final ArrayList<Task> tasks = new ArrayList<Task>();
 
 	/**
+	 * Returns a task from this scheduler that has the highest priority value
+	 * 
+	 * @return
+	 * 		| For all task in Tasks: task.getPriority <= result.getPriority
+	 */
+	public Task getHighestPriority(){
+		Task theTask = tasks.get(0);
+		for (Task task : tasks) 
+			if (task.getPriority() >= theTask.getPriority())
+				theTask = task;
+		return theTask;
+	}
+	
+	/**
 	 * Returns the list of tasks that have a higher priority than a given priority
 	 * @param priority
 	 * 		the priority to exceed

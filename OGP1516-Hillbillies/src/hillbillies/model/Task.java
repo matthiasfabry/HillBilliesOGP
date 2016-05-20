@@ -328,23 +328,43 @@ public class Task {
 
 	// Location //
 	
+	/**
+	 * Returns the location of the task
+	 */
+	@Basic
+	@Immutable
 	public Coordinate getLocation(){
 		return this.location;
 	}
 	
+	/**
+	 * Variable registering the location of the task
+	 */
 	private final Coordinate location;
 	
 	// Executing //
 	
+	/**
+	 * Checks whether a task is well formed or not
+	 * 
+	 * @return
+	 * 		Returns true if no exceptions are thrown in Statement.check(),
+	 * 		false if there are, or the method returns false;
+	 */
 	public boolean check(){
 		try {
-			getActivities().check(getUnit(), null, null);
+			return getActivities().check(getUnit(), null, null);
 		} catch (ModelException | BreakException | FormException e) {
 			return false;
 		}
-		return true;
 	}
 	
+	/**
+	 * Executes the activities of this task
+	 * 
+	 * @effect
+	 * 		| this.getActivities().execute(getUnit(),null,null))
+	 */
 	public void run(){
 		if (this.check()) {
 			try {
@@ -356,15 +376,26 @@ public class Task {
 		}
 	}
 	
+	/**
+	 * Stops the unit from executing this task, and decouples the 
+	 * current unit from this task
+	 * 
+	 * @post | new.inExecution == false
+	 * 		 | new.getUnit() == null
+	 */
 	public void stop(){
 		inExecution = false;
 		try {
+			this.getUnit().setTask(null);
 			this.setUnit(null);
 		} catch (ModelException e) {
 			// shoudn't happen
 		}
 	}
 	
+	/**
+	 * flag registering whether this task is being executed.
+	 */
 	boolean inExecution = false;
 	
 	// Overrides from object //
