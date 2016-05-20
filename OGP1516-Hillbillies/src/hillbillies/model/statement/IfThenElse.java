@@ -30,7 +30,7 @@ public class IfThenElse implements Statement {
 
 	@Override
 	public void execute(Unit unit, VarTracker tracker) {
-		if (condition.evaluate())
+		if (condition.evaluate(unit))
 			try {
 				thenBody.execute(unit, tracker);
 			} catch (BreakException e) {
@@ -50,7 +50,7 @@ public class IfThenElse implements Statement {
 	@Override
 	public boolean check(Unit unit, VarTracker tracker, Statement parent)
 			throws ModelException, BreakException, FormException {
-		return condition.check() && thenBody.check(unit, tracker, parent)
+		return condition.check(unit) && thenBody.check(unit, tracker, parent)
 				&& elseBody.check(unit, tracker, parent);
 	}
 

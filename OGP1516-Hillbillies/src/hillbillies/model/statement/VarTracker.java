@@ -6,6 +6,8 @@ package hillbillies.model.statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import hillbillies.model.expression.Expression;
+
 /**
  *
  *
@@ -19,13 +21,16 @@ public class VarTracker {
 		
 	}
 	
-	public void assign(String key, Object value){
+	public void assign(String key, Expression<?> value){
 		thePairs.put(key, value);
 	}
 	
-	public Object retrieve(String key){
+	public Expression<?> retrieve(String key){
 		return thePairs.get(key);
 	}
 	
-	private final Map<String, Object> thePairs = new HashMap<>();
+	public int size(){
+		return thePairs.size();
+	}
+	private final Map<String, Expression<?>> thePairs = new HashMap<>();
 }

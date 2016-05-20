@@ -27,7 +27,7 @@ public class WorkAction implements Statement {
 	@Override
 	public void execute(Unit unit, VarTracker tracker) {
 		try {
-			unit.workAt(position.evaluate());
+			unit.workAt(position.evaluate(unit));
 		} catch (ModelException e) {
 			// shoudn't happen
 		}
@@ -38,7 +38,7 @@ public class WorkAction implements Statement {
 	public boolean check(Unit unit, VarTracker tracker, Statement parent)
 			throws ModelException, BreakException, FormException {
 		// TODO Auto-generated method stub
-		return unit.isValidPosition(position.evaluate());
+		return unit.isValidPosition(position.evaluate(unit));
 	}
 
 }

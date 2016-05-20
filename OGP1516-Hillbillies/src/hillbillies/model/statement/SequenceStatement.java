@@ -32,13 +32,9 @@ public class SequenceStatement implements Statement {
 	
 	
 	@Override
-	public void execute(Unit unit, VarTracker tracker){
+	public void execute(Unit unit, VarTracker tracker) throws BreakException{
 		for (Statement statement : statements){
-			try {
-				statement.execute(unit, tracker);
-			} catch (BreakException e) {
-				// shoudn't happen
-			}
+			statement.execute(unit, this.tracker);
 		}
 	}
 

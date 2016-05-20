@@ -2,9 +2,13 @@ package hillbillies.tests.taskFactory;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import hillbillies.model.Activity;
 import hillbillies.model.Boulder;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Cube;
@@ -15,6 +19,9 @@ import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.model.expression.Boolean_Expression;
+import hillbillies.model.expression.FormException;
+import hillbillies.model.expression.FriendExpression;
+import hillbillies.model.expression.SpecifiedExpression;
 import hillbillies.model.statement.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.ModelException;
@@ -296,49 +303,132 @@ public class ExpressionStatementTest {
 
 	@Test
 	public void testCreateAssignment() {
-		stat = theFactory.createAssignment("LeVariable",
-				new Boolean_Expression(true), source);
-		VarTracker theTracker = stat.getTracker()
+		ArrayList<Statement> statements = new ArrayList<>();
+		statements.add(theFactory.createAssignment("TheVariable",
+				new Boolean_Expression(true), source));
+		SequenceStatement wrapper = new SequenceStatement(statements);
+		VarTracker theTracker = wrapper.getTracker();
+		try {
+			wrapper.execute(null, null);
+		} catch (BreakException e) {
+			// shoudn't happen
+		}
+		assertTrue(theTracker.size() != 0);
+		assertEquals(theTracker.retrieve("TheVariable").evaluate(null), true);
 	}
 
 	@Test
-	public void testCreateWhile() {
+	public void testCreateWhilePlusBreak() {
+		ArrayList<Statement> statements = new ArrayList<>();
+		statements.add(theFactory.createAssignment("TheVariable",
+				new Boolean_Expression(true), source));
+		statements.add(new BreakStatement());
+		SequenceStatement wrapper = new SequenceStatement(statements);
+		VarTracker theTracker = wrapper.getTracker();
+		stat = new WhileLoop(new Boolean_Expression(true), wrapper);
+		try {
+			stat.execute(null, null);
+		} catch (BreakException e) {
+			// shoudn't happen
+		}
+		assertTrue(theTracker.size() != 0);
+		assertEquals(theTracker.retrieve("TheVariable").evaluate(null), true);
+	}
 
+	@Test
+	public void testBreakOutsideWhile()
+			throws BreakException, ModelException, FormException {
+		stat = new IfThenElse(new Boolean_Expression(true),
+				new BreakStatement(), null);
+		assertFalse(stat.check(null, null, null));
 	}
 
 	@Test
 	public void testCreateIf() {
-
-	}
-
-	@Test
-	public void testCreateBreak() {
-
+		ArrayList<Statement> statements = new ArrayList<>();
+		statements.add(theFactory.createAssignment("TheVariable",
+				new Boolean_Expression(true), source));
+		@SuppressWarnings("unchecked")
+		SequenceStatement wrapper1 = new SequenceStatement(
+				(List<Statement>) statements.clone());
+		statements.clear();
+		statements.add(theFactory.createAssignment("TheVariable",
+				new Boolean_Expression(false), source));
+		SequenceStatement wrapper2 = new SequenceStatement(statements);
+		VarTracker theTracker1 = wrapper1.getTracker();
+		VarTracker theTracker2 = wrapper2.getTracker();
+		stat = new IfThenElse(new Boolean_Expression(true), wrapper1, wrapper2);
+		try {
+			stat.execute(null, null);
+		} catch (BreakException e) {
+			// shoudn't happen
+		}
+		assertTrue(theTracker1.size() != 0);
+		assertEquals(theTracker1.retrieve("TheVariable").evaluate(null), true);
+		stat = new IfThenElse(new Boolean_Expression(false), wrapper1,
+				wrapper2);
+		try {
+			stat.execute(null, null);
+		} catch (BreakException e) {
+			// shoudn't happen
+		}
+		assertTrue(theTracker2.size() != 0);
+		assertEquals(theTracker2.retrieve("TheVariable").evaluate(null), false);
 	}
 
 	@Test
 	public void testCreatePrint() {
-
+		// No need for testing
 	}
 
 	@Test
 	public void testCreateSequence() {
-
+		// Implicitly tested in other cases
 	}
 
 	@Test
 	public void testCreateMoveTo() {
-
+		stat = new MoveAction(new SpecifiedExpression(1, 1, 0));
+		try {
+			assertTrue(stat.check(unit, null, null));
+		} catch (ModelException | BreakException | FormException e) {
+			// shoudn't happen
+		}
+		try {
+			stat.execute(unit, null);
+		} catch (BreakException e) {
+			// shoudn't happen
+		}
+		assertTrue(unit.getActivity() == Activity.MOVING);
+		
+		// Moving itself not testable since FindPath not working.
+		
 	}
 
 	@Test
 	public void testCreateWorkAt() {
-
+		stat = new WorkAction(new SpecifiedExpression(1, 1, 0));
+		try {
+			assertTrue(stat.check(unit, null, null));
+		} catch (ModelException | BreakException | FormException e) {
+			// shoudn't happen
+		}
+		try {
+			stat.execute(unit, null);
+		} catch (BreakException e) {
+			// shoudn't happen
+		}
+		
+		assertTrue(unit.getActivity() == Activity.MOVING);
+		
+		// Unit moving to work place, working itself not testable since FindPath not
+		// working
+		
 	}
 
 	@Test
 	public void testCreateFollow() {
-
+		stat = new FollowAction(null);
 	}
 
 	@Test

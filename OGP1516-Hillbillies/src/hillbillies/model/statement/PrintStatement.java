@@ -24,15 +24,13 @@ public class PrintStatement<T> implements Statement {
 
 	@Override
 	public void execute(Unit unit, VarTracker tracker) {
-		System.out.println(printBody.evaluate().toString());
-		
+		System.out.println(printBody.evaluate(unit).toString());
 	}
 
 	@Override
 	public boolean check(Unit unit, VarTracker tracker, Statement parent)
 			throws ModelException, BreakException {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	

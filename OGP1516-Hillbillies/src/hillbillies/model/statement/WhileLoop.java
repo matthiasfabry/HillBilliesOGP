@@ -28,7 +28,7 @@ public class WhileLoop implements Statement {
 
 	@Override
 	public void execute(Unit unit, VarTracker tracker){
-		while(condition.evaluate())
+		while(condition.evaluate(unit))
 			try {
 				whileBody.execute(unit, tracker);
 			} catch (BreakException e) {
@@ -36,15 +36,11 @@ public class WhileLoop implements Statement {
 			}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see hillbillies.model.statement.Statement#check(hillbillies.model.Unit, hillbillies.model.statement.VarTracker, hillbillies.model.statement.Statement)
-	 */
 	@Override
 	public boolean check(Unit unit, VarTracker tracker, Statement parent)
 			throws ModelException, BreakException, FormException {
 		// TODO Auto-generated method stub
-		return condition.check() && whileBody.check(unit, tracker, parent);
+		return condition.check(unit) && whileBody.check(unit, tracker, parent);
 	}
 
 }

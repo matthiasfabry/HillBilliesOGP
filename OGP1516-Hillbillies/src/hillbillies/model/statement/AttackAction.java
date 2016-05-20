@@ -29,7 +29,7 @@ public class AttackAction implements Statement {
 	@Override
 	public void execute(Unit unit, VarTracker tracker) {
 		try {
-			unit.attack(victim.evaluate());
+			unit.attack(victim.evaluate(unit));
 		} catch (ModelException e) {
 			// shoudn't happen
 		}
@@ -40,7 +40,7 @@ public class AttackAction implements Statement {
 	 */
 	@Override
 	public boolean check(Unit unit, VarTracker tracker, Statement parent){
-		return unit.getFaction() != victim.evaluate().getFaction();
+		return unit.getFaction() != victim.evaluate(unit).getFaction();
 	}
 	
 	
