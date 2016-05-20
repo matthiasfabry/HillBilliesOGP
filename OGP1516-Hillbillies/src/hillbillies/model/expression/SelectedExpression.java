@@ -17,6 +17,8 @@ public class SelectedExpression extends PositionExpression<Coordinate> {
 	public SelectedExpression(){
 	}
 	
+	private Coordinate coordinate = new Coordinate(0,0,0);
+	
 	@Override
 	public Coordinate evaluate(Unit unit) {
 		return coordinate;
