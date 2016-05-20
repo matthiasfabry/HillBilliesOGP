@@ -153,7 +153,6 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 			SourceLocation sourceLocation) {
 		return new Expression<Boolean>() {
 			
-		
 		@Override
 		public Boolean evaluate(Unit thisUnit) {
 			if (thisUnit.getFaction() != ((Unit) unit.evaluate(thisUnit)).getFaction())

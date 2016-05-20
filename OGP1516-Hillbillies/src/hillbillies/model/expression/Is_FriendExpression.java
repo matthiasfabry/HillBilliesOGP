@@ -26,7 +26,7 @@ public class Is_FriendExpression implements Expression<Boolean> {
 
 	@Override
 	public boolean check(Unit thisUnit) throws FormException{
-		if (! (thisUnit instanceof Unit) || (! (otherUnit instanceof Unit)))
+		if (! (thisUnit instanceof Unit) || (! (otherUnit.evaluate(thisUnit) instanceof Unit)))
 			throw new FormException();
 		else 
 			return true;
