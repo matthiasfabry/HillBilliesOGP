@@ -19,6 +19,7 @@ import hillbillies.model.Terrain;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.model.expression.Boolean_Expression;
+import hillbillies.model.expression.Expression;
 import hillbillies.model.expression.FormException;
 import hillbillies.model.expression.FriendExpression;
 import hillbillies.model.expression.SpecifiedExpression;
@@ -56,6 +57,15 @@ public class ExpressionStatementTest {
 	private Log theLog;
 	private Boulder theBoulder;
 	private TaskFactory theFactory = new TaskFactory();
+	private Expression cube1E;
+	private Expression cube2E;
+	private Expression cube3E;
+	private Expression cube4E;
+	private Expression unitE;
+	private Expression closeenemyunitE;
+	private Expression closefriendunitE;
+	private Expression farenemyunitE;
+	private Expression farfriendunitE;
 
 	/**
 	 * @throws ModelException 
@@ -82,6 +92,16 @@ public class ExpressionStatementTest {
 		theBoulder = new Boulder(new Coordinate(1, 2, 0), theWorld);
 		cube1.addGameObject(theLog);
 		cube2.addGameObject(theBoulder);
+		cube1E = theFactory.createLiteralPosition(1, 0, 0, source);
+		cube2E = theFactory.createLiteralPosition(2, 0, 0, source);
+		cube3E = theFactory.createLiteralPosition(1, 1, 0, source);
+		cube4E = theFactory.createLiteralPosition(2, 1, 0, source);
+		unitE = theFactory.createThis(source);
+		closeenemyunitE = theFactory.createThis(source);
+		closefriendunitE = theFactory.createThis(source);
+		farenemyunitE = theFactory.createThis(source);
+		farfriendunitE = theFactory.createThis(source);
+		
 	}
 
 	// Expressions //
@@ -91,58 +111,58 @@ public class ExpressionStatementTest {
 		assertEquals(unit, theFactory
 				.createReadVariable("TestUnit", source).evaluate(unit));
 		assertEquals(closeenemyunit, theFactory
-				.createReadVariable("TestUnit1", source).evaluate(unit));
+				.createReadVariable("TestUnitA", source).evaluate(unit));
 	}
 
 	@Test
 	public void testCreateIsSolid() {
 		assertEquals(true,
-				theFactory.createIsSolid(cube3, source).evaluate(unit));
+				theFactory.createIsSolid(cube3E, source).evaluate(unit));
 		assertEquals(true,
-				theFactory.createIsSolid(cube4, source).evaluate(unit));
+				theFactory.createIsSolid(cube4E, source).evaluate(unit));
 		assertEquals(false,
-				theFactory.createIsSolid(cube1, source).evaluate(unit));
+				theFactory.createIsSolid(cube1E, source).evaluate(unit));
 		assertEquals(false,
-				theFactory.createIsSolid(cube2, source).evaluate(unit));
+				theFactory.createIsSolid(cube2E, source).evaluate(unit));
 	}
 
 	@Test
 	public void testCreateIsPassable() {
 		assertEquals(true,
-				theFactory.createIsPassable(unit, cube1, source).evaluate());
+				theFactory.createIsPassable(cube1E, source).evaluate(unit));
 		assertEquals(true,
-				theFactory.createIsPassable(unit, cube2, source).evaluate());
+				theFactory.createIsPassable(cube2E, source).evaluate(unit));
 		assertEquals(false,
-				theFactory.createIsPassable(unit, cube3, source).evaluate());
+				theFactory.createIsPassable(cube3E, source).evaluate(unit));
 		assertEquals(false,
-				theFactory.createIsPassable(unit, cube4, source).evaluate());
+				theFactory.createIsPassable(cube4E, source).evaluate(unit));
 	}
 
 	@Test
 	public void testCreateIsFriend() {
 		assertEquals(true, theFactory
-				.createIsFriend(closefriendunit, source).evaluate(unit));
+				.createIsFriend(closefriendunitE, source).evaluate(unit));
 		assertEquals(false, theFactory
-				.createIsFriend(closeenemyunit, source).evaluate(unit));
+				.createIsFriend(closeenemyunitE, source).evaluate(unit));
 	}
 
 	@Test
 	public void testCreateIsEnemy() {
 		assertEquals(true, theFactory
-				.createIsEnemy(closeenemyunit, source).evaluate(unit));
+				.createIsEnemy(closeenemyunitE, source).evaluate(unit));
 		assertEquals(false, theFactory
-				.createIsEnemy(closefriendunit, source).evaluate(unit));
+				.createIsEnemy(closefriendunitE, source).evaluate(unit));
 	}
 
 	@Test
 	public void testCreateIsAlive() {
-		assertEquals(true, theFactory.createIsAlive(source).evaluate(unit));
+		assertEquals(true, theFactory.createIsAlive(unitE, source).evaluate(unit));
 	}
 
 	@Test
 	public void testCreateCarriesItem() {
 		assertEquals(false,
-				theFactory.createCarriesItem(source).evaluate(unit));
+				theFactory.createCarriesItem(unitE, source).evaluate(unit));
 	}
 
 	@Test
@@ -205,7 +225,7 @@ public class ExpressionStatementTest {
 	public void testCreateHerePosition() {
 		assertEquals(theCoordinate,
 				theFactory.createHerePosition(source).evaluate(unit));
-		assertEquals(theFactory.createPositionOf(unit, source).evaluate(unit),
+		assertEquals(theFactory.createPositionOf(unitE, source).evaluate(unit),
 				theFactory.createHerePosition(source).evaluate(unit));
 	}
 
@@ -237,9 +257,8 @@ public class ExpressionStatementTest {
 	@Test
 	public void testCreateNextToPosition() {
 		assertEquals(theCoordinate,
-				theFactory
-						.createNextToPosition(
-								closefriendunit.getInWorldPosition(), source)
+				theFactory.createNextToPosition(
+								theFactory.createLiteralPosition(1, 1, 0, source), source)
 						.evaluate(unit));
 	}
 
@@ -294,9 +313,9 @@ public class ExpressionStatementTest {
 	@Test
 	public void testCreatePositionOf() {
 		assertEquals(theCoordinate,
-				theFactory.createPositionOf(source).evaluate(unit));
+				theFactory.createPositionOf(unitE, source).evaluate(unit));
 		assertEquals(new Coordinate(9, 3, 0),
-				theFactory.createPositionOf(source).evaluate(farenemyunit));
+				theFactory.createPositionOf(farenemyunitE, source).evaluate(unit));
 	}
 
 	// Statements //
