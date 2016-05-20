@@ -4,6 +4,7 @@
 package hillbillies.model.statement;
 
 import hillbillies.model.Unit;
+import hillbillies.model.expression.FormException;
 import ogp.framework.util.ModelException;
 
 /**
@@ -17,5 +18,5 @@ public interface Statement {
 
 	void execute(Unit unit, VarTracker tracker) throws BreakException;
 	
-	boolean check(Unit unit, VarTracker tracker, Statement parent) throws ModelException, BreakException;
+	boolean check(Unit unit, VarTracker tracker, Statement parent) throws ModelException, BreakException, FormException;
 }

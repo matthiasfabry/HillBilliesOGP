@@ -6,6 +6,7 @@ package hillbillies.model.statement;
 
 import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
+import hillbillies.model.expression.FormException;
 import ogp.framework.util.ModelException;
 
 /**
@@ -26,13 +27,24 @@ public class WhileLoop implements Statement {
 	
 
 	@Override
-	public void execute(Unit unit, VarTracker tracker) throws ModelException {
+	public void execute(Unit unit, VarTracker tracker){
 		while(condition.evaluate())
 			try {
 				whileBody.execute(unit, tracker);
 			} catch (BreakException e) {
 				break;
 			}
+	}
+
+
+	/* (non-Javadoc)
+	 * @see hillbillies.model.statement.Statement#check(hillbillies.model.Unit, hillbillies.model.statement.VarTracker, hillbillies.model.statement.Statement)
+	 */
+	@Override
+	public boolean check(Unit unit, VarTracker tracker, Statement parent)
+			throws ModelException, BreakException, FormException {
+		// TODO Auto-generated method stub
+		return condition.check() && whileBody.check(unit, tracker, parent);
 	}
 
 }

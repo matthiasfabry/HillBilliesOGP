@@ -6,6 +6,7 @@ package hillbillies.model.statement;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
+import hillbillies.model.expression.FormException;
 import ogp.framework.util.ModelException;
 
 /**
@@ -20,15 +21,24 @@ public class WorkAction implements Statement {
 	public WorkAction(Expression<Coordinate> position){
 		this.position = position;
 	}
+	
 	private final Expression<Coordinate> position;
 	
-	/* (non-Javadoc)
-	 * @see hillbillies.model.statement.ActionStatement#execute()
-	 */
 	@Override
-	public void execute(Unit unit) throws ModelException {
-		unit.workAt(position.evaluate());
+	public void execute(Unit unit, VarTracker tracker) {
+		try {
+			unit.workAt(position.evaluate());
+		} catch (ModelException e) {
+			// shoudn't happen
+		}
 		
+	}
+
+	@Override
+	public boolean check(Unit unit, VarTracker tracker, Statement parent)
+			throws ModelException, BreakException, FormException {
+		// TODO Auto-generated method stub
+		return unit.isValidPosition(position.evaluate());
 	}
 
 }

@@ -6,6 +6,7 @@ package hillbillies.model.statement;
 import java.util.List;
 
 import hillbillies.model.Unit;
+import hillbillies.model.expression.FormException;
 import ogp.framework.util.ModelException;
 
 /**
@@ -42,13 +43,9 @@ public class SequenceStatement implements Statement {
 	}
 
 	@Override
-	public boolean check(Unit unit, VarTracker tracker, Statement parent) {
+	public boolean check(Unit unit, VarTracker tracker, Statement parent) throws FormException, ModelException, BreakException {
 		for (Statement statement : statements){
-			try {
-				statement.check(unit, tracker, (SequenceStatement) this);
-			} catch (BreakException | ModelException e) {
-				return false;
-			}
+			return statement.check(unit, this.tracker, (SequenceStatement) this);
 		}
 		return true;
 			

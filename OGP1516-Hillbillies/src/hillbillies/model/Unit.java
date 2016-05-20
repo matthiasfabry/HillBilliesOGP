@@ -269,17 +269,17 @@ public class Unit {
 				position.getZ());
 	}
 	/**
-	 +	 * Method that checks whether the given coordinate is a valid coordinate
-	 +	 * for the Units world.
-	 +	 * @param coordinate
-	 +	 * 			the coordinate that needs to be evaluated
-	 +	 * @return	true when the coordinate is valid
-	 +	 * 		|	if this.getWorld().isValidPosition(coordinate)
-	 +	 * 		|		return true
-	 +	 * 		|	else
-	 +	 * 		|		return false
-	 +	 * 		
-	 +	 */
+	 * Method that checks whether the given coordinate is a valid coordinate
+	 * for the Units world.
+	 * @param coordinate
+	 * 			the coordinate that needs to be evaluated
+	 * @return	true when the coordinate is valid
+	 * 		|	if this.getWorld().isValidPosition(coordinate)
+	 * 		|		return true
+	 * 		|	else
+	 * 		|		return false
+	 * 		
+	 */
 	public boolean isValidPosition(Coordinate coordinate) {
 		return this.getWorld().isValidPosition(coordinate);
 	}

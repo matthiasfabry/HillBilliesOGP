@@ -5,6 +5,7 @@ package hillbillies.model.statement;
 
 import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
+import hillbillies.model.expression.FormException;
 import ogp.framework.util.ModelException;
 
 /**
@@ -48,7 +49,7 @@ public class IfThenElse implements Statement {
 
 	@Override
 	public boolean check(Unit unit, VarTracker tracker, Statement parent)
-			throws ModelException, BreakException {
+			throws ModelException, BreakException, FormException {
 		return condition.check() && thenBody.check(unit, tracker, parent)
 				&& elseBody.check(unit, tracker, parent);
 	}

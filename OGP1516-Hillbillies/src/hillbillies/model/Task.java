@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.*;
+import hillbillies.model.expression.FormException;
 import hillbillies.model.statement.BreakException;
 import hillbillies.model.statement.Statement;
 import hillbillies.model.statement.VarTracker;
@@ -337,10 +338,8 @@ public class Task {
 	
 	public boolean check(){
 		try {
-			getActivities().check(getUnit(), new VarTracker(), null);
-		} catch (ModelException e) {
-			return false;
-		} catch (BreakException e) {
+			getActivities().check(getUnit(), null, null);
+		} catch (ModelException | BreakException | FormException e) {
 			return false;
 		}
 		return true;
