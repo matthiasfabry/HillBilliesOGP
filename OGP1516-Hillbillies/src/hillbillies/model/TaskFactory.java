@@ -147,35 +147,56 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsFriend(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public Expression createIsFriend(Expression unit, SourceLocation sourceLocation) {
-		return new Is_FriendExpression(unit);
-//		return new Expression<Unit>() {
-//
-//			@Override
-//			public Unit evaluate() {
-//				// TODO Auto-generated method stub
-//				return null;
-//			}	
-//		};
+//	public Expression createIsFriend(Expression unit, SourceLocation sourceLocation) {
+//		return new Is_FriendExpression(unit);
+	public Expression<Boolean> createIsFriend(Expression unit,
+			SourceLocation sourceLocation) {
+		
+		@Override
+		public Boolean evaluate(Unit thisUnit) {
+			if (thisUnit.getFaction() != ((Unit) unit.evaluate(thisUnit)).getFaction())
+				return true;
+			else 
+				return false;
+		}
+
+		@Override
+		public boolean check(Unit thisUnit) throws FormException{
+			if (! (thisUnit instanceof Unit) || (! (unit.evaluate((Unit) unit) instanceof Unit)))
+				throw new FormException();
+			else 
+				return true;
+		}
+		};
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsEnemy(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
-	@Override
-	public Expression createIsEnemy(Expression unit, SourceLocation sourceLocation) {
-		return new Is_EnemyExpression(unit);
-		
-//		public Expression<Unit> createIsEnemy(Unit unit, Unit unitt,
-//				SourceLocation sourceLocation) 
-//		return new Expression<Unit>() {
-//
-//			@Override
-//			public Unit evaluate() {
-				// TODO Auto-generated method stub
-//				return null;
-//			}
-//		};
+	
+//	public Expression createIsEnemy(Expression unit, SourceLocation sourceLocation) {
+//		return new Is_EnemyExpression(unit);
+	
+	public Expression<Boolean> createIsEnemy(Expression unit,
+			SourceLocation sourceLocation) {
+	return new Expression<Boolean>() {
+
+		@Override
+		public Boolean evaluate(Unit thisUnit) {
+			if (thisUnit.getFaction() != ((Unit) unit.evaluate(thisUnit)).getFaction())
+				return true;
+			else 
+				return false;
+		}
+
+		@Override
+		public boolean check(Unit thisUnit) throws FormException{
+			if (! (thisUnit instanceof Unit) || (! (unit.evaluate((Unit) unit) instanceof Unit)))
+				throw new FormException();
+			else 
+				return true;
+		}
+		};
 	}
 
 	/* (non-Javadoc)
