@@ -4,6 +4,10 @@
 package hillbillies.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 
 import be.kuleuven.cs.som.annotate.*;
 import ogp.framework.util.ModelException;
@@ -34,12 +38,12 @@ public class Scheduler {
 	 *         This new Scheduler cannot have the given Faction as its Faction.
 	 *       | ! canHaveAsFaction(this.getFaction())
 	 */
-	Scheduler(Faction faction){
+	Scheduler(Faction faction) {
 		this.faction = faction;
 	}
 
 	// Faction //
-	
+
 	/**
 	 * Return the Faction of this Scheduler.
 	 * 
@@ -172,6 +176,22 @@ public class Scheduler {
 	}
 
 	/**
+	 * Checks whether this Schedular has the given tasks as its tasks.
+	 * 
+	 * @param tasks
+	 * @return true is all tasks are member of this scheduler, false otherwize
+	 * 		| If (for all task in tasks : this.hasAsTask(task)) result == true
+	 * 		| else result == false
+	 */
+	public boolean hasAsTasks(Task... tasks) {
+		for (Task task : tasks) {
+			if (!hasAsTask(task))
+				return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Add the given Task to the list of Tasks of this Scheduler.
 	 * 
 	 * @param  Task
@@ -193,23 +213,52 @@ public class Scheduler {
 		tasks.add(Task);
 	}
 
-	void addTasks(@Raw Task...tasks){
-		for(Task task : tasks)
-			if(canHaveAsTask(task))
+	/**
+	 * Add the given Task to the list of Tasks of this Scheduler.
+	 * 
+	 * @param  Tasks
+	 *         The Tasks to be added.
+	 * @pre    The given Tasks are effective and already references
+	 *         this Scheduler, and this Scheduler does not yet have the given
+	 *         Tasks as one of its Tasks.
+	 *       | for all Task in tasks (Task != null) && (Task.getScheduler() == this) &&
+	 *       | (! this.hasAsTask(Task))
+	 * @post   The number of Tasks of this Scheduler is
+	 *         incremented by tasks.size().
+	 *       | new.getNbTasks() == getNbTasks() + tasks.size()
+	 * @post   This Scheduler has the given Tasks as its last Tasks.
+	 *       | for all i<tasks.size() : new.getTaskAt(getNbTasks()+i) == Tasks[i]
+	 */
+	void addTasks(@Raw Task... tasks) {
+		for (Task task : tasks)
+			if (canHaveAsTask(task))
 				this.addTask(task);
 	}
 
-	public void replace(Task original, Task replacement) throws ModelException{
-		if (! hasAsTask(original))
+	/**
+	 * Replaces a task with another task
+	 * 
+	 * @param original
+	 * 		the original task
+	 * @param replacement
+	 * 		the new task
+	 * @throws ModelException
+	 * 		The original task is not member of this scheduler
+	 * 		| ! hasAsTask(original)
+	 * 		The new task is not a valid task for this scheduler
+	 * 		| ! canHaveAsTask(replacement)
+	 */
+	public void replace(Task original, Task replacement) throws ModelException {
+		if (!hasAsTask(original))
 			throw new ModelException("Original not in Scheduler");
-		if (! canHaveAsTask(replacement))
+		if (!canHaveAsTask(replacement))
 			throw new ModelException("replacement is not valid");
 		else {
 			this.removeTask(original);
 			this.addTask(replacement);
 		}
 	}
-	
+
 	/**
 	 * Remove the given Task from the list of Tasks of this Scheduler.
 	 * 
@@ -259,4 +308,71 @@ public class Scheduler {
 	 *       |     (Tasks.get(I) != Tasks.get(J))
 	 */
 	private final ArrayList<Task> tasks = new ArrayList<Task>();
+
+	/**
+	 * Returns the list of tasks that have a higher priority than a given priority
+	 * @param priority
+	 * 		the priority to exceed
+	 * @effect
+	 * 		| this.getTasksFromPredicate(task -> task.getPriority > priority)
+	 */
+	public ArrayList<Task> getTasksHigherThan(int priority) {
+		return getTasksFromPredicate(task -> task.getPriority() > priority);
+	}
+
+	/**
+	 * Returns the list of tasks that are in execution
+	 * @effect
+	 * 		| this.getTasksFromPredicate(task -> task.inExecution)
+	 */
+	public ArrayList<Task> getTasksInExecution() {
+		return getTasksFromPredicate(task -> task.inExecution);
+	}
+
+	/**
+	 * Return the list of tasks of this scheduler satisfying a predicate
+	 * @param t
+	 * 		The predicate to satisfy
+	 * @return
+	 * 		The list of tasks such that t.test(Task) == true
+	 * 		| for all Tasks in result :
+	 * 		|   t.test(Task) = true;
+	 */
+	public ArrayList<Task> getTasksFromPredicate(Predicate<Task> t) {
+		return (ArrayList<Task>) tasks.stream().filter(t)
+				.collect(Collectors.toList());
+	}
+
+//	public Iterator<Task> getIterator(){
+//		return new Iterator<Task>() {
+//
+//			private Task next = null;
+//			
+//			@Override
+//			public boolean hasNext() {
+//				if (next == null)
+//					next = tasks.condition
+//				return false;
+//			}
+//
+//			@Override
+//			public Task next() {
+//				if (! hasNext()){
+//					throw new NoSuchElementException();
+//				}
+//				Task theTask = next;
+//				next = null;
+//				return theTask;
+//			}
+//		};
+//	}
+
+	/**
+	 * Returns the Simple iterator of the list of Tasks
+	 * @return tasks.iterator()
+	 */
+	public Iterator<Task> getSimpleIterator(){
+		return tasks.iterator();
+	}
+	
 }

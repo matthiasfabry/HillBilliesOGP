@@ -3,8 +3,9 @@
  */
 package hillbillies.model;
 
-import java.util.PriorityQueue;
-import java.util.Queue;
+
+import java.util.ArrayList;
+
 
 import be.kuleuven.cs.som.annotate.*;
 import ogp.framework.util.ModelException;
@@ -32,18 +33,26 @@ public class Cube {
 	 * 
 	 * @param coordinate
 	 * 			The position of the cube in the game world
-	 * @param  world
+	 * @param  grid
 	 *         The World for this new Cube.
-	 * @post   The World of this new Cube is equal to the given
-	 *         World.
-	 *       | new.getWorld() == world
+	 * @post   The Grid of this new Cube is equal to the given
+	 *         Grid.
+	 *       | new.getGrid() == grid
 	 * @throws ModelException
-	 *         This new Cube cannot have the given World as its World.
-	 *       | ! canHaveAsWorld(this.getWorld())
+	 *         The terrain is not a valid terrain types
 	 */
-	public Cube(Coordinate coordinate, Grid grid) {
+	public Cube(Coordinate coordinate, Grid grid, Terrain terrain){
 		this.position = coordinate;
 		this.grid = grid;
+		try {
+			this.setTerrain(terrain);
+		} catch (ModelException e) {
+			try {
+				this.setTerrain(Terrain.AIR);
+			} catch (ModelException e1) {
+				// shoudn't happen
+			}
+		}
 	}
 
 	// Terrain //
@@ -67,7 +76,7 @@ public class Cube {
 	 *       | result == true
 	*/
 	static boolean isValidTerrain(Terrain terrain) {
-		return true;
+		return terrain != null;
 	}
 	/**
 	 * Set the Terrain of this Cube to the given Terrain.
@@ -184,18 +193,18 @@ public class Cube {
 	 * Return the set of Logs of this Cube.
 	 */
 	@Raw
-	Queue<Log> getLogs() {
-		Queue<Log> theQueue = new PriorityQueue<>();
+	ArrayList<Log> getLogs() {
+		ArrayList<Log> theQueue = new ArrayList<>();
 		for (GameObject gameObject : gameObjects)
 			if (gameObject instanceof Log)
-				theQueue.offer((Log) gameObject);
+				theQueue.add((Log) gameObject);
 		return theQueue;
 	}
 	/**
 	 * removes the Logs from the cube.
 	 */
 	Log removeLog() {
-		Log theLog = this.getLogs().poll();
+		Log theLog = this.getLogs().get(1);
 		gameObjects.remove(theLog);
 		return theLog;
 	}
@@ -204,18 +213,18 @@ public class Cube {
 	 * Return the set of Boulders of this Cube.
 	 */
 	@Raw
-	Queue<Boulder> getBoulders() {
-		Queue<Boulder> theQueue = new PriorityQueue<>();
+	ArrayList<Boulder> getBoulders() {
+		ArrayList<Boulder> theSet = new ArrayList<>();
 		for (GameObject gameObject : gameObjects)
 			if (gameObject instanceof Boulder)
-				theQueue.offer((Boulder) gameObject);
-		return theQueue;
+				theSet.add((Boulder) gameObject);
+		return theSet;
 	}
 	/**
 	 * removes the Boulders from the cube.
 	 */
 	Boulder removeBoulder() {
-		Boulder theBoulder = this.getBoulders().poll();
+		Boulder theBoulder = this.getBoulders().get(1);
 		gameObjects.remove(theBoulder);
 		this.getGrid().getWorld().removeBoulderAt(getPlaceInGrid());
 		return theBoulder;
@@ -227,7 +236,7 @@ public class Cube {
 	 * 			the object that needs to be added
 	 */
 	public void addGameObject(GameObject gameObject) {
-		this.getGameObjects().offer(gameObject);
+		this.getGameObjects().add(gameObject);
 	}
 
 	/**
@@ -235,13 +244,13 @@ public class Cube {
 	 * 
 	 * @return the gameObjects
 	 */
-	Queue<GameObject> getGameObjects() {
+	ArrayList<GameObject> getGameObjects() {
 		return gameObjects;
 	}
 	/**
 	 * Variable registering the set of Boulders of this Cube.
 	 */
-	private Queue<GameObject> gameObjects = new PriorityQueue<>();
+	private ArrayList<GameObject> gameObjects = new ArrayList<>();
 
 	// Position //
 

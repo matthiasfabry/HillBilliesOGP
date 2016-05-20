@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import hillbillies.model.Boulder;
 import hillbillies.model.Coordinate;
-import hillbillies.model.GameObject;
+
 import hillbillies.model.World;
 import ogp.framework.util.ModelException;
 /**

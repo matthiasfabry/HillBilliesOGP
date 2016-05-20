@@ -261,8 +261,12 @@ public class Task {
 	 * @return 
 	 *       | result == 
 	*/
-	public static boolean isValidUnit(Unit unit) {
-		return false;
+	public boolean isValidUnit(Unit unit) {
+		if (this.inExecution) {
+			return unit != null;
+		}
+		else
+			return unit == null;
 	}
 
 	/**
@@ -345,12 +349,24 @@ public class Task {
 	public void run(){
 		if (this.check()) {
 			try {
+				inExecution = true;
 				getActivities().execute(getUnit(), new VarTracker());
 			} catch (BreakException e) {
 				// shoudn't happen
 			} 
 		}
 	}
+	
+	public void stop(){
+		inExecution = false;
+		try {
+			this.setUnit(null);
+		} catch (ModelException e) {
+			// shoudn't happen
+		}
+	}
+	
+	boolean inExecution = false;
 	
 	// Overrides from object //
 

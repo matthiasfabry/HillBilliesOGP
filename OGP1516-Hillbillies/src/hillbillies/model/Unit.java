@@ -1,7 +1,7 @@
 
 package hillbillies.model;
 
-import java.util.Iterator;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -48,6 +48,9 @@ import ogp.framework.util.ModelException;
  * 			| isValidPosition(DestinationCube)
  * @invar  Each Unit can have its World as World.
  *          | canHaveAsWorld(this.getWorld())
+ * @invar  The Task of each Unit must be a valid Task for any
+ *         Unit.
+ *       | isValidTask(getTask())
  *
  * @author Matthias Fabry and Lukas Van Riel
  * @version 1.0
@@ -2555,6 +2558,58 @@ public class Unit {
 	 * Variable registering the experience of the Unit.
 	 */
 	public int totalExperience;
+	
+	// Task //
+
+	/**
+	 * Return the Task of this Unit.
+	 */
+	@Basic @Raw
+	public Task getTask() {
+		return this.task;
+	}
+	
+	/**
+	 * Check whether the given Task is a valid Task for
+	 * any Unit.
+	 *  
+	 * @param  task
+	 *         The Task to check.
+	 * @return 
+	 *       | result == 
+	*/
+	public static boolean isValidTask(Task task) {
+		return true;
+	}
+	
+	/**
+	 * Set the Task of this Unit to the given Task.
+	 * 
+	 * @param  task
+	 *         The new Task for this Unit.
+	 * @post   If the given Task is a valid Task for any Unit,
+	 *         the Task of this new Unit is equal to the given
+	 *         Task.
+	 *       | if (isValidTask(task))
+	 *       |   then new.getTask() == task
+	 */
+	@Raw
+	public void setTask(Task task) {
+		if (isValidTask(task))
+			this.task = task;
+	}
+	
+	/**
+	 * Variable registering the Task of this Unit.
+	 */
+	private Task task;
+	
+	public void execute(){
+		if (this.getTask() != null) {
+			this.getTask().run();
+		}
+	}
+
 
 	// Overrides from Object //
 

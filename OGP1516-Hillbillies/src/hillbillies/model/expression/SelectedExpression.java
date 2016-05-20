@@ -1,7 +1,7 @@
 package hillbillies.model.expression;
 
 import hillbillies.model.Coordinate;
-import hillbillies.model.Cube;
+
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 

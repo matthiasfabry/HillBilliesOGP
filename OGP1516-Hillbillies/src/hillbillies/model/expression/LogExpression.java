@@ -3,7 +3,7 @@ package hillbillies.model.expression;
 import java.util.HashSet;
 import java.util.Set;
 
-import hillbillies.model.Boulder;
+
 import hillbillies.model.Coordinate;
 import hillbillies.model.Log;
 import hillbillies.model.Unit;
