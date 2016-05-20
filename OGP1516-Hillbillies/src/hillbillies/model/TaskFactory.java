@@ -151,6 +151,8 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 //		return new Is_FriendExpression(unit);
 	public Expression<Boolean> createIsFriend(Expression unit,
 			SourceLocation sourceLocation) {
+		return new Expression<Boolean>() {
+			
 		
 		@Override
 		public Boolean evaluate(Unit thisUnit) {
