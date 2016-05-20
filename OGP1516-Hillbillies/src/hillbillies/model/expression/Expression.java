@@ -3,6 +3,8 @@
  */
 package hillbillies.model.expression;
 
+import hillbillies.model.Unit;
+
 /**
  *
  *
@@ -12,7 +14,7 @@ package hillbillies.model.expression;
  */
 public interface Expression<T> {
 	
-	public T evaluate();
+	public T evaluate(Unit unit);
 	
 	boolean check() throws FormException;
 

@@ -16,19 +16,15 @@ import hillbillies.model.World;
 */
 public class AnyExpression extends UnitExpression<Unit> {
 
-	public AnyExpression(Unit unit) {
-		this.thisUnit = unit;
-		this.anyUnit = determineAnyUnit();
+	public AnyExpression() {
 	}
-	private final Unit thisUnit;
-	private final Unit anyUnit;
 	
 	@Override
-	public Unit evaluate() {
-		return anyUnit;
+	public Unit evaluate(Unit unit) {
+		return determineAnyUnit(unit);
 	}
 
-	public Unit determineAnyUnit(){
+	public Unit determineAnyUnit(Unit thisUnit){
 		Coordinate position = thisUnit.getInWorldPosition();
 		World world = thisUnit.getWorld();
 		Unit someUnit = null;
