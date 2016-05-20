@@ -38,7 +38,7 @@ public class Scheduler {
 	 *         This new Scheduler cannot have the given Faction as its Faction.
 	 *       | ! canHaveAsFaction(this.getFaction())
 	 */
-	Scheduler(Faction faction) {
+	public Scheduler(Faction faction) {
 		this.faction = faction;
 	}
 
@@ -229,7 +229,7 @@ public class Scheduler {
 	 * @post   This Scheduler has the given Tasks as its last Tasks.
 	 *       | for all i<tasks.size() : new.getTaskAt(getNbTasks()+i) == Tasks[i]
 	 */
-	void addTasks(@Raw Task... tasks) {
+	public void addTasks(@Raw Task... tasks) {
 		for (Task task : tasks)
 			if (canHaveAsTask(task))
 				this.addTask(task);
