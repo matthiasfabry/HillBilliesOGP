@@ -1,7 +1,6 @@
 
 package hillbillies.model;
 
-
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -1117,9 +1116,9 @@ public class Unit {
 			Queue<Tuple<Coordinate>> searched = new PriorityQueue<>();
 			LinkedList<Coordinate> coordinateQueue = new LinkedList<>();
 			int i = 0;
-			while (! coordinateQueue.contains(this.getInWorldPosition())
+			while (!coordinateQueue.contains(this.getInWorldPosition())
 					&& q.size() != 0) {
-			Tuple<Coordinate> next = q.poll();
+				Tuple<Coordinate> next = q.poll();
 				search(next);
 				searched.add(next);
 				if (!coordinateQueue.contains(next.getC().floor())) {
@@ -1129,8 +1128,8 @@ public class Unit {
 				i++;
 			}
 			if (coordinateQueue.contains(this.getInWorldPosition())) {
-				searched.add(
-						new Tuple<Coordinate>(this.getInWorldPosition(), i-1));
+				searched.add(new Tuple<Coordinate>(this.getInWorldPosition(),
+						i - 1));
 				while (!this.getPath().getLast()
 						.equals(this.getDestinationCube().sum(centerCube()))) {
 					int counter = 10000;
@@ -1156,7 +1155,7 @@ public class Unit {
 		} else
 			throw new ModelException("No destination!");
 	}
-	
+
 	/**
 	 * Method that adds all accessible cubes to q, together with a cost starting from 
 	 * the given cube. 
@@ -1206,7 +1205,7 @@ public class Unit {
 		} while (decending.getV() >= 0 && !alreadyinQ);
 		return alreadyinQ;
 	}
-	
+
 	/**
 	 * Checks if the given cube neighbours any solid cube.
 	 * @param cube
@@ -1687,7 +1686,8 @@ public class Unit {
 				&& this.getActivity() != Activity.SPRINTING
 				&& this.getActivity() != Activity.WORKING
 				&& this.getActivity() != Activity.ATTACKING
-				&& this.getActivity() != Activity.DEFENDING) {
+				&& this.getActivity() != Activity.DEFENDING
+				&& this.getActivity() != Activity.FALLING) {
 			this.setRemainingWorkTime(this.workTime());
 			this.setActivity(Activity.WORKING);
 		} else
@@ -1886,7 +1886,7 @@ public class Unit {
 	/**
 	 * The Object that is being carried by the Unit.
 	 */
-	private GameObject ObjectCarried;
+	private GameObject ObjectCarried = null;
 
 	/**
 	 * flag that registers whether a Unit is carrying a gameobject.
@@ -2512,20 +2512,21 @@ public class Unit {
 	 * Variable registering the experience of the Unit.
 	 */
 	public int totalExperience;
-	
+
 	// Task //
-	
-	public void choosePriorityTask(){
+
+	public void choosePriorityTask() {
 		this.setTask(this.getFaction().getScheduler().getHighestPriority());
 	}
 	/**
 	 * Return the Task of this Unit.
 	 */
-	@Basic @Raw
+	@Basic
+	@Raw
 	public Task getTask() {
 		return this.task;
 	}
-	
+
 	/**
 	 * Check whether the given Task is a valid Task for
 	 * any Unit.
@@ -2536,9 +2537,9 @@ public class Unit {
 	 *       | result == ! task.inExecution
 	*/
 	public static boolean isValidTask(Task task) {
-		return ! task.inExecution;
+		return !task.inExecution;
 	}
-	
+
 	/**
 	 * Set the Task of this Unit to the given Task.
 	 * 
@@ -2555,12 +2556,12 @@ public class Unit {
 		if (isValidTask(task))
 			this.task = task;
 	}
-	
+
 	/**
 	 * Variable registering the Task of this Unit.
 	 */
 	private Task task;
-	
+
 	/**
 	 * Starts this unit with executing his selected task
 	 * 
@@ -2569,7 +2570,7 @@ public class Unit {
 	 * @post this unit will not be IDLE
 	 * 		| new.getActivity != Activity.IDLE
 	 */
-	public void execute(){
+	public void execute() {
 		if (this.getTask() != null) {
 			this.getTask().run();
 		}
@@ -2580,7 +2581,7 @@ public class Unit {
 	 * 
 	 * @effect | this.getTask().stop()
 	 */
-	public void stopExecute(){
+	public void stopExecute() {
 		this.getTask().stop();
 	}
 

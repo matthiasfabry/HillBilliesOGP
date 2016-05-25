@@ -14,6 +14,7 @@ import hillbillies.model.statement.VarTracker;
 import ogp.framework.util.ModelException;
 
 /**
+ * Class representing a Hillbillie Task
  *
  * @invar   Each Task must have proper Schedulers.
  *        | hasProperSchedulers()
@@ -351,7 +352,7 @@ public class Task {
 	 * 		Returns true if no exceptions are thrown in Statement.check(),
 	 * 		false if there are, or the method returns false;
 	 */
-	public boolean check(){
+	boolean check(){
 		try {
 			return getActivities().check(getUnit(), null, null);
 		} catch (ModelException | BreakException | FormException e) {

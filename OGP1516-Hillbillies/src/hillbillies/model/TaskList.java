@@ -8,7 +8,7 @@ import java.util.List;
 import hillbillies.model.statement.Statement;
 
 /**
- *
+ * Wrapper Class of tasks
  *
  * @author Matthias Fabry
  * @version 1.0
