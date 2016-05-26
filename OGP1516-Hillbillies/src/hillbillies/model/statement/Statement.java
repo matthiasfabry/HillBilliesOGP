@@ -17,6 +17,9 @@ import ogp.framework.util.ModelException;
 public interface Statement {
 
 	void execute(Unit unit, VarTracker tracker) throws BreakException;
-	
-	boolean check(Unit unit, VarTracker tracker, Statement parent) throws ModelException, BreakException, FormException;
+
+	default boolean check(Unit unit, VarTracker tracker, Statement parent)
+			throws ModelException, BreakException, FormException {
+		return false;
+	}
 }

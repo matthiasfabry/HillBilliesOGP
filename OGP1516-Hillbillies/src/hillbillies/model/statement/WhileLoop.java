@@ -22,6 +22,7 @@ public class WhileLoop implements Statement {
 		this.condition = condition;
 		this.whileBody = whileBody;
 	}
+	
 	private final Expression<Boolean> condition;
 	private final Statement whileBody;
 	
@@ -39,7 +40,6 @@ public class WhileLoop implements Statement {
 	@Override
 	public boolean check(Unit unit, VarTracker tracker, Statement parent)
 			throws ModelException, BreakException, FormException {
-		// TODO Auto-generated method stub
 		return condition.check(unit) && whileBody.check(unit, tracker, parent);
 	}
 

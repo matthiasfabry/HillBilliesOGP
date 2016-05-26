@@ -122,6 +122,7 @@ public class World {
 	public void setTerrainAt(Coordinate coordinate, Terrain terrain)
 			throws ModelException {
 		this.getGrid().setTerrainAt(coordinate, terrain);
+		this.getListener().notify();
 	}
 
 	/**
